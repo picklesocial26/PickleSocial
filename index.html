@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Pickle Social - Pickleball</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<link rel="icon" href="logo.jpeg" type="image/jpeg">
+
+<link rel="stylesheet" href="css/styles.css">
+
+<style>
+  @keyframes checkPopIn {
+    0% { transform: scale(0.3); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+  @keyframes circleDraw {
+    to { stroke-dashoffset: 0; }
+  }
+  @keyframes circleFill {
+    to { opacity: 0.1; }
+  }
+  @keyframes checkDraw {
+    to { stroke-dashoffset: 0; }
+  }
+</style>
+</head>
+
+<body>
+
+<nav>
+  <div class="nav-brand">
+    <img src="logo.jpeg" alt="Pickle Social logo" class="nav-logo">
+    Pickle Social <span>Pickleball</span>
+  </div>
+  <button class="hamburger" aria-label="Open search" onclick="openModal()">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <path d="M3 6h18M3 12h18M3 18h18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </button>
+  <div class="nav-actions">
+    <div style="display:flex;align-items:center;gap:6px;">
+      <div id="statusDot" style="width:8px;height:8px;border-radius:50%;background:#f59e0b;"></div>
+      <span id="statusLabel" style="font-size:0.75rem;color:#f59e0b;">Connecting...</span>
+    </div>
+    <button class="btn-primary" onclick="openModal()" aria-label="Search Booking">
+      <svg class="icon-search" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        <path d="M11 4a7 7 0 1 0 4.95 11.95l4.54 4.54 1.41-1.41-4.54-4.54A7 7 0 0 0 11 4zm0 2a5 5 0 1 1 0 10A5 5 0 0 1 11 6z" />
+      </svg>
+      Search Booking
+    </button>
+  </div>
+</nav>
+
+<div class="hero-banner">
+  <img src="banner.jpeg" alt="Pickle Social banner" class="hero-banner-image">
+</div>
+
+<main>
+  <div class="photo-grid">
+    <div class="main-photo">
+      <span class="court-label">📸 Court View</span>
+    </div>
+    <div class="photo-mini"></div>
+    <div class="photo-mini"></div>
+    <div class="photo-mini"></div>
+    <div class="photo-mini"></div>
+  </div>
+
+  <div class="venue-header">
+    <h1>Book a Court at Pickle Social</h1>
+    <div class="venue-meta">
+      <span>📍 <a href="https://maps.app.goo.gl/ewXraZnbkGZVhZsX6" target="_blank" rel="noreferrer" style="color:#2dd4bf;">Pickle Social - Cebu, Barangay Pang Pang, Talisay, 6000 Cebu</a></span>
+      <span>🕒 60-min slots • 24hrs</span>
+      <span>📞 +63 917 000 0000</span>
+    </div>
+  </div>
+
+  <div class="pricing-banner">
+    <div class="rate">☀️ Day Rate: ₱450 / hour (6AM–6PM)</div>
+    <div class="rate">🌙 Night Rate: ₱500 / hour (6PM–6AM)</div>
+    <div class="note">Tap available slots to select multiple. Open 24 hours.</div>
+  </div>
+
+  <div class="booking-section">
+    <div class="calendar-card">
+      <div class="cal-header">
+        <button class="cal-nav" id="prevBtn">&#8249;</button>
+        <h3 id="calMonthYear"></h3>
+        <button class="cal-nav" id="nextBtn">&#8250;</button>
+      </div>
+      <div class="cal-grid" id="calGrid"></div>
+      <div class="legend">
+        <div class="legend-title">Legend</div>
+        <div class="legend-item"><div class="dot dot-green"></div> Available</div>
+        <div class="legend-item"><div class="dot dot-pink"></div> Selected</div>
+        <div class="legend-item"><div class="dot dot-red"></div> Booked</div>
+      </div>
+    </div>
+
+    <div class="table-panel">
+      <div class="table-header">
+        <h2>📅 <span id="selectedDateLabel"></span></h2>
+        <button class="btn-primary" onclick="goToToday()">Today</button>
+      </div>
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>Time</th>
+              <th>🏟 Court One</th>
+              <th>🏟 Court Two</th>
+            </tr>
+          </thead>
+          <tbody id="slotBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <h2>Pickle Social <span>Pickleball</span></h2>
+      <p>Easy. Fast. Reliable Court Booking.</p>
+      <div class="social-links">
+        <a class="social-link" href="https://www.facebook.com/profile.php?id=61589519277936" target="_blank" rel="noreferrer" aria-label="Facebook">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true">
+            <path d="M22.675 0h-21.35C.597 0 0 .597 0 1.333v21.333C0 23.403.597 24 1.325 24H12.82v-9.294H9.692V11.12h3.128V8.414c0-3.1 1.893-4.788 4.659-4.788 1.325 0 2.463.099 2.795.143v3.24l-1.918.001c-1.504 0-1.796.715-1.796 1.764v2.314h3.587l-.467 3.586h-3.12V24h6.116C23.403 24 24 23.403 24 22.667V1.333C24 .597 23.403 0 22.675 0z"/>
+          </svg>
+        </a>
+        <a class="social-link" href="https://www.instagram.com/picklesocial.ph/?hl=en" target="_blank" rel="noreferrer" aria-label="Instagram">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true">
+            <path d="M7.75 2h8.5A5.75 5.75 0 0 1 22 7.75v8.5A5.75 5.75 0 0 1 16.25 22h-8.5A5.75 5.75 0 0 1 2 16.25v-8.5A5.75 5.75 0 0 1 7.75 2Zm0 1.5A4.25 4.25 0 0 0 3.5 7.75v8.5A4.25 4.25 0 0 0 7.75 20.5h8.5A4.25 4.25 0 0 0 20.5 16.25v-8.5A4.25 4.25 0 0 0 16.25 3.5h-8.5ZM12 7.25a4.75 4.75 0 1 1 0 9.5 4.75 4.75 0 0 1 0-9.5Zm0 1.5a3.25 3.25 0 1 0 0 6.5 3.25 3.25 0 0 0 0-6.5Zm4.88-.88a1.12 1.12 0 1 1-2.24 0 1.12 1.12 0 0 1 2.24 0Z"/>
+          </svg>
+        </a>
+        <a class="social-link" href="mailto:picklesocial26@gmail.com" aria-label="Email">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true">
+            <path d="M20 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2Zm0 2v.511l-8 5.333-8-5.333V6h16Zm-16 12V8.155l7.404 4.936a1 1 0 0 0 1.192 0L20 8.155V18H4Z"/>
+          </svg>
+        </a>
+      </div>
+    </div>
+    <div class="footer-links">
+      <a href="#">About Us</a>
+      <a href="#">Privacy Policy</a>
+      <a href="#">Terms of Service</a>
+      <a href="#">Contact Us</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    © 2026 Pickle Social Pickleball. All rights reserved.
+    <br>
+    Developer: <a href="https://github.com/Heoiscod" target="_blank" rel="noreferrer" style="color:#ec4899;">Heoiscod</a>
+  </div>
+</footer>
+
+<!-- CART BAR -->
+<div class="cart-bar" id="cartBar">
+  <div class="cart-info">
+    <div class="cart-count" id="cartCount">0 slots selected</div>
+    <div class="cart-total">Total: <span id="cartTotal">₱0</span></div>
+  </div>
+  <div class="cart-actions">
+    <button class="btn-clear" onclick="clearForm()">Clear</button>
+    <button class="btn-checkout" onclick="openConfirmModal()">Proceed →</button>
+  </div>
+</div>
+
+<!-- BOOKING MODAL -->
+<div class="modal-overlay" id="bookingModal">
+  <div class="modal">
+    <div class="modal-top">
+      <div class="check-icon">📋</div>
+      <h2>Check Your Booking</h2>
+    </div>
+    <p class="subtitle">Review your selections and provide contact details</p>
+    
+    <div class="modal-progress" aria-hidden="true">
+      <div class="modal-progress-fill"></div>
+    </div>
+
+    <p class="subtitle">Enter your booking reference number to check your booking status</p>
+
+    <div class="form-group">
+      <label for="searchRef">Reference Number</label>
+      <input type="text" id="searchRef" placeholder="E.G. 26FEB07A1B" autocomplete="off">
+      <div class="modal-hint">You received this when you made your booking</div>
+    </div>
+
+  
+
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+      <button class="btn-checkout" id="checkRefBtn" onclick="checkReference()" disabled>Check Status</button>
+      
+    </div>
+  </div>
+</div>
+
+<!-- CONFIRMATION MODAL (opened from cart Proceed) -->
+<div class="modal-overlay" id="confirmModal">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="confirmTitle">
+    <h2 id="confirmTitle" style="color:var(--accent);">Confirm Booking</h2>
+    <p class="subtitle">You're almost ready to play!</p>
+
+    <div style="margin-top:12px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+        <div style="color:#9ca3af">Date</div>
+        <div id="confirmDate" style="font-weight:700;color:var(--text-primary);">--</div>
+      </div>
+
+      <div id="confirmSlotsContainer" style="display:flex;flex-direction:column;gap:10px;margin-bottom:12px;">
+        <!-- Selected slot cards populated by JS -->
+      </div>
+
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 12px;border-radius:8px;background:rgba(255,255,255,0.02);margin-bottom:12px;">
+        <div style="color:#9ca3af">Total (<span id="confirmCount">0</span> slot)</div>
+        <div id="confirmTotal" style="font-weight:800;color:var(--accent);">₱0</div>
+      </div>
+
+      <div style="background:linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border-left:4px solid rgba(245,158,11,0.16);padding:12px;border-radius:8px;color:#e5e7eb;margin-bottom:12px;">
+        <div style="font-weight:700;color:#fbbf24;margin-bottom:6px;">⏱ Pending bookings expire in 30 minutes if not confirmed.</div>
+        <div style="color:#9ca3af">Please complete payment promptly.</div>
+      </div>
+
+      <div class="form-group">
+        <label for="confirmName">Facebook Profile Name</label>
+        <input type="text" id="confirmName" placeholder="Enter your name">
+      </div>
+      <div class="form-group">
+        <label for="confirmPhone">Phone Number</label>
+        <input type="tel" id="confirmPhone" placeholder="e.g., 917 123 4567">
+        <div class="modal-hint">Mobile number (e.g., 917 123 4567)</div>
+      </div>
+    </div>
+
+    <div class="modal-actions" style="margin-top:14px;">
+      <button class="btn-cancel" onclick="closeConfirmModal()">Cancel</button>
+      <button class="btn-confirm" id="confirmModalBtn" onclick="submitBooking()" disabled>Next: Scan to Pay</button>
+    </div>
+  </div>
+</div>
+
+<!-- SUCCESS MODAL -->
+<div class="modal-overlay" id="successModal">
+  <div class="modal">
+    <div class="success-content">
+      <div class="success-icon">
+        <svg width="80" height="80" viewBox="0 0 80 80" style="animation: checkPopIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);">
+          <circle cx="40" cy="40" r="36" fill="none" stroke="currentColor" stroke-width="3" style="color:#3b82f6;animation: circleFill 0.4s ease-out forwards;opacity:0.2;"/>
+          <circle cx="40" cy="40" r="36" fill="none" stroke="currentColor" stroke-width="3" style="color:#10b981;stroke-dasharray: 226;stroke-dashoffset: 226;animation: circleDraw 0.5s ease-out 0.1s forwards;"/>
+          <polyline points="28,42 36,50 54,30" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" style="color:#10b981;stroke-dasharray: 50;stroke-dashoffset: 50;animation: checkDraw 0.5s ease-out 0.3s forwards;"/>
+        </svg>
+      </div>
+      <h2 id="successTitle">Booking Status</h2>
+      <p id="successMessage" style="color:var(--gray-text);">Search results are shown below.</p>
+
+      <div class="success-details" style="display:grid;gap:10px;margin-top:16px;">
+        <div style="display:flex;justify-content:space-between;gap:8px;">
+          <div style="color:#9ca3af">Name:</div>
+          <div id="successName" style="font-weight:700;color:#fff;">—</div>
+        </div>
+        <div style="display:flex;justify-content:space-between;gap:8px;">
+          <div style="color:#9ca3af">Courts:</div>
+          <div id="successCourts" style="font-weight:700;color:#fff;">—</div>
+        </div>
+        <div style="display:flex;justify-content:space-between;gap:8px;">
+          <div style="color:#9ca3af">Date:</div>
+          <div id="successDate" style="font-weight:700;color:#fff;">—</div>
+        </div>
+        <div style="display:flex;justify-content:space-between;gap:8px;">
+          <div style="color:#9ca3af">Paid Total:</div>
+          <div id="successPaidTotal" style="font-weight:700;color:#fff;">—</div>
+        </div>
+      </div>
+      <div class="booking-ref">
+        <div class="booking-ref-label">Booking Reference</div>
+        <div class="booking-ref-code" id="bookingRefCode">PKL-000000</div>
+      </div>
+      <p id="successNotice" style="margin-top:12px;color:#d1fae5;font-weight:700;">Thank you for booking @ Pickle Social - Cebu!</p>
+      <p id="successScreenshotNote" style="margin-top:4px;color:#a5f3fc;font-weight:600;">PLEASE TAKE A SCREENSHOT AND SHOW IT TO THE COUNTER</p>
+
+      <div id="searchResults" style="margin-top:12px;color:#e5e7eb;"></div>
+      <div id="paymentDetails" style="margin-top:12px;color:#e5e7eb;"></div>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn-confirm" style="flex:1;" onclick="closeSuccessModal()">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- RECEIPT VERIFICATION MODAL -->
+<div class="modal-overlay" id="receiptModal">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="receiptTitle">
+    <h2 id="receiptTitle" style="color:var(--accent);">Upload GCash Receipt</h2>
+    <p class="subtitle">Upload your GCash receipt image and verify the booking reference, total amount, and payment details.</p>
+    <div style="display:flex;flex-direction:column;gap:12px;margin-top:12px;">
+      <div style="display:flex;flex-direction:column;align-items:center;gap:10px;">
+        <div style="font-weight:700;color:#fff;font-size:1rem;">Scan this QR to pay</div>
+        <img id="receiptPayQr" src="../GcashQR.jpg" alt="GCash QR code" style="width:320px;height:320px;border-radius:22px;border:1px solid rgba(255,255,255,0.08);background:#fff;object-fit:contain;"/>
+      </div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+        <label style="cursor:pointer;">
+          <span style="display:inline-block;padding:10px 14px;border-radius:10px;background:rgba(236,72,153,0.12);color:#fda4af;">Upload receipt screenshot</span>
+          <input type="file" id="receiptFileInput" accept="image/*" style="display:none" onchange="handleReceiptFile(event)">
+        </label>
+        <button class="btn-primary" type="button" onclick="triggerReceiptUpload()">Choose Image</button>
+        <button class="btn-cancel" type="button" id="receiptRemoveBtn" onclick="clearReceiptUpload()" style="opacity:0.6;">Remove Photo</button>
+      </div>
+      <div id="receiptPreviewContainer" style="display:none;flex-direction:column;gap:10px;">
+        <img id="receiptPreview" alt="Receipt preview" style="max-width:100%;border-radius:12px;border:1px solid rgba(255,255,255,0.08);"/>
+      </div>
+      <div id="receiptScanStatus" style="color:#9ca3af;font-size:0.95rem;">No receipt uploaded yet.</div>
+      <div id="receiptTimer" style="color:#7dd3fc;font-size:0.95rem;margin-top:4px;">Time remaining: 30:00</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+        <div style="padding:12px;border-radius:10px;background:rgba(15,23,42,0.9);">
+          <div style="font-size:0.8rem;color:#9ca3af;margin-bottom:6px;">Expected Booking Ref</div>
+          <div id="receiptBookingRef" style="font-weight:700;color:#fff;">—</div>
+        </div>
+        <div style="padding:12px;border-radius:10px;background:rgba(15,23,42,0.9);">
+          <div style="font-size:0.8rem;color:#9ca3af;margin-bottom:6px;">Receipt Reference</div>
+          <div id="receiptRef" style="font-weight:700;color:#fff;">—</div>
+        </div>
+        <div style="padding:12px;border-radius:10px;background:rgba(15,23,42,0.9);">
+          <div style="font-size:0.8rem;color:#9ca3af;margin-bottom:6px;">Total Amount</div>
+          <div id="receiptAmount" style="font-weight:700;color:#fff;">—</div>
+        </div>
+        <div style="grid-column:1 / -1;padding:12px;border-radius:10px;background:rgba(15,23,42,0.9);">
+          <div style="font-size:0.8rem;color:#9ca3af;margin-bottom:6px;">Date / Time</div>
+          <div id="receiptDateTime" style="font-weight:700;color:#fff;">—</div>
+        </div>
+      </div>
+      <div id="receiptMismatch" style="color:#fca5a5;font-size:0.95rem;"></div>
+      <div class="modal-actions" style="margin-top:8px;">
+        <button class="btn-cancel" onclick="closeReceiptModal()">Cancel</button>
+        <button class="btn-confirm" id="verifyReceiptBtn" onclick="verifyReceipt()" disabled>Submit Booking</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  // Local development fallback for direct frontend Supabase access (safe for local testing only)
+  window.SUPABASE_FALLBACK = {
+    url: 'https://nozisfmqzkeywefrqkok.supabase.co',
+    key: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5vemlzZm1xemtleXdlZnJxa29rIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg1NzY2NzcsImV4cCI6MjA5NDE1MjY3N30.9CyqA4zZ9o5glyVl40Baah9ce-mqPIB3fAi2wp2-Ppk'
+  };
+</script>
+<script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@4.0.2/dist/tesseract.min.js"></script>
+
+<script src="js/app.js"></script>
+
+</body>
+</html>
