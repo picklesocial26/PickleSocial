@@ -146,15 +146,21 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       if (!response.ok) {
         let errorBody = null;
+        let textBody = null;
         try {
           errorBody = await response.json();
         } catch (parseError) {
-          // ignore parse error
+          try {
+            textBody = await response.text();
+          } catch (textError) {
+            textBody = null;
+          }
         }
-        const message = errorBody?.message || `API Error: ${response.status}`;
+        const message = errorBody?.message || textBody || `API Error: ${response.status}`;
         const err = new Error(message);
         err.status = response.status;
         err.body = errorBody;
+        err.text = textBody;
         throw err;
       }
 
