@@ -4,8 +4,11 @@ import { createClient } from '@supabase/supabase-js';
 import dotenv from 'dotenv';
 import path from 'path';
 
-dotenv.config({ path: path.resolve(process.cwd(), '.env') });
-dotenv.config({ path: path.resolve(process.cwd(), '.env.local') });
+const envPath = path.resolve(process.cwd(), '.env');
+const envLocalPath = path.resolve(process.cwd(), '.env.local');
+console.log('Loading environment files:', envPath, envLocalPath);
+dotenv.config({ path: envPath });
+dotenv.config({ path: envLocalPath });
 
 // Initialize Supabase with environment variables (not exposed to client)
 const supabaseUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -16,6 +19,7 @@ if (!supabaseUrl || !supabaseKey) {
     SUPABASE_URL: !!supabaseUrl,
     SUPABASE_KEY: !!supabaseKey
   });
+  throw new Error('Supabase configuration missing. Please add SUPABASE_URL and SUPABASE_SERVICE_KEY or SUPABASE_ANON_KEY to your .env.');
 }
 
 const supabase = createClient(supabaseUrl, supabaseKey);
@@ -83,10 +87,15 @@ export default async function handler(req, res) {
         .from('bookings')
         .insert([{
           booking_date: bookingDate,
+          booking_time: timeSlot,
           time_slot: timeSlot,
           court: court,
+          court_name: court,
           customer_name: customer_name.substring(0, 100), // Limit length
           phone_number: phone_number.substring(0, 20),
+          status: 'pending',
+          price: 0,
+          rate: 0,
           created_at: new Date().toISOString()
         }])
         .select();
@@ -112,14 +121,17 @@ export default async function handler(req, res) {
       // Validate and sanitize each booking
       const validatedBookings = bookings.map(booking => ({
         booking_date: booking.booking_date,
+        booking_time: booking.booking_time || booking.time_slot,
         time_slot: booking.time_slot || booking.booking_time,
         court: booking.court || booking.court_name,
+        court_name: booking.court_name || booking.court,
         customer_name: String(booking.customer_name || '').substring(0, 100),
         phone_number: String(booking.phone_number || '').substring(0, 20),
         reference_code: String(booking.reference_code || '').substring(0, 50),
         receipt_reference: booking.receipt_reference ? String(booking.receipt_reference).substring(0, 50) : null,
         status: booking.status || 'pending',
         price: booking.price || 0,
+        rate: booking.rate || 0,
         notes: booking.notes ? String(booking.notes).substring(0, 500) : null,
         created_at: new Date().toISOString()
       }));
@@ -184,9 +196,17 @@ export default async function handler(req, res) {
 
   } catch (error) {
     console.error('Bookings API Error:', error);
+    console.error('Bookings API Error details:', {
+      message: error?.message,
+      code: error?.code,
+      hint: error?.hint,
+      details: error?.details,
+      status: error?.status
+    });
     return res.status(500).json({ 
       error: 'Database operation failed',
-      message: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error'
+      message: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error',
+      details: process.env.NODE_ENV === 'development' ? error?.details : undefined
     });
   }
 }
