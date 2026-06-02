@@ -203,10 +203,17 @@ export default async function handler(req, res) {
       details: error?.details,
       status: error?.status
     });
-    return res.status(500).json({ 
-      error: 'Database operation failed',
-      message: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error',
-      details: process.env.NODE_ENV === 'development' ? error?.details : undefined
+
+    const isDuplicate = error?.code === '23505';
+    const statusCode = isDuplicate ? 409 : 500;
+    const message = isDuplicate
+      ? (error?.details ? `Duplicate entry: ${error.details}` : error.message)
+      : (process.env.NODE_ENV === 'development' ? error.message : 'Internal server error');
+
+    return res.status(statusCode).json({ 
+      error: isDuplicate ? 'Duplicate entry' : 'Database operation failed',
+      message,
+      details: process.env.NODE_ENV === 'development' ? (error?.details || error?.hint) : undefined
     });
   }
 }
