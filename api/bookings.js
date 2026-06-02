@@ -12,17 +12,20 @@ dotenv.config({ path: envLocalPath });
 
 // Initialize Supabase with environment variables (not exposed to client)
 const supabaseUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;
-const supabaseKey = process.env.SUPABASE_SERVICE_KEY || process.env.SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
+const supabaseKey = process.env.SUPABASE_SERVICE_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
 
 let supabase = null;
 let supabaseInitError = null;
 
 if (!supabaseUrl || !supabaseKey) {
   supabaseInitError = {
-    message: 'Supabase configuration missing. Please set SUPABASE_URL and SUPABASE_SERVICE_KEY or SUPABASE_ANON_KEY in Vercel environment variables.',
+    message: 'Supabase configuration missing. Please set SUPABASE_URL and SUPABASE_SERVICE_KEY or SUPABASE_SERVICE_ROLE_KEY in Vercel environment variables.',
     details: {
       SUPABASE_URL: !!supabaseUrl,
-      SUPABASE_KEY: !!supabaseKey
+      SUPABASE_SERVICE_KEY: !!process.env.SUPABASE_SERVICE_KEY,
+      SUPABASE_SERVICE_ROLE_KEY: !!process.env.SUPABASE_SERVICE_ROLE_KEY,
+      SUPABASE_ANON_KEY: !!process.env.SUPABASE_ANON_KEY,
+      NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: !!process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY
     }
   };
   console.error('Supabase environment variables are missing:', supabaseInitError.details);
@@ -228,6 +231,3 @@ export default async function handler(req, res) {
       error: isDuplicate ? 'Duplicate entry' : 'Database operation failed',
       message,
       details: process.env.NODE_ENV === 'development' ? (error?.details || error?.hint) : undefined
-    });
-  }
-}
