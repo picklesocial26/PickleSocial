@@ -14,15 +14,21 @@ dotenv.config({ path: envLocalPath });
 const supabaseUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;
 const supabaseKey = process.env.SUPABASE_SERVICE_KEY || process.env.SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
 
-if (!supabaseUrl || !supabaseKey) {
-  console.error('Supabase environment variables are missing:', {
-    SUPABASE_URL: !!supabaseUrl,
-    SUPABASE_KEY: !!supabaseKey
-  });
-  throw new Error('Supabase configuration missing. Please add SUPABASE_URL and SUPABASE_SERVICE_KEY or SUPABASE_ANON_KEY to your .env.');
-}
+let supabase = null;
+let supabaseInitError = null;
 
-const supabase = createClient(supabaseUrl, supabaseKey);
+if (!supabaseUrl || !supabaseKey) {
+  supabaseInitError = {
+    message: 'Supabase configuration missing. Please set SUPABASE_URL and SUPABASE_SERVICE_KEY or SUPABASE_ANON_KEY in Vercel environment variables.',
+    details: {
+      SUPABASE_URL: !!supabaseUrl,
+      SUPABASE_KEY: !!supabaseKey
+    }
+  };
+  console.error('Supabase environment variables are missing:', supabaseInitError.details);
+} else {
+  supabase = createClient(supabaseUrl, supabaseKey);
+}
 
 // Health check endpoint
 export default async function handler(req, res) {
@@ -40,6 +46,14 @@ export default async function handler(req, res) {
   const { action, bookingDate, timeSlot, court, customer_name, phone_number } = req.body;
 
   try {
+    if (supabaseInitError) {
+      return res.status(500).json({
+        error: 'Supabase configuration missing',
+        message: supabaseInitError.message,
+        details: supabaseInitError.details
+      });
+    }
+
     // Check connection to Supabase
     if (action === 'check-connection') {
       const { error } = await supabase.from('bookings').select('id').limit(1);
