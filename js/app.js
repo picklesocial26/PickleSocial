@@ -1108,9 +1108,10 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     if (insertError) {
       console.error('Receipt verification insert error:', insertError);
+      console.error('API error body:', insertError?.body);
       console.error('Error details:', JSON.stringify(insertError, null, 2));
       console.error('Attempted insert data:', JSON.stringify(bookingsToInsert, null, 2));
-      const errorText = insertError?.message || insertError?.error_description || insertError?.details || JSON.stringify(insertError);
+      const errorText = insertError?.body?.message || insertError?.message || insertError?.body?.error || insertError?.error_description || insertError?.details || JSON.stringify(insertError);
       const errorMsg = String(errorText || 'Unknown database error');
       const isSlotConflict = /bookings_unique_slot|booking_date|time_slot|court|slot/i.test(errorMsg);
       let userMessage = `Booking insert failed: ${errorMsg}`;
