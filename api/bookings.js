@@ -1,14 +1,6 @@
 // api/bookings.js - Secure backend endpoint for booking operations
 // This backend handles all Supabase operations with environment variables
 import { createClient } from '@supabase/supabase-js';
-import dotenv from 'dotenv';
-import path from 'path';
-
-const envPath = path.resolve(process.cwd(), '.env');
-const envLocalPath = path.resolve(process.cwd(), '.env.local');
-console.log('Loading environment files:', envPath, envLocalPath);
-dotenv.config({ path: envPath });
-dotenv.config({ path: envLocalPath });
 
 // Initialize Supabase with environment variables (not exposed to client)
 const supabaseUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -231,3 +223,6 @@ export default async function handler(req, res) {
       error: isDuplicate ? 'Duplicate entry' : 'Database operation failed',
       message,
       details: process.env.NODE_ENV === 'development' ? (error?.details || error?.hint) : undefined
+    });
+  }
+}
