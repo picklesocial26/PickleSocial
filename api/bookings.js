@@ -68,7 +68,7 @@ export default async function handler(req, res) {
 
       const { data, error } = await supabase
         .from('bookings')
-        .select('time_slot,court,customer_name')
+        .select('time_slot,court,customer_name,status,receipt_reference,created_at')
         .eq('booking_date', bookingDate);
       
       if (error) throw error;

@@ -239,56 +239,104 @@
 
     <div class="modal-actions" style="margin-top:14px;">
       <button class="btn-cancel" onclick="closeConfirmModal()">Cancel</button>
-      <button class="btn-confirm" id="confirmModalBtn" onclick="submitBooking()" disabled>Next: Scan to Pay</button>
+      <button class="btn-confirm" id="confirmModalBtn" onclick="submitBooking()" disabled>Next</button>
     </div>
   </div>
 </div>
 
 <!-- SUCCESS MODAL -->
 <div class="modal-overlay" id="successModal">
-  <div class="modal">
-    <div class="success-content">
-      <div class="success-icon">
-        <svg width="80" height="80" viewBox="0 0 80 80" style="animation: checkPopIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);">
-          <circle cx="40" cy="40" r="36" fill="none" stroke="currentColor" stroke-width="3" style="color:#3b82f6;animation: circleFill 0.4s ease-out forwards;opacity:0.2;"/>
-          <circle cx="40" cy="40" r="36" fill="none" stroke="currentColor" stroke-width="3" style="color:#10b981;stroke-dasharray: 226;stroke-dashoffset: 226;animation: circleDraw 0.5s ease-out 0.1s forwards;"/>
-          <polyline points="28,42 36,50 54,30" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" style="color:#10b981;stroke-dasharray: 50;stroke-dashoffset: 50;animation: checkDraw 0.5s ease-out 0.3s forwards;"/>
-        </svg>
-      </div>
-      <h2 id="successTitle">Booking Status</h2>
-      <p id="successMessage" style="color:var(--gray-text);">Search results are shown below.</p>
+  <div class="modal success-modal">
+    <div class="success-body-box">
+      <div class="success-download-card">
+        <div class="success-icon">
+          <svg width="78" height="78" viewBox="0 0 80 80" style="animation: checkPopIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);">
+            <circle cx="40" cy="40" r="36" fill="none" stroke="currentColor" stroke-width="3" opacity="0.18"/>
+            <circle cx="40" cy="40" r="36" fill="none" stroke="currentColor" stroke-width="3" stroke-dasharray="226" stroke-dashoffset="226" style="animation: circleDraw 0.5s ease-out 0.1s forwards;"/>
+            <polyline points="28,42 36,50 54,30" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="50" stroke-dashoffset="50" style="animation: checkDraw 0.5s ease-out 0.3s forwards;"/>
+          </svg>
+        </div>
+        <h2 id="successTitle">Booking Submitted!</h2>
+        <p class="success-subtitle" id="successMessage">Save a copy of this confirmation. When you are ready, scan to pay and upload your receipt proof.</p>
 
-      <div class="success-details" style="display:grid;gap:10px;margin-top:16px;">
-        <div style="display:flex;justify-content:space-between;gap:8px;">
-          <div style="color:#9ca3af">Name:</div>
-          <div id="successName" style="font-weight:700;color:#fff;">—</div>
+        <div class="success-summary-grid">
+          <div class="summary-pill">
+            <span>Name</span>
+            <strong id="successName">—</strong>
+          </div>
+          <div class="summary-pill">
+            <span>Date</span>
+            <strong id="successDate">—</strong>
+          </div>
+          <div class="summary-pill">
+            <span>Court</span>
+            <strong id="successCourt">—</strong>
+          </div>
+          <div class="summary-pill">
+            <span>Time</span>
+            <strong id="successTime">—</strong>
+          </div>
         </div>
-        <div style="display:flex;justify-content:space-between;gap:8px;">
-          <div style="color:#9ca3af">Courts:</div>
-          <div id="successCourts" style="font-weight:700;color:#fff;">—</div>
-        </div>
-        <div style="display:flex;justify-content:space-between;gap:8px;">
-          <div style="color:#9ca3af">Date:</div>
-          <div id="successDate" style="font-weight:700;color:#fff;">—</div>
-        </div>
-        <div style="display:flex;justify-content:space-between;gap:8px;">
-          <div style="color:#9ca3af">Paid Total:</div>
-          <div id="successPaidTotal" style="font-weight:700;color:#fff;">—</div>
-        </div>
-      </div>
-      <div class="booking-ref">
-        <div class="booking-ref-label">Booking Reference</div>
-        <div class="booking-ref-code" id="bookingRefCode">PKL-000000</div>
-      </div>
-      <p id="successNotice" style="margin-top:12px;color:#d1fae5;font-weight:700;">Thank you for booking @ Pickle Social - Cebu!</p>
-      <p id="successScreenshotNote" style="margin-top:4px;color:#a5f3fc;font-weight:600;">PLEASE TAKE A SCREENSHOT AND SHOW IT TO THE COUNTER</p>
 
-      <div id="searchResults" style="margin-top:12px;color:#e5e7eb;"></div>
-      <div id="paymentDetails" style="margin-top:12px;color:#e5e7eb;"></div>
+        <div class="paid-total-card">
+          <span>Paid Total</span>
+          <strong id="successPaidTotal">—</strong>
+        </div>
+
+        <div class="success-bookings-list" id="successBookingItems"></div>
+
+        <div class="booking-ref-card">
+          <div class="booking-ref-label">BOOKING REFERENCE</div>
+          <div class="booking-ref-code" id="bookingRefCode">PKL-000000</div>
+        </div>
+
+        <div class="status-row">
+          <span class="pending-timer" id="successExpiryNote">Expires in 15 minutes to pay</span>
+        </div>
+      </div>
+
+      <label class="save-copy-checkbox save-copy-download">
+        <input type="checkbox" id="successSaveCopy" onchange="toggleSuccessPaymentExtension()" />
+        <div>
+          <div class="checkbox-label">Save a copy of this confirmation and I'm ready to pay</div>
+          <div class="checkbox-description">We'll create an image on your device you can keep for payment proof.</div>
+        </div>
+      </label>
+
+      <div id="successPaySection" class="success-pay-section">
+        <div class="scan-title">
+          <span>Scan to pay</span>
+          <span class="scan-title-label">Total Amount: <span id="scanTitleAmount" class="scan-title-amount">—</span></span>
+        </div>
+        <div id="successPayActionText" class="scan-note">Once checked, the scan-to-pay QR section will expand below.</div>
+        <div class="scan-card">
+          <div class="scan-card-title">Scan this QR to pay</div>
+          <img src="../GcashQR.jpg" alt="GCash QR code" />
+          <p>After payment, upload your receipt screenshot.</p>
+          <button id="successUploadReceiptBtn" class="btn-confirm btn-upload-receipt" type="button" onclick="openReceiptModal(receiptBookingReference, receiptBookingTotal)">Upload Receipt Screenshot</button>
+          <div id="receiptUploadedStatus" class="receipt-uploaded-note" style="display:none;">Gcash Receipt Uploaded</div>
+        </div>
+      </div>
+
+      <div class="next-steps-card">
+        <div class="next-steps-heading">NEXT STEPS</div>
+        <ol class="next-steps-list">
+          <li><strong>Pay:</strong> Scan the QR code above and complete your payment.</li>
+          <li><strong>Send payment proof:</strong> Once you have uploaded the receipt, please send both the booking receipt and the GCash payment receipt through Messenger for verification.</li>
+          <li><strong>Wait for confirmation:</strong> Pickle Social will confirm your booking after we verify your payment.</li>
+        </ol>
+      </div>
+
+      <a id="successMessengerBtn" class="btn-messenger" href="https://www.messenger.com/t/1070406479496408" target="_blank" rel="noreferrer">
+        <span class="btn-messenger-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18" xmlns="http://www.w3.org/2000/svg"><path d="M12.01 2C6.48 2 2 5.94 2 10.5c0 2.86 1.76 5.43 4.6 7.05v3.46l3.05-1.68c.8.2 1.64.31 2.46.31 5.53 0 10.01-3.94 10.01-8.5S17.54 2 12.01 2zm1.86 10.19l-1.17-1.27-2.26 1.27 2.26-2.75 1.17 1.27 2.26-1.27-2.26 2.75z"/></svg>
+        </span>
+        Message us on Messenger
+      </a>
     </div>
 
     <div class="modal-actions">
-      <button class="btn-confirm" style="flex:1;" onclick="closeSuccessModal()">Close</button>
+      <button id="successDoneBtn" class="btn-confirm" style="flex:1;" onclick="closeSuccessModal()" disabled>Done</button>
     </div>
   </div>
 </div>
@@ -301,16 +349,15 @@
     <div style="display:flex;flex-direction:column;gap:12px;margin-top:12px;">
       <div style="display:flex;flex-direction:column;align-items:center;gap:10px;">
         <div style="font-weight:700;color:#fff;font-size:1rem;">Scan this QR to pay</div>
-        <img id="receiptPayQr" src="../GcashQR.jpg" alt="GCash QR code" style="width:320px;height:320px;border-radius:22px;border:1px solid rgba(255,255,255,0.08);background:#fff;object-fit:contain;"/>
       </div>
       <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
-        <label style="cursor:pointer;">
+        <label style="cursor:pointer;display:flex;justify-content:center;width:100%;">
           <span style="display:inline-block;padding:10px 14px;border-radius:10px;background:rgba(236,72,153,0.12);color:#fda4af;">Upload receipt screenshot</span>
           <input type="file" id="receiptFileInput" accept="image/*" style="display:none" onchange="handleReceiptFile(event)">
         </label>
-        <button class="btn-primary" type="button" onclick="triggerReceiptUpload()">Choose Image</button>
         <button class="btn-cancel" type="button" id="receiptRemoveBtn" onclick="clearReceiptUpload()" style="opacity:0.6;">Remove Photo</button>
       </div>
+      <div id="receiptUploadedNote" style="display:none;margin-top:4px;font-size:0.88rem;color:#34d399;">✅ Receipt uploaded!</div>
       <div id="receiptPreviewContainer" style="display:none;flex-direction:column;gap:10px;">
         <img id="receiptPreview" alt="Receipt preview" style="max-width:100%;border-radius:12px;border:1px solid rgba(255,255,255,0.08);"/>
       </div>
@@ -355,6 +402,7 @@
 </script>
 <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@4.0.2/dist/tesseract.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 
 <script src="js/app.js"></script>
 
