@@ -697,9 +697,8 @@ document.addEventListener("DOMContentLoaded", async () => {
       });
       const dataUrl = canvas.toDataURL('image/png');
       const link = document.createElement('a');
-      const safeRef = (receiptBookingReference || 'booking-confirmation').replace(/[^a-zA-Z0-9-_]/g, '_');
       link.href = dataUrl;
-      link.download = `${safeRef}.png`;
+      link.download = 'BookingConfirmation.png';
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
