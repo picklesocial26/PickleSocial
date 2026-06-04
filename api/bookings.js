@@ -203,6 +203,59 @@ export default async function handler(req, res) {
       });
     }
 
+    // Update booking with receipt and payment status
+    if (action === 'update-booking-receipt') {
+      const { reference_code, receipt_reference, status } = req.body;
+      
+      if (!reference_code || !receipt_reference) {
+        return res.status(400).json({ error: 'reference_code and receipt_reference are required' });
+      }
+
+      const { data, error } = await supabase
+        .from('bookings')
+        .update({
+          receipt_reference: receipt_reference,
+          status: status || 'paid'
+        })
+        .eq('reference_code', reference_code)
+        .select();
+      
+      if (error) throw error;
+      
+      return res.status(200).json({ 
+        success: true,
+        updated: data?.length || 0,
+        bookings: data || []
+      });
+    }
+
+    // Confirm booking - admin action to change status from pending to confirmed
+    if (action === 'confirm-booking') {
+      const { booking_id, reference_code } = req.body;
+      
+      if (!booking_id && !reference_code) {
+        return res.status(400).json({ error: 'booking_id or reference_code is required' });
+      }
+
+      let query = supabase.from('bookings').update({ status: 'confirmed' });
+      
+      if (booking_id) {
+        query = query.eq('id', booking_id);
+      } else {
+        query = query.eq('reference_code', reference_code);
+      }
+      
+      const { data, error } = await query.select();
+      
+      if (error) throw error;
+      
+      return res.status(200).json({ 
+        success: true,
+        updated: data?.length || 0,
+        bookings: data || []
+      });
+    }
+
   } catch (error) {
     console.error('Bookings API Error:', error);
     console.error('Bookings API Error details:', {

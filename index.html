@@ -314,11 +314,20 @@
 
       <div class="next-steps-card">
         <div class="next-steps-heading">NEXT STEPS</div>
-        <ol class="next-steps-list">
-          <li><strong>Pay:</strong> Scan the QR code above and complete your payment.</li>
-          <li><strong>Send payment proof:</strong> Once you have uploaded the receipt, please send both the booking receipt and the GCash payment receipt through Messenger for verification.</li>
-          <li><strong>Wait for confirmation:</strong> Pickle Social will confirm your booking after we verify your payment.</li>
-        </ol>
+        <div style="display:flex;flex-direction:column;gap:16px;">
+          <div>
+            <div style="font-weight:700;font-size:1.1rem;color:#f8fafc;margin-bottom:6px;">1. Pay</div>
+            <div style="color:#d1d5db;font-size:0.95rem;">Scan the QR code above and complete your payment.</div>
+          </div>
+          <div>
+            <div style="font-weight:700;font-size:1.1rem;color:#f8fafc;margin-bottom:6px;">2. Send payment proof</div>
+            <div style="color:#d1d5db;font-size:0.95rem;">Once you have uploaded the receipt, please send both the booking receipt and the GCash payment receipt through Messenger for verification.</div>
+          </div>
+          <div>
+            <div style="font-weight:700;font-size:1.1rem;color:#f8fafc;margin-bottom:6px;">3. Wait for confirmation</div>
+            <div style="color:#d1d5db;font-size:0.95rem;">Pickle Social will confirm your booking after we verify your payment.</div>
+          </div>
+        </div>
       </div>
 
       <a id="successMessengerBtn" class="btn-messenger" href="https://www.messenger.com/t/1070406479496408" target="_blank" rel="noreferrer">
@@ -330,7 +339,7 @@
     </div>
 
     <div class="modal-actions">
-      <button id="successDoneBtn" class="btn-confirm" style="flex:1;" onclick="closeSuccessModal()" disabled>Done</button>
+      <button id="successDoneBtn" class="btn-confirm" style="flex:1;" onclick="handleDoneBooking()">Done</button>
     </div>
   </div>
 </div>
@@ -339,10 +348,9 @@
 <div class="modal-overlay" id="receiptModal">
   <div class="modal" role="dialog" aria-modal="true" aria-labelledby="receiptTitle">
     <h2 id="receiptTitle" style="color:var(--accent);">Upload GCash Receipt</h2>
-    <p class="subtitle">Upload your GCash receipt image and verify the booking reference, total amount, and payment details.</p>
+    <p class="subtitle">Upload your GCash receipt image and verify the booking reference, total amount, and payment details.<br><br>If you're paying via GoTyme, Maya, or Bank Transfer, no need to upload receipt here — just send your receipt through Messenger for verification.</p>
     <div style="display:flex;flex-direction:column;gap:12px;margin-top:12px;">
       <div style="display:flex;flex-direction:column;align-items:center;gap:10px;">
-        <div style="font-weight:700;color:#fff;font-size:1rem;">Scan this QR to pay</div>
       </div>
       <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
         <label style="cursor:pointer;display:flex;justify-content:center;width:100%;">
@@ -376,15 +384,6 @@
         </div>
       </div>
       <div id="receiptManualFields" style="margin-top:14px;display:grid;gap:12px;">
-        <div class="form-group">
-          <label for="manualReceiptRef">Gcash Receipt Reference (enter if not auto-detected)</label>
-          <input type="text" id="manualReceiptRef" placeholder="E.g. 1234 5678 9012" autocomplete="off" />
-        </div>
-        <div class="form-group">
-          <label for="manualReceiptAmount">Amount Paid (optional)</label>
-          <input type="text" id="manualReceiptAmount" placeholder="E.g. 450.00" autocomplete="off" />
-          <div class="modal-hint">If OCR can't read the amount, enter the receipt total manually.</div>
-        </div>
       </div>
       <div id="receiptMismatch" style="color:#fca5a5;font-size:0.95rem;"></div>
       <div class="modal-actions" style="margin-top:8px;">
