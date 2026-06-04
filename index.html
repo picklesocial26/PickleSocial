@@ -102,7 +102,7 @@
     <div class="table-panel">
       <div class="table-header">
         <h2>📅 <span id="selectedDateLabel"></span></h2>
-        <button class="btn-primary" onclick="goToToday()">Today</button>
+        <button class="btn-primary" id="refreshBtn" onclick="refreshSlots()">Refresh</button>
       </div>
       <div class="table-scroll">
         <table>
@@ -185,17 +185,19 @@
     <p class="subtitle">Enter your booking reference number to check your booking status</p>
 
     <div class="form-group">
-      <label for="searchRef">Reference Number</label>
+      <label for="searchRef">Booking Reference Number</label>
       <input type="text" id="searchRef" placeholder="E.G. 26FEB07A1B" autocomplete="off">
       <div class="modal-hint">You received this when you made your booking</div>
     </div>
 
-  
+    <div id="bookingCheckResults" style="display:none;margin-top:16px;">
+      <div id="bookingResultsContent"></div>
+    </div>
 
     <div class="modal-actions">
       <button class="btn-cancel" onclick="closeModal()">Cancel</button>
       <button class="btn-checkout" id="checkRefBtn" onclick="checkReference()" disabled>Check Status</button>
-      
+      <button class="btn-checkout" id="payNowBtn" onclick="openReceiptModal()" style="display:none;background:linear-gradient(135deg, #ec4899, #db2777);">Pay & Upload Receipt</button>
     </div>
   </div>
 </div>
@@ -267,14 +269,6 @@
           <div class="summary-pill">
             <span>Date</span>
             <strong id="successDate">—</strong>
-          </div>
-          <div class="summary-pill">
-            <span>Court</span>
-            <strong id="successCourt">—</strong>
-          </div>
-          <div class="summary-pill">
-            <span>Time</span>
-            <strong id="successTime">—</strong>
           </div>
         </div>
 
@@ -379,6 +373,17 @@
         <div style="grid-column:1 / -1;padding:12px;border-radius:10px;background:rgba(15,23,42,0.9);">
           <div style="font-size:0.8rem;color:#9ca3af;margin-bottom:6px;">Date / Time</div>
           <div id="receiptDateTime" style="font-weight:700;color:#fff;">—</div>
+        </div>
+      </div>
+      <div id="receiptManualFields" style="margin-top:14px;display:grid;gap:12px;">
+        <div class="form-group">
+          <label for="manualReceiptRef">Gcash Receipt Reference (enter if not auto-detected)</label>
+          <input type="text" id="manualReceiptRef" placeholder="E.g. 1234 5678 9012" autocomplete="off" />
+        </div>
+        <div class="form-group">
+          <label for="manualReceiptAmount">Amount Paid (optional)</label>
+          <input type="text" id="manualReceiptAmount" placeholder="E.g. 450.00" autocomplete="off" />
+          <div class="modal-hint">If OCR can't read the amount, enter the receipt total manually.</div>
         </div>
       </div>
       <div id="receiptMismatch" style="color:#fca5a5;font-size:0.95rem;"></div>

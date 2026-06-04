@@ -858,6 +858,14 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       const totalAmount = pendingBookingEntries.reduce((s, b) => s + (b.price || 0), 0);
 
+      // Mark selected slots as pending with 30-minute timer
+      selectedSlots.forEach(key => {
+        const [date, slot, courtIndex] = key.split('|');
+        const slotKey = `${date}|${slot}|${courtIndex}`;
+        pendingSlotsWithTimer[slotKey] = Date.now(); // 30-minute pending timer
+      });
+      startPendingPoll(); // Start polling to detect admin confirmations
+
       // Close booking/confirm modal and show the booking submitted summary
       closeModal();
       closeConfirmModal();
@@ -927,6 +935,10 @@ document.addEventListener("DOMContentLoaded", async () => {
   window.checkReference = async function() {
     const refEl = document.getElementById('searchRef');
     const btn = document.getElementById('checkRefBtn');
+    const resultsEl = document.getElementById('bookingCheckResults');
+    const contentEl = document.getElementById('bookingResultsContent');
+    const payBtn = document.getElementById('payNowBtn');
+
     if (!refEl) return;
     const ref = refEl.value.trim();
     if (!ref) {
@@ -944,39 +956,83 @@ document.addEventListener("DOMContentLoaded", async () => {
       const result = await callBackendAPI('get-booking-by-reference', { reference: ref });
       
       if (!result.bookings || result.bookings.length === 0) {
-        showToast('🔎 Reference not found');
+        if (contentEl) {
+          contentEl.innerHTML = '<div style="color:#f87171;text-align:center;padding:16px;">🔎 Reference not found</div>';
+        }
+        if (resultsEl) resultsEl.style.display = 'block';
+        if (payBtn) payBtn.style.display = 'none';
         return;
       }
 
-      // Build results HTML
-      const resultsEl = document.getElementById('searchResults');
-      let html = '<div style="display:flex;flex-direction:column;gap:10px;">';
-      result.bookings.forEach(row => {
-        html += `
-          <div style="background:#0f1720;border:1px solid #222;padding:10px;border-radius:8px;">
-            <div style="font-weight:700;color:white;">${row.court} • ₱${row.price}</div>
-            <div style="color:#9ca3af;font-size:0.9rem;">${row.booking_date} • ${row.time_slot}</div>
-            <div style="color:#9ca3af;font-size:0.85rem;margin-top:6px;">Status: <strong style="color:var(--pink-400);">${row.status}</strong></div>
+      const booking = result.bookings[0];
+      const status = booking.status || 'pending';
+      receiptBookingReference = ref;
+
+      let resultHtml = '<div style="display:flex;flex-direction:column;gap:12px;">';
+      
+      if (status === 'paid' || status === 'confirmed') {
+        resultHtml += `
+          <div style="text-align:center;padding:16px;border:2px solid #10b981;border-radius:12px;background:rgba(16,185,129,0.1);">
+            <div style="font-size:1.2rem;margin-bottom:8px;">✅ Booking Confirmed</div>
+            <div style="color:#a7f3d0;font-weight:700;">Reference: ${ref}</div>
+          </div>
+          <div style="background:rgba(255,255,255,0.03);padding:12px;border-radius:8px;border:1px solid rgba(236,72,153,0.14);">
+            <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
+              <span style="color:#9ca3af;">Date</span>
+              <strong style="color:#f8fafc;">${booking.booking_date}</strong>
+            </div>
+            <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
+              <span style="color:#9ca3af;">Time</span>
+              <strong style="color:#f8fafc;">${booking.time_slot}</strong>
+            </div>
+            <div style="display:flex;justify-content:space-between;">
+              <span style="color:#9ca3af;">Court</span>
+              <strong style="color:#f8fafc;">${booking.court || booking.court_name}</strong>
+            </div>
           </div>
         `;
-      });
-      html += '</div>';
+        if (payBtn) payBtn.style.display = 'none';
+      } else if (status === 'pending') {
+        resultHtml += `
+          <div style="text-align:center;padding:16px;border:2px solid #f59e0b;border-radius:12px;background:rgba(245,158,11,0.1);">
+            <div style="font-size:1.1rem;margin-bottom:8px;">⏳ Booking Pending Payment</div>
+            <div style="color:#fcd34d;">Payment required to confirm</div>
+          </div>
+          <div style="background:rgba(255,255,255,0.03);padding:12px;border-radius:8px;border:1px solid rgba(236,72,153,0.14);">
+            <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
+              <span style="color:#9ca3af;">Date</span>
+              <strong style="color:#f8fafc;">${booking.booking_date}</strong>
+            </div>
+            <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
+              <span style="color:#9ca3af;">Time</span>
+              <strong style="color:#f8fafc;">${booking.time_slot}</strong>
+            </div>
+            <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
+              <span style="color:#9ca3af;">Court</span>
+              <strong style="color:#f8fafc;">${booking.court || booking.court_name}</strong>
+            </div>
+            <div style="display:flex;justify-content:space-between;">
+              <span style="color:#9ca3af;">Amount Due</span>
+              <strong style="color:#ec4899;">₱${booking.price || booking.rate || 0}</strong>
+            </div>
+          </div>
+        `;
+        if (payBtn) payBtn.style.display = 'inline-block';
+        receiptBookingTotal = booking.price || booking.rate || 0;
+      }
+      
+      resultHtml += '</div>';
 
-      if (resultsEl) resultsEl.innerHTML = html;
-      document.getElementById('bookingRefCode').textContent = ref;
-      document.getElementById('successTitle').textContent = 'Booking Found';
-      document.getElementById('successMessage').textContent = `Found ${data.length} record${data.length>1?'s':''}.`;
-      document.getElementById('successName').textContent = '';
-      document.getElementById('successCourt').textContent = '';
-      document.getElementById('successDate').textContent = '';
-      document.getElementById('successTime').textContent = '';
-      document.getElementById('successPaidTotal').textContent = '';
-      closeModal();
-      document.getElementById('successModal').classList.add('open');
+      if (contentEl) contentEl.innerHTML = resultHtml;
+      if (resultsEl) resultsEl.style.display = 'block';
 
     } catch (err) {
       console.error('Search error:', err);
-      showToast('Error checking reference');
+      if (contentEl) {
+        contentEl.innerHTML = '<div style="color:#f87171;text-align:center;padding:16px;">❌ Error checking booking</div>';
+      }
+      if (resultsEl) resultsEl.style.display = 'block';
+      if (payBtn) payBtn.style.display = 'none';
     } finally {
       if (btn) {
         btn.disabled = false;
@@ -1006,6 +1062,29 @@ document.addEventListener("DOMContentLoaded", async () => {
   window.triggerReceiptUpload = function() {
     const input = document.getElementById('receiptFileInput');
     if (input) input.click();
+  };
+
+  // Refresh available slots from server and re-render table
+  window.refreshSlots = async function() {
+    try {
+      const refreshBtn = document.getElementById('refreshBtn');
+      if (refreshBtn) {
+        refreshBtn.disabled = true;
+        const prev = refreshBtn.textContent;
+        refreshBtn.textContent = 'Refreshing...';
+        await loadAndRenderTable();
+        refreshBtn.textContent = prev || 'Refresh';
+        refreshBtn.disabled = false;
+      } else {
+        await loadAndRenderTable();
+      }
+      showToast('Slots refreshed');
+    } catch (err) {
+      console.error('Failed to refresh slots', err);
+      showToast('Failed to refresh slots');
+      const refreshBtn = document.getElementById('refreshBtn');
+      if (refreshBtn) refreshBtn.disabled = false;
+    }
   };
 
   window.openReceiptModal = function(reference, totalAmount) {
@@ -1040,6 +1119,16 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (fileInput) fileInput.value = '';
     if (previewImg) previewImg.src = '';
     if (removeBtn) removeBtn.style.display = 'none';
+    const manualRefInput = document.getElementById('manualReceiptRef');
+    const manualAmountInput = document.getElementById('manualReceiptAmount');
+    if (manualRefInput) {
+      manualRefInput.value = '';
+      manualRefInput.oninput = updateReceiptVerificationState;
+    }
+    if (manualAmountInput) {
+      manualAmountInput.value = '';
+      manualAmountInput.oninput = updateReceiptVerificationState;
+    }
     const timerField = document.getElementById('receiptTimer');
     if (timerField) timerField.textContent = 'Time remaining: 30:00';
 
@@ -1108,6 +1197,54 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (refField) refField.textContent = parsed.reference || 'Not found';
     if (amountField) amountField.textContent = parsed.amount != null ? `₱${parsed.amount.toLocaleString()}` : `₱${receiptBookingTotal.toLocaleString()}`;
     if (dateTimeField) dateTimeField.textContent = [parsed.date, parsed.time].filter(Boolean).join(' ') || 'Date / time not found';
+  }
+
+  function getManualReceiptReference() {
+    return (document.getElementById('manualReceiptRef')?.value || '').trim();
+  }
+
+  function getManualReceiptAmount() {
+    const raw = (document.getElementById('manualReceiptAmount')?.value || '').trim();
+    if (!raw) return null;
+    const normalized = raw.replace(/,/g, '.').replace(/[^\d.]/g, '');
+    const parsed = Number(normalized);
+    return Number.isFinite(parsed) ? parsed : null;
+  }
+
+  function getParsedReceiptData() {
+    return receiptTextExtracted ? parseReceiptText(receiptTextExtracted) : { reference: '', amount: null };
+  }
+
+  function updateReceiptVerificationState() {
+    const verifyBtn = document.getElementById('verifyReceiptBtn');
+    const statusEl = document.getElementById('receiptScanStatus');
+    if (!verifyBtn) return;
+
+    const parsed = getParsedReceiptData();
+    const manualRef = getManualReceiptReference();
+    const manualAmount = getManualReceiptAmount();
+    const reference = manualRef || parsed.reference;
+    const amount = manualAmount != null ? manualAmount : parsed.amount;
+    const hasReceiptFile = Boolean(receiptFile);
+    const amountMissing = amount == null;
+    const amountMatches = amountMissing ? false : Number(amount.toFixed(2)) === Number(receiptBookingTotal.toFixed(2));
+    const valid = hasReceiptFile && reference && amountMatches;
+
+    verifyBtn.disabled = !valid;
+
+    if (statusEl) {
+      if (!hasReceiptFile) {
+        statusEl.textContent = 'Upload the receipt screenshot to continue.';
+      } else if (!reference) {
+        statusEl.textContent = 'Receipt reference missing. Enter it manually if OCR failed.';
+      } else if (amountMissing) {
+        statusEl.textContent = 'Receipt amount missing. Enter it manually if OCR failed.';
+      } else if (!amountMatches) {
+        statusEl.textContent = 'Receipt total does not match booking total. Check the amount.';
+      } else {
+        statusEl.textContent = 'Ready to verify receipt.';
+      }
+    }
   }
 
   async function decodeReceiptImage(file) {
@@ -1190,6 +1327,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       if (!parsedText) {
         if (statusEl) statusEl.textContent = 'Receipt text could not be extracted. Please try a clearer image.';
+        updateReceiptVerificationState();
         return;
       }
 
@@ -1207,9 +1345,9 @@ document.addEventListener("DOMContentLoaded", async () => {
       }
       if (mismatchEl) mismatchEl.textContent = mismatchMessage;
       const hasReceiptRef = Boolean(parsed.reference);
-      if (verifyBtn) verifyBtn.disabled = !hasReceiptRef || parsed.amount == null;
       receiptRefUploaded = hasReceiptRef;
       updateSuccessReceiptUploadState();
+      updateReceiptVerificationState();
 
       if (uploadNote && hasReceiptRef) {
         uploadNote.style.display = 'block';
@@ -1307,17 +1445,25 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   window.verifyReceipt = async function() {
-    if (!receiptTextExtracted) {
-      showToast('Upload the receipt image first.');
+    if (!receiptFile) {
+      showToast('Upload the receipt screenshot first.');
       return;
     }
-    const parsed = parseReceiptText(receiptTextExtracted);
+    const parsed = getParsedReceiptData();
+    const manualRef = getManualReceiptReference();
+    const manualAmount = getManualReceiptAmount();
+    const receiptReference = manualRef || parsed.reference;
+    const receiptAmount = manualAmount != null ? manualAmount : parsed.amount;
     const mismatchEl = document.getElementById('receiptMismatch');
-    if (!parsed.reference || parsed.amount == null) {
-      if (mismatchEl) mismatchEl.textContent = 'Could not detect receipt reference or amount from the receipt.';
+    if (!receiptReference) {
+      if (mismatchEl) mismatchEl.textContent = 'Receipt reference missing. Enter it manually if OCR failed.';
       return;
     }
-    if (Number(parsed.amount.toFixed(2)) !== Number(receiptBookingTotal.toFixed(2))) {
+    if (receiptAmount == null) {
+      if (mismatchEl) mismatchEl.textContent = 'Receipt amount not detected. Enter it manually so we can verify payment.';
+      return;
+    }
+    if (Number(receiptAmount.toFixed(2)) !== Number(receiptBookingTotal.toFixed(2))) {
       if (mismatchEl) mismatchEl.textContent = 'Receipt total amount does not match the booking total.';
       return;
     }
