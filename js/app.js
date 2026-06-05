@@ -24,18 +24,7 @@ function showToast(message) {
 }
 
 function updateSuccessReceiptUploadState() {
-  const uploadButton = document.getElementById('successUploadReceiptBtn');
-  const statusNote = document.getElementById('receiptUploadedStatus');
-  if (!uploadButton || !statusNote) return;
-  if (receiptRefUploaded) {
-    uploadButton.disabled = true;
-    uploadButton.classList.add('disabled');
-    statusNote.style.display = 'block';
-  } else {
-    uploadButton.disabled = false;
-    uploadButton.classList.remove('disabled');
-    statusNote.style.display = 'none';
-  }
+  // Receipt upload state tracking removed
 }
 
 async function uploadReceiptImage(file, reference) {
