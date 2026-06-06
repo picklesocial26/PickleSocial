@@ -24,7 +24,18 @@ function showToast(message) {
 }
 
 function updateSuccessReceiptUploadState() {
-  // Receipt upload state tracking removed
+  const uploadButton = document.getElementById('successUploadReceiptBtn');
+  const statusNote = document.getElementById('receiptUploadedStatus');
+  if (!uploadButton || !statusNote) return;
+  if (receiptRefUploaded) {
+    uploadButton.disabled = true;
+    uploadButton.classList.add('disabled');
+    statusNote.style.display = 'block';
+  } else {
+    uploadButton.disabled = false;
+    uploadButton.classList.remove('disabled');
+    statusNote.style.display = 'none';
+  }
 }
 
 async function uploadReceiptImage(file, reference) {
@@ -686,8 +697,9 @@ document.addEventListener("DOMContentLoaded", async () => {
       });
       const dataUrl = canvas.toDataURL('image/png');
       const link = document.createElement('a');
+      const safeRef = (receiptBookingReference || 'booking-confirmation').replace(/[^a-zA-Z0-9-_]/g, '_');
       link.href = dataUrl;
-      link.download = 'BookingConfirmation.png';
+      link.download = `${safeRef}.png`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);

@@ -1,47 +1,7 @@
 {
   "version": 2,
-  "builds": [
-    {
-      "src": "api/create-payment.js",
-      "use": "@vercel/node"
-    },
-    {
-      "src": "api/bookings.js",
-      "use": "@vercel/node"
-    }
-    ,
-    {
-      "src": "index.html",
-      "use": "@vercel/static"
-    },
-    {
-      "src": "css/**",
-      "use": "@vercel/static"
-    },
-    {
-      "src": "js/**",
-      "use": "@vercel/static"
-    },
-    {
-      "src": "*.{png,jpeg,jpg,svg,gif}",
-      "use": "@vercel/static"
-    }
-  ],
   "routes": [
-    {
-      "src": "/api/create-payment",
-      "dest": "api/create-payment.js"
-    },
-    {
-      "src": "/api/bookings",
-      "dest": "api/bookings.js"
-    },
-    {
-      "handle": "filesystem"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/index.html"
-    }
+    { "src": "^/$", "dest": "/index.html" },
+    { "src": "^/dashboard$", "dest": "/admin-dashboard.html" }
   ]
 }
