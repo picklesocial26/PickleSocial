@@ -91,11 +91,32 @@
 </div>
 
 <script>
-  // Check maintenance mode on load
-  if (localStorage.getItem('maintenanceMode') === 'true') {
-    document.getElementById('maintenanceOverlay').style.display = 'flex';
-    document.body.style.overflow = 'hidden';
+  // Check maintenance mode from database on load
+  async function checkMaintenanceMode() {
+    try {
+      // Try to fetch from API endpoint first (production)
+      const apiUrl = window.location.hostname === 'picklesocialcebu.site' 
+        ? 'https://adminps.vercel.app/api/maintenance'
+        : '/api/maintenance';
+      
+      const response = await fetch(apiUrl);
+      const data = await response.json();
+      
+      if (data.maintenanceMode === true) {
+        document.getElementById('maintenanceOverlay').style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+      }
+    } catch (err) {
+      console.log('Maintenance check failed, falling back to localStorage');
+      // Fallback to localStorage if API fails
+      if (localStorage.getItem('maintenanceMode') === 'true') {
+        document.getElementById('maintenanceOverlay').style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+      }
+    }
   }
+  
+  checkMaintenanceMode();
 </script>
 
 <nav>
