@@ -8,6 +8,10 @@
     {
       "src": "api/bookings.js",
       "use": "@vercel/node"
+    },
+    {
+      "src": "api/maintenance.js",
+      "use": "@vercel/node"
     }
     ,
     {
@@ -35,6 +39,10 @@
     {
       "src": "/api/bookings",
       "dest": "api/bookings.js"
+    },
+    {
+      "src": "/api/maintenance",
+      "dest": "api/maintenance.js"
     },
     {
       "handle": "filesystem"
