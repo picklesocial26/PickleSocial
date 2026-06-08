@@ -1915,4 +1915,4 @@ Phone: ${firstBooking.phone_number || ''}
       }
     }
   }, 1000);
-});
+});
