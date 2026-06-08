@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>Pickle Social - Pickleball</title>
+<title>Pickle Social - Cebu</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="preconnect"/>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -101,7 +101,7 @@
 <nav>
   <div class="nav-brand">
     <img src="logo.jpeg" alt="Pickle Social logo" class="nav-logo">
-    Pickle Social <span>Pickleball</span>
+    Pickle Social <span>Cebu</span>
   </div>
   <button class="hamburger" aria-label="Open search" onclick="openModal()">
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
@@ -134,7 +134,7 @@
   </div>
 
   <div class="venue-header">
-    <h1>Book a Court at Pickle Social</h1>
+    <h1>Book a Court at Pickle Social - Cebu</h1>
     <div class="venue-meta">
       <span>📍 <a href="https://maps.app.goo.gl/ewXraZnbkGZVhZsX6" target="_blank" rel="noreferrer" style="color:#2dd4bf;">Pickle Social - Cebu, Barangay Pang Pang, Talisay, 6000 Cebu</a></span>
       <span>🕒 60-min slots • 24hrs</span>
@@ -189,7 +189,7 @@
 <footer>
   <div class="footer-inner">
     <div class="footer-brand">
-      <h2>Pickle Social <span>Pickleball</span></h2>
+      <h2>Pickle Social <span>Cebu</span></h2>
       <p>Easy. Fast. Reliable Court Booking.</p>
       <div class="social-links">
         <a class="social-link" href="https://www.facebook.com/profile.php?id=61589519277936" target="_blank" rel="noreferrer" aria-label="Facebook">
@@ -210,16 +210,16 @@
       </div>
     </div>
     <div class="footer-links">
-      <a href="#">About Us</a>
-      <a href="#">Privacy Policy</a>
-      <a href="#">Terms of Service</a>
-      <a href="#">Contact Us</a>
+      <a href="#" onclick="openAboutUsModal(event)">About Us</a>
+      <a href="#" onclick="openPrivacyPolicyModal(event)">Privacy Policy</a>
+      <a href="#" onclick="openTermsModal(event)">Terms of Service</a>
+      <a href="#" onclick="openContactUsModal(event)">Contact Us</a>
     </div>
   </div>
   <div class="footer-bottom">
-    © 2026 Pickle Social Pickleball. All rights reserved.
+    © 2026 Pickle Social - Cebu. All rights reserved.
     <br>
-    Developer: <a href="https://github.com/Heoiscod" target="_blank" rel="noreferrer" style="color:#ec4899;">Heoiscod</a>
+    Developer: <a target="_blank" rel="noreferrer" style="color:#ec4899;">Heoiscod</a>
   </div>
 </footer>
 
@@ -290,7 +290,7 @@
       </div>
 
       <div style="background:linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border-left:4px solid rgba(245,158,11,0.16);padding:12px;border-radius:8px;color:#e5e7eb;margin-bottom:12px;">
-        <div style="font-weight:700;color:#fbbf24;margin-bottom:6px;">⏱ Pending bookings expire in 30 minutes if not confirmed.</div>
+        <div style="font-weight:700;color:#fbbf24;margin-bottom:6px;">⏱ Pending bookings expire in 60 minutes if not confirmed.</div>
         <div style="color:#9ca3af">Please complete payment promptly.</div>
       </div>
 
@@ -414,7 +414,7 @@
     </div>
 
     <div class="modal-actions">
-      <button id="successDoneBtn" class="btn-confirm" style="flex:1;" onclick="handleDoneBooking()">Done</button>
+      <button id="successDoneBtn" class="btn-confirm" style="flex:1;" onclick="handleDoneBooking()" disabled>Done</button>
     </div>
   </div>
 </div>
@@ -470,6 +470,186 @@
 </div>
 
 <div class="toast" id="toast"></div>
+
+<!-- ABOUT US MODAL -->
+<div class="modal-overlay" id="aboutUsModal">
+  <div class="modal modal-info">
+    <button class="modal-close-btn" onclick="closeAboutUsModal()" aria-label="Close About Us">&times;</button>
+    <h2>About Us</h2>
+    <div class="modal-info-content">
+      <h3>Pickle Social - Cebu</h3>
+      <p><strong>Located:</strong> Cebu City, Philippines<br>
+      📍 <a href="https://maps.app.goo.gl/wjSce8V1DpoGts5K8" target="_blank" rel="noreferrer">Google Maps</a></p>
+      <p>Pickle Social - Cebu is a dedicated pickleball space built for everyone—from beginners discovering the sport for the first time to experienced players looking for competitive and fun matches. Our goal is to grow the pickleball community in Cebu by providing a welcoming environment where people can connect, play, and improve their skills.</p>
+      <p>We believe sports bring people together, and pickleball is one of the fastest-growing games that promotes fitness, friendship, and enjoyment for all ages. At Pickle Social, we aim to create a place where players can unwind, stay active, and enjoy quality court time with friends, family, and fellow enthusiasts.</p>
+      <p>Whether you're coming for casual play, training sessions, or organized games, our facility is designed to give you a smooth and enjoyable experience every time you step on the court. We are continuously improving our services to make sure every visit is worth it.</p>
+      <p>Join us as we build a strong pickleball community here in Cebu—one game at a time. 🏓✨</p>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-confirm" onclick="closeAboutUsModal()">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- PRIVACY POLICY MODAL -->
+<div class="modal-overlay" id="privacyPolicyModal">
+  <div class="modal modal-info modal-scrollable">
+    <button class="modal-close-btn" onclick="closePrivacyPolicyModal()" aria-label="Close Privacy Policy">&times;</button>
+    <h2>Privacy Policy</h2>
+    <div class="modal-info-content">
+      <h3>Pickle Social - Cebu</h3>
+      <h4>1. Introduction</h4>
+      <p>Pickle Social - Cebu ("we," "our," or "us") values your privacy and is committed to protecting the personal information of all our customers and website users. This Privacy Policy explains how we collect, use, store, and protect your information when you use our services, website, or contact us through social media or messaging platforms.</p>
+      <p>By using our services, you agree to the terms outlined in this Privacy Policy.</p>
+      <h4>2. Information We Collect</h4>
+      <p>We may collect the following types of information:</p>
+      <ul>
+        <li>Full name</li>
+        <li>Contact information (phone number, email address, Messenger/Instagram details)</li>
+        <li>Booking details (date, time, court reservation)</li>
+        <li>Payment information (if applicable, processed through third-party providers)</li>
+        <li>Messages and inquiries you send to us</li>
+      </ul>
+      <h4>3. How We Use Your Information</h4>
+      <p>We use the collected information to:</p>
+      <ul>
+        <li>Process and confirm court bookings</li>
+        <li>Communicate with you regarding your reservation</li>
+        <li>Provide customer support and respond to inquiries</li>
+        <li>Improve our services and customer experience</li>
+        <li>Send important updates, announcements, or promotions (if you opt in)</li>
+      </ul>
+      <h4>4. Data Protection</h4>
+      <p>We take appropriate security measures to protect your personal information from unauthorized access, alteration, disclosure, or destruction. However, please note that no method of online transmission or electronic storage is 100% secure.</p>
+      <h4>5. Sharing of Information</h4>
+      <p>We do not sell, rent, or trade your personal information. We may only share your data when necessary:</p>
+      <ul>
+        <li>With payment processors (for transaction purposes)</li>
+        <li>When required by law or legal processes</li>
+        <li>To protect our rights, safety, or property</li>
+      </ul>
+      <h4>6. Cookies and Website Usage</h4>
+      <p>Our website may use cookies or similar technologies to improve user experience, track website performance, and understand visitor behavior. You may disable cookies in your browser settings if you prefer.</p>
+      <h4>7. Third-Party Links</h4>
+      <p>Our website or social media pages may contain links to third-party sites. We are not responsible for the privacy practices or content of these external websites.</p>
+      <h4>8. Your Rights</h4>
+      <p>You have the right to:</p>
+      <ul>
+        <li>Access your personal data</li>
+        <li>Request corrections or updates</li>
+        <li>Request deletion of your information (subject to legal or operational requirements)</li>
+      </ul>
+      <p>To exercise these rights, you may contact us directly.</p>
+      <h4>9. Updates to This Policy</h4>
+      <p>We may update this Privacy Policy from time to time. Any changes will be posted on our official website or social media pages.</p>
+      <h4>10. Contact Us</h4>
+      <p>If you have any questions about this Privacy Policy, please contact us through our official page or booking website.</p>
+      <p><strong>Pickle Social - Cebu</strong><br>📍 Cebu City, Philippines<br>🏓 Building a strong and active pickleball community.</p>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-confirm" onclick="closePrivacyPolicyModal()">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- TERMS & CONDITIONS MODAL -->
+<div class="modal-overlay" id="termsModal">
+  <div class="modal modal-info modal-scrollable">
+    <button class="modal-close-btn" onclick="closeTermsModal()" aria-label="Close Terms & Conditions">&times;</button>
+    <h2>Terms & Conditions</h2>
+    <div class="modal-info-content">
+      <h3>Pickle Social - Cebu</h3>
+      <h4>1. Introduction</h4>
+      <p>Welcome to Pickle Social - Cebu. By accessing our website, booking a court, or using our facilities, you agree to be bound by these Terms & Conditions. Please read them carefully before making any reservation or using our services.</p>
+      <h4>2. Booking Policy</h4>
+      <ul>
+        <li>All court bookings must be made through our official website or approved booking channels.</li>
+        <li>Bookings are confirmed only after full or required payment is received.</li>
+        <li>Walk-in players are subject to court availability.</li>
+        <li>We reserve the right to reschedule or cancel bookings due to maintenance, weather conditions, or unforeseen circumstances.</li>
+      </ul>
+      <h4>3. Payments</h4>
+      <ul>
+        <li>Court fees must be paid according to the published rates.</li>
+        <li>Soft opening and promotional rates are only valid within the specified period.</li>
+        <li>All payments are non-transferable unless stated otherwise.</li>
+      </ul>
+      <h4>4. Cancellation & Refunds</h4>
+      <ul>
+        <li><strong>All bookings are final.</strong></li>
+        <li><strong>No cancellations are allowed once a booking is confirmed.</strong></li>
+        <li><strong>No refunds will be issued for any reason, including no-shows, late arrivals, or change of plans.</strong></li>
+        <li>Customers are responsible for ensuring their selected date and time before confirming payment.</li>
+      </ul>
+      <h4>5. User Conduct</h4>
+      <p>All players are expected to:</p>
+      <ul>
+        <li>Respect other players and staff</li>
+        <li>Follow proper sportsmanship at all times</li>
+        <li>Avoid any behavior that may cause harm or disturbance</li>
+        <li>Take care of the facilities and equipment</li>
+      </ul>
+      <p>We reserve the right to refuse entry or service to anyone violating these rules.</p>
+      <h4>6. Safety & Liability</h4>
+      <ul>
+        <li>Players participate at their own risk.</li>
+        <li>Pickle Social - Cebu is not liable for any injuries, accidents, or loss of personal belongings during play or within the premises.</li>
+        <li>We encourage all players to warm up properly and follow safety guidelines.</li>
+      </ul>
+      <h4>7. Facility Rules</h4>
+      <ul>
+        <li>Proper sports attire and non-marking shoes are required.</li>
+        <li>Food and drinks may be restricted in certain areas.</li>
+        <li>Any damage to property caused by negligence may result in charges.</li>
+      </ul>
+      <h4>8. Changes to Terms</h4>
+      <p>We may update or modify these Terms & Conditions at any time without prior notice. Continued use of our services means you accept any changes made.</p>
+      <h4>9. Contact Us</h4>
+      <p>For questions or concerns regarding these Terms & Conditions, please contact us through our official page or website.</p>
+      <p><strong>Pickle Social - Cebu</strong><br>📍 Cebu City, Philippines<br>🏓 Building a strong pickleball community.</p>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-confirm" onclick="closeTermsModal()">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- CONTACT US MODAL -->
+<div class="modal-overlay" id="contactUsModal">
+  <div class="modal modal-info">
+    <button class="modal-close-btn" onclick="closeContactUsModal()" aria-label="Close Contact Us">&times;</button>
+    <h2>Contact Us</h2>
+    <div class="modal-info-content">
+      <p style="margin-bottom: 20px;">We'd love to hear from you! If you have any questions, booking inquiries, or concerns, feel free to reach out through any of the following channels:</p>
+      
+      <div class="contact-method">
+        <h4>💬 Messenger</h4>
+        <p>Message us directly on our official Facebook page</p>
+        <a href="https://www.facebook.com/profile.php?id=61589519277936" target="_blank" rel="noreferrer" class="contact-link">Visit Our Facebook Page</a>
+      </div>
+      
+      <div class="contact-method">
+        <h4>📱 Mobile Number</h4>
+        <p><a href="tel:+639941321131" class="contact-link">0994 132 1131</a></p>
+      </div>
+      
+      <div class="contact-method">
+        <h4>📧 Email</h4>
+        <p><a href="mailto:picklesocia26@gmail.com" class="contact-link">picklesocia26@gmail.com</a></p>
+      </div>
+      
+      <p style="margin-top: 20px; color: #9ca3af; font-size: 0.9rem;">We aim to respond as quickly as possible during operating hours. Thank you for choosing Pickle Social - Cebu! 🏓</p>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-confirm" onclick="closeContactUsModal()">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- MESSENGER BUTTON (Fixed) -->
+<a href="https://www.facebook.com/profile.php?id=61589519277936" target="_blank" rel="noreferrer" class="messenger-fab" aria-label="Message us on Messenger" title="Message us on Messenger">
+  <svg viewBox="0 0 24 24" fill="currentColor" width="24" height="24" xmlns="http://www.w3.org/2000/svg"><path d="M12.01 2C6.48 2 2 5.94 2 10.5c0 2.86 1.76 5.43 4.6 7.05v3.46l3.05-1.68c.8.2 1.64.31 2.46.31 5.53 0 10.01-3.94 10.01-8.5S17.54 2 12.01 2zm1.86 10.19l-1.17-1.27-2.26 1.27 2.26-2.75 1.17 1.27 2.26-1.27-2.26 2.75z"/></svg>
+</a>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>

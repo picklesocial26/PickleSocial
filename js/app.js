@@ -25,6 +25,77 @@ function showToast(message) {
   }, 3000);
 }
 
+// Modal Functions for About Us, Privacy Policy, Terms & Conditions, Contact Us
+function openAboutUsModal(event) {
+  if (event) event.preventDefault();
+  const modal = document.getElementById('aboutUsModal');
+  if (modal) modal.classList.add('open');
+}
+
+function closeAboutUsModal() {
+  const modal = document.getElementById('aboutUsModal');
+  if (modal) modal.classList.remove('open');
+}
+
+function openPrivacyPolicyModal(event) {
+  if (event) event.preventDefault();
+  const modal = document.getElementById('privacyPolicyModal');
+  if (modal) {
+    modal.classList.add('open');
+    modal.scrollTop = 0;
+  }
+}
+
+function closePrivacyPolicyModal() {
+  const modal = document.getElementById('privacyPolicyModal');
+  if (modal) modal.classList.remove('open');
+}
+
+function openTermsModal(event) {
+  if (event) event.preventDefault();
+  const modal = document.getElementById('termsModal');
+  if (modal) {
+    modal.classList.add('open');
+    modal.scrollTop = 0;
+  }
+}
+
+function closeTermsModal() {
+  const modal = document.getElementById('termsModal');
+  if (modal) modal.classList.remove('open');
+}
+
+function openContactUsModal(event) {
+  if (event) event.preventDefault();
+  const modal = document.getElementById('contactUsModal');
+  if (modal) modal.classList.add('open');
+}
+
+function closeContactUsModal() {
+  const modal = document.getElementById('contactUsModal');
+  if (modal) modal.classList.remove('open');
+}
+
+// Close modals when clicking on overlay
+document.addEventListener('DOMContentLoaded', function() {
+  const modals = ['aboutUsModal', 'privacyPolicyModal', 'termsModal', 'contactUsModal'];
+  
+  modals.forEach(modalId => {
+    const modal = document.getElementById(modalId);
+    if (modal) {
+      modal.addEventListener('click', function(e) {
+        if (e.target === modal) {
+          if (modalId === 'aboutUsModal') closeAboutUsModal();
+          else if (modalId === 'privacyPolicyModal') closePrivacyPolicyModal();
+          else if (modalId === 'termsModal') closeTermsModal();
+          else if (modalId === 'contactUsModal') closeContactUsModal();
+        }
+      });
+    }
+  });
+});
+
+
 function updateSuccessReceiptUploadState() {
   // Receipt upload state tracking removed
 }
@@ -238,13 +309,13 @@ document.addEventListener("DOMContentLoaded", async () => {
       .substring(0, 2);
   }
 
-  // Helper function to get remaining time for pending slots (30 mins)
+  // Helper function to get remaining time for pending slots (60 mins)
   function getRemainingTime(timestamp) {
     const now = Date.now();
     const elapsed = now - timestamp;
-    const thirtyMins = 30 * 60 * 1000;
-    if (elapsed >= thirtyMins) return '0:00';
-    const remaining = thirtyMins - elapsed;
+    const sixtyMins = 60 * 60 * 1000;
+    if (elapsed >= sixtyMins) return '0:00';
+    const remaining = sixtyMins - elapsed;
     const mins = Math.floor(remaining / 60000);
     const secs = Math.floor((remaining % 60000) / 1000);
     return `${mins}:${secs.toString().padStart(2, '0')}`;
@@ -272,9 +343,9 @@ document.addEventListener("DOMContentLoaded", async () => {
               } catch (e) {
                 ts = Date.now();
               }
-              // Only set pending timer if still within 30 minutes window
-              const thirtyMins = 30 * 60 * 1000;
-              if ((Date.now() - ts) < thirtyMins) {
+              // Only set pending timer if still within 60 minutes window
+              const sixtyMins = 60 * 60 * 1000;
+              if ((Date.now() - ts) < sixtyMins) {
                 pendingSlotsWithTimer[key] = ts;
               } else {
                 // expired on backend; ensure no pending marker left
@@ -470,7 +541,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   function updatePendingTimerButtons() {
     const now = Date.now();
-    const thirtyMins = 30 * 60 * 1000;
+    const sixtyMins = 60 * 60 * 1000;
     const pendingButtons = document.querySelectorAll('.slot-pending');
     let needsRerender = false;
 
@@ -478,7 +549,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       const slotKey = btn.dataset.slotKey;
       if (!slotKey) return;
       const start = pendingSlotsWithTimer[slotKey];
-      if (!start || now - start >= thirtyMins) {
+      if (!start || now - start >= sixtyMins) {
         delete pendingSlotsWithTimer[slotKey];
         needsRerender = true;
         return;
@@ -522,7 +593,7 @@ document.addEventListener("DOMContentLoaded", async () => {
           btn.disabled = true;
         }
         // Check if slot is pending (receipt uploaded, awaiting admin confirmation)
-        else if (pendingSlotsWithTimer[key] && (Date.now() - pendingSlotsWithTimer[key]) < 30 * 60 * 1000) {
+        else if (pendingSlotsWithTimer[key] && (Date.now() - pendingSlotsWithTimer[key]) < 60 * 60 * 1000) {
           btn.classList.add('slot-pending');
           btn.dataset.slotKey = key;
           const remaining = getRemainingTime(pendingSlotsWithTimer[key]);
@@ -678,6 +749,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const bookingRefCard = document.getElementById('bookingRefCardContainer');
     const bookingRefCardBottom = document.getElementById('bookingRefCardContainerBottom');
     const actionText = document.getElementById('successPayActionText');
+    const doneBtn = document.getElementById('successDoneBtn');
     if (!checkbox || !section || !nextSteps) return;
     if (checkbox.checked) {
       section.style.display = 'block';
@@ -686,6 +758,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       if (bookingRefCard) bookingRefCard.style.display = 'block';
       if (bookingRefCardBottom) bookingRefCardBottom.style.display = 'block';
       if (actionText) actionText.textContent = 'You may now scan the QR code and upload your payment receipt to complete this booking.';
+      if (doneBtn) doneBtn.disabled = false;
       await downloadBookingConfirmationImage();
     } else {
       section.style.display = 'none';
@@ -694,6 +767,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       if (bookingRefCard) bookingRefCard.style.display = 'none';
       if (bookingRefCardBottom) bookingRefCardBottom.style.display = 'none';
       if (actionText) actionText.textContent = 'Check the box to reveal the scan-to-pay section and upload your receipt proof.';
+      if (doneBtn) doneBtn.disabled = true;
     }
   };
 
@@ -1048,7 +1122,7 @@ Phone: ${firstBooking.phone_number || ''}
         });
       } catch (err) {
         console.error('Error saving pending booking:', err);
-        showToast('❌ Failed to save booking. Please try again.');
+        showToast('⚠️ Booking Update\n\nYour selected date and time has already been reserved by another player.\n\nPlease click Refresh and choose another available schedule.\n\nThank you for your understanding and support! 🏓');
         if (confirmBtn) {
           confirmBtn.disabled = false;
           confirmBtn.textContent = 'Next';
@@ -1056,11 +1130,11 @@ Phone: ${firstBooking.phone_number || ''}
         return;
       }
 
-      // Mark selected slots as pending with 30-minute timer
+      // Mark selected slots as pending with 60-minute timer
       selectedSlots.forEach(key => {
         const [date, slot, courtIndex] = key.split('|');
         const slotKey = `${date}|${slot}|${courtIndex}`;
-        pendingSlotsWithTimer[slotKey] = Date.now(); // 30-minute pending timer
+        pendingSlotsWithTimer[slotKey] = Date.now(); // 60-minute pending timer
       });
       startPendingPoll(); // Start polling to detect admin confirmations
 
@@ -1346,7 +1420,7 @@ Phone: ${firstBooking.phone_number || ''}
     const timerField = document.getElementById('receiptTimer');
     if (timerField) timerField.textContent = 'Time remaining: 30:00';
 
-    const expiry = Date.now() + 30 * 60 * 1000;
+    const expiry = Date.now() + 60 * 60 * 1000;
     receiptTimerInterval = setInterval(() => {
       const remainingMs = expiry - Date.now();
       if (remainingMs <= 0) {
@@ -1364,7 +1438,7 @@ Phone: ${firstBooking.phone_number || ''}
       clearReceiptModalTimer();
       closeReceiptModal();
       showToast('Payment time expired. Please reopen the receipt upload and try again.');
-    }, 30 * 60 * 1000);
+    }, 60 * 60 * 1000);
 
     document.getElementById('receiptModal').classList.add('open');
   };
@@ -1689,7 +1763,7 @@ Phone: ${firstBooking.phone_number || ''}
           ? slotCheck.conflicts.map(conflict => `${conflict.court} ${conflict.booking_date} ${conflict.booking_time}`).join('; ')
           : 'Could not verify slot availability.';
         const message = slotCheck.conflicts.length > 0
-          ? `One or more selected slots were already booked: ${conflictText}. Please refresh and choose a different slot.`
+          ? `⚠️ **Booking Update**\n\nYour selected date and time has already been reserved by another player.\n\nPlease click **Refresh** and choose another available schedule.\n\nThank you for your understanding and support! 🏓`
           : 'Could not verify slot availability. Please try again.';
         if (mismatchEl) mismatchEl.textContent = message;
         showToast(message);
@@ -1780,12 +1854,12 @@ Phone: ${firstBooking.phone_number || ''}
     const entriesToRender = [...pendingBookingEntries];
     
     // For existing bookings (already in database), skip pending slot marking
-    // For new bookings, mark slots as pending with 30-minute timer
+    // For new bookings, mark slots as pending with 60-minute timer
     if (!isExistingBooking) {
       entriesToRender.forEach(entry => {
         const courtIndex = COURTS.indexOf(entry.court_name || entry.court);
         const key = `${entry.booking_date}|${entry.booking_time || entry.time_slot}|${courtIndex}`;
-        pendingSlotsWithTimer[key] = Date.now(); // 30-minute pending timer
+        pendingSlotsWithTimer[key] = Date.now(); // 60-minute pending timer
       });
       startPendingPoll();
     }
@@ -1878,13 +1952,12 @@ Phone: ${firstBooking.phone_number || ''}
   // Update timer display every second
   setInterval(() => {
     const now = Date.now();
-    const thirtyMins = 30 * 60 * 1000;
-    const fifteenMins = 15 * 60 * 1000;
+    const sixtyMins = 60 * 60 * 1000;
     let tableNeedsRefresh = false;
 
     // Remove expired pending timers and update button labels directly.
     Object.keys(pendingSlotsWithTimer).forEach(key => {
-      if (now - pendingSlotsWithTimer[key] >= thirtyMins) {
+      if (now - pendingSlotsWithTimer[key] >= sixtyMins) {
         delete pendingSlotsWithTimer[key];
         tableNeedsRefresh = true;
       }
@@ -1899,7 +1972,8 @@ Phone: ${firstBooking.phone_number || ''}
     // Update payment/booking modal timer (15 minutes) if modal is open
     if (bookingSubmissionTime) {
       const elapsed = now - bookingSubmissionTime;
-      const remaining = fifteenMins - elapsed;
+      const thirtyMins = 30 * 60 * 1000;
+      const remaining = thirtyMins - elapsed;
       
       if (remaining <= 0) {
         const expiryEl = document.getElementById('successExpiryNote');
@@ -1915,4 +1989,4 @@ Phone: ${firstBooking.phone_number || ''}
       }
     }
   }, 1000);
-});
+});
