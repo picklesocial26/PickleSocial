@@ -91,14 +91,17 @@
 </div>
 
 <script>
-
-
+  // Check maintenance mode on load
+  if (localStorage.getItem('maintenanceMode') === 'true') {
+    document.getElementById('maintenanceOverlay').style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+  }
 </script>
 
 <nav>
   <div class="nav-brand">
     <img src="logo.jpeg" alt="Pickle Social logo" class="nav-logo">
-    Pickle Social - <span>Cebu</span>
+    Pickle Social <span>Pickleball</span>
   </div>
   <button class="hamburger" aria-label="Open search" onclick="openModal()">
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
@@ -131,7 +134,7 @@
   </div>
 
   <div class="venue-header">
-    <h1>Book a court at Pickle Social - Cebu</h1>
+    <h1>Book a Court at Pickle Social</h1>
     <div class="venue-meta">
       <span>📍 <a href="https://maps.app.goo.gl/ewXraZnbkGZVhZsX6" target="_blank" rel="noreferrer" style="color:#2dd4bf;">Pickle Social - Cebu, Barangay Pang Pang, Talisay, 6000 Cebu</a></span>
       <span>🕒 60-min slots • 24hrs</span>
@@ -207,16 +210,16 @@
       </div>
     </div>
     <div class="footer-links">
-      <a href="#" onclick="openAboutModal(); return false;">About Us</a>
-      <a href="#" onclick="openPrivacyModal(); return false;">Privacy Policy</a>
-      <a href="#" onclick="openTermsModal(); return false;">Terms of Service</a>
-      <a href="#" onclick="openContactModal(); return false;">Contact Us</a>
+      <a href="#">About Us</a>
+      <a href="#">Privacy Policy</a>
+      <a href="#">Terms of Service</a>
+      <a href="#">Contact Us</a>
     </div>
   </div>
   <div class="footer-bottom">
-    © 2026 Pickle Social - Cebu. All rights reserved.
+    © 2026 Pickle Social Pickleball. All rights reserved.
     <br>
-    Developer: <a target="_blank" rel="noreferrer" style="color:#ec4899;">Heoiscod</a>
+    Developer: <a href="https://github.com/Heoiscod" target="_blank" rel="noreferrer" style="color:#ec4899;">Heoiscod</a>
   </div>
 </footer>
 
@@ -249,7 +252,9 @@
 
     <div class="form-group">
       <label for="searchRef">Booking Reference Number</label>
-        <input type="text" id="searchRef" placeholder="PKL-XXXXXXXXXXXX" autocomplete="off">
+      <input type="text" id="searchRef" placeholder="E.G. 26FEB07A1B" autocomplete="off">
+      <div class="modal-hint">You received this when you made your booking</div>
+    </div>
 
     <div id="bookingCheckResults" style="display:none;margin-top:16px;">
       <div id="bookingResultsContent"></div>
@@ -258,7 +263,7 @@
     <div class="modal-actions">
       <button class="btn-cancel" onclick="closeModal()">Cancel</button>
       <button class="btn-checkout" id="checkRefBtn" onclick="checkReference()" disabled>Check Status</button>
-      <button class="btn-checkout" id="payNowBtn" onclick="openSuccessModal()" style="display:none;background:linear-gradient(135deg, #ec4899, #db2777);">Pay</button>
+      <button class="btn-checkout" id="payNowBtn" onclick="openReceiptModal()" style="display:none;background:linear-gradient(135deg, #ec4899, #db2777);">Pay & Upload Receipt</button>
     </div>
   </div>
 </div>
@@ -285,7 +290,7 @@
       </div>
 
       <div style="background:linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border-left:4px solid rgba(245,158,11,0.16);padding:12px;border-radius:8px;color:#e5e7eb;margin-bottom:12px;">
-        <div style="font-weight:700;color:#fbbf24;margin-bottom:6px;">⏱ Pending bookings expire in 1 hour if not confirmed.</div>
+        <div style="font-weight:700;color:#fbbf24;margin-bottom:6px;">⏱ Pending bookings expire in 30 minutes if not confirmed.</div>
         <div style="color:#9ca3af">Please complete payment promptly.</div>
       </div>
 
@@ -343,7 +348,7 @@
         <div id="bookingRefCardContainer" class="booking-ref-card" style="cursor:pointer;transition:all 0.3s;" onclick="copyBookingReference()" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'">
           <div class="booking-ref-label">
             <span class="desktop-only" style="display:none;">Booking Reference</span>
-            <span class="mobile-only">Booking Reference</span>
+            <span class="mobile-only">TAP TO COPY</span>
           </div>
           <div class="booking-ref-code" id="successRefDisplay">PKL-000000</div>
         </div>
@@ -409,287 +414,62 @@
     </div>
 
     <div class="modal-actions">
-      <button id="successDoneBtn" class="btn-confirm" style="flex:1;opacity:0.5;cursor:not-allowed;" onclick="handleDoneBooking()" disabled>Done</button>
+      <button id="successDoneBtn" class="btn-confirm" style="flex:1;" onclick="handleDoneBooking()">Done</button>
     </div>
   </div>
 </div>
 
-<!-- ABOUT US MODAL -->
-<div class="modal-overlay" id="aboutModal">
-  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="aboutTitle">
-    <h2 id="aboutTitle" style="color:var(--accent);">About Us</h2>
-    
-    <div style="margin-top:16px;">
-      <h3 style="font-size:1.2rem;font-weight:700;color:#f8fafc;margin-bottom:8px;">Pickle Social - Cebu</h3>
-      
-      <div style="margin-bottom:16px;padding:12px;background:rgba(255,255,255,0.02);border-radius:8px;border-left:3px solid var(--accent);">
-        <div style="color:#9ca3af;font-size:0.9rem;margin-bottom:4px;">📍 Location:</div>
-        <div style="color:#f8fafc;font-weight:600;margin-bottom:8px;">Cebu City, Philippines</div>
-        <a href="https://maps.app.goo.gl/wjSce8V1DpoGts5K8" target="_blank" rel="noreferrer" style="color:var(--accent);text-decoration:none;font-weight:600;display:inline-flex;align-items:center;gap:6px;">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
-            <circle cx="12" cy="10" r="3"/>
-          </svg>
-          View on Maps
-        </a>
+<!-- RECEIPT VERIFICATION MODAL -->
+<div class="modal-overlay" id="receiptModal">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="receiptTitle">
+    <h2 id="receiptTitle" style="color:var(--accent);">Upload GCash Receipt</h2>
+    <p class="subtitle">Upload your GCash receipt image and verify the booking reference, total amount, and payment details.<br><br>If you're paying via GoTyme, Maya, or Bank Transfer, no need to upload receipt here — just send your receipt through Messenger for verification.</p>
+    <div style="display:flex;flex-direction:column;gap:12px;margin-top:12px;">
+      <div style="display:flex;flex-direction:column;align-items:center;gap:10px;">
       </div>
-      
-      <div style="color:#d1d5db;line-height:1.8;margin-bottom:14px;">
-        <p style="margin-bottom:12px;">
-          Pickle Social - Cebu is a dedicated pickleball space built for everyone—from beginners discovering the sport for the first time to experienced players looking for competitive and fun matches. Our goal is to grow the pickleball community in Cebu by providing a welcoming environment where people can connect, play, and improve their skills.
-        </p>
-        
-        <p style="margin-bottom:12px;">
-          We believe sports bring people together, and pickleball is one of the fastest-growing games that promotes fitness, friendship, and enjoyment for all ages. At Pickle Social, we aim to create a place where players can unwind, stay active, and enjoy quality court time with friends, family, and fellow enthusiasts.
-        </p>
-        
-        <p style="margin-bottom:12px;">
-          Whether you're coming for casual play, training sessions, or organized games, our facility is designed to give you a smooth and enjoyable experience every time you step on the court. We are continuously improving our services to make sure every visit is worth it.
-        </p>
-        
-        <p style="color:#10b981;font-weight:600;">
-          Join us as we build a strong pickleball community here in Cebu—one game at a time. 🏓✨
-        </p>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+        <label style="cursor:pointer;display:flex;justify-content:center;width:100%;">
+          <span style="display:inline-block;padding:10px 14px;border-radius:10px;background:rgba(236,72,153,0.12);color:#fda4af;">Upload receipt screenshot</span>
+          <input type="file" id="receiptFileInput" accept="image/*" style="display:none" onchange="handleReceiptFile(event)">
+        </label>
+        <button class="btn-cancel" type="button" id="receiptRemoveBtn" onclick="clearReceiptUpload()" style="opacity:0.6;">Remove Photo</button>
       </div>
-    </div>
-
-    <div class="modal-actions" style="margin-top:16px;">
-      <button class="btn-confirm" onclick="closeAboutModal()" style="width:100%;">Close</button>
-    </div>
-  </div>
-</div>
-
-<!-- PRIVACY POLICY MODAL -->
-<div class="modal-overlay" id="privacyModal">
-  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="privacyTitle" style="max-height: 90vh; overflow-y: auto;">
-    <h2 id="privacyTitle" style="color:var(--accent);">Privacy Policy</h2>
-    <p style="color:#9ca3af;font-size:0.9rem;margin-bottom:16px;"><strong>Pickle Social - Cebu</strong></p>
-    
-    <div style="color:#d1d5db;line-height:1.8;font-size:0.95rem;">
-      <h3 style="font-size:1.1rem;font-weight:700;color:#f8fafc;margin-top:14px;margin-bottom:8px;">1. Introduction</h3>
-      <p style="margin-bottom:12px;">
-        Pickle Social - Cebu ("we," "our," or "us") values your privacy and is committed to protecting the personal information of all our customers and website users. This Privacy Policy explains how we collect, use, store, and protect your information when you use our services, website, or contact us through social media or messaging platforms.
-      </p>
-      <p style="margin-bottom:16px;">
-        By using our services, you agree to the terms outlined in this Privacy Policy.
-      </p>
-
-      <h3 style="font-size:1.1rem;font-weight:700;color:#f8fafc;margin-top:14px;margin-bottom:8px;">2. Information We Collect</h3>
-      <p style="margin-bottom:8px;">We may collect the following types of information:</p>
-      <ul style="margin-bottom:16px;margin-left:20px;">
-        <li style="margin-bottom:6px;">Full name</li>
-        <li style="margin-bottom:6px;">Contact information (phone number, email address, Messenger/Instagram details)</li>
-        <li style="margin-bottom:6px;">Booking details (date, time, court reservation)</li>
-        <li style="margin-bottom:6px;">Payment information (if applicable, processed through third-party providers)</li>
-        <li>Messages and inquiries you send to us</li>
-      </ul>
-
-      <h3 style="font-size:1.1rem;font-weight:700;color:#f8fafc;margin-top:14px;margin-bottom:8px;">3. How We Use Your Information</h3>
-      <p style="margin-bottom:8px;">We use the collected information to:</p>
-      <ul style="margin-bottom:16px;margin-left:20px;">
-        <li style="margin-bottom:6px;">Process and confirm court bookings</li>
-        <li style="margin-bottom:6px;">Communicate with you regarding your reservation</li>
-        <li style="margin-bottom:6px;">Provide customer support and respond to inquiries</li>
-        <li style="margin-bottom:6px;">Improve our services and customer experience</li>
-        <li>Send important updates, announcements, or promotions (if you opt in)</li>
-      </ul>
-
-      <h3 style="font-size:1.1rem;font-weight:700;color:#f8fafc;margin-top:14px;margin-bottom:8px;">4. Data Protection</h3>
-      <p style="margin-bottom:16px;">
-        We take appropriate security measures to protect your personal information from unauthorized access, alteration, disclosure, or destruction. However, please note that no method of online transmission or electronic storage is 100% secure.
-      </p>
-
-      <h3 style="font-size:1.1rem;font-weight:700;color:#f8fafc;margin-top:14px;margin-bottom:8px;">5. Sharing of Information</h3>
-      <p style="margin-bottom:8px;">We do not sell, rent, or trade your personal information. We may only share your data when necessary:</p>
-      <ul style="margin-bottom:16px;margin-left:20px;">
-        <li style="margin-bottom:6px;">With payment processors (for transaction purposes)</li>
-        <li style="margin-bottom:6px;">When required by law or legal processes</li>
-        <li>To protect our rights, safety, or property</li>
-      </ul>
-
-      <h3 style="font-size:1.1rem;font-weight:700;color:#f8fafc;margin-top:14px;margin-bottom:8px;">6. Cookies and Website Usage</h3>
-      <p style="margin-bottom:16px;">
-        Our website may use cookies or similar technologies to improve user experience, track website performance, and understand visitor behavior. You may disable cookies in your browser settings if you prefer.
-      </p>
-
-      <h3 style="font-size:1.1rem;font-weight:700;color:#f8fafc;margin-top:14px;margin-bottom:8px;">7. Third-Party Links</h3>
-      <p style="margin-bottom:16px;">
-        Our website or social media pages may contain links to third-party sites. We are not responsible for the privacy practices or content of these external websites.
-      </p>
-
-      <h3 style="font-size:1.1rem;font-weight:700;color:#f8fafc;margin-top:14px;margin-bottom:8px;">8. Your Rights</h3>
-      <p style="margin-bottom:8px;">You have the right to:</p>
-      <ul style="margin-bottom:16px;margin-left:20px;">
-        <li style="margin-bottom:6px;">Access your personal data</li>
-        <li style="margin-bottom:6px;">Request corrections or updates</li>
-        <li style="margin-bottom:6px;">Request deletion of your information (subject to legal or operational requirements)</li>
-      </ul>
-      <p style="margin-bottom:16px;">To exercise these rights, you may contact us directly.</p>
-
-      <h3 style="font-size:1.1rem;font-weight:700;color:#f8fafc;margin-top:14px;margin-bottom:8px;">9. Updates to This Policy</h3>
-      <p style="margin-bottom:16px;">
-        We may update this Privacy Policy from time to time. Any changes will be posted on our official website or social media pages.
-      </p>
-
-      <h3 style="font-size:1.1rem;font-weight:700;color:#f8fafc;margin-top:14px;margin-bottom:8px;">10. Contact Us</h3>
-      <p style="margin-bottom:16px;">
-        If you have any questions about this Privacy Policy, please contact us through our official page or booking website.
-      </p>
-
-      <div style="margin-top:20px;padding:12px;background:rgba(255,255,255,0.02);border-radius:8px;border-left:3px solid var(--accent);">
-        <p style="margin:0;"><strong style="color:#10b981;">🏓 Pickle Social - Cebu</strong></p>
-        <p style="margin:6px 0 0 0;color:#9ca3af;">📍 Cebu City, Philippines</p>
-        <p style="margin:4px 0 0 0;color:#9ca3af;">Building a strong and active pickleball community.</p>
+      <div id="receiptUploadedNote" style="display:none;margin-top:4px;font-size:0.88rem;color:#34d399;">✅ Receipt uploaded!</div>
+      <div id="receiptPreviewContainer" style="display:none;flex-direction:column;gap:10px;">
+        <img id="receiptPreview" alt="Receipt preview" style="max-width:100%;border-radius:12px;border:1px solid rgba(255,255,255,0.08);"/>
       </div>
-    </div>
-
-    <div class="modal-actions" style="margin-top:16px;">
-      <button class="btn-confirm" onclick="closePrivacyModal()" style="width:100%;">Close</button>
-    </div>
-  </div>
-</div>
-
-<!-- TERMS OF SERVICE MODAL -->
-<div class="modal-overlay" id="termsModal">
-  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="termsTitle" style="max-height: 90vh; overflow-y: auto;">
-    <h2 id="termsTitle" style="color:var(--accent);">Terms & Conditions</h2>
-    <p style="color:#9ca3af;font-size:0.9rem;margin-bottom:16px;"><strong>Pickle Social - Cebu</strong></p>
-    
-    <div style="color:#d1d5db;line-height:1.8;font-size:0.95rem;">
-      <h3 style="font-size:1.1rem;font-weight:700;color:#f8fafc;margin-top:14px;margin-bottom:8px;">1. Introduction</h3>
-      <p style="margin-bottom:16px;">
-        Welcome to Pickle Social - Cebu. By accessing our website, booking a court, or using our facilities, you agree to be bound by these Terms & Conditions. Please read them carefully before making any reservation or using our services.
-      </p>
-
-      <h3 style="font-size:1.1rem;font-weight:700;color:#f8fafc;margin-top:14px;margin-bottom:8px;">2. Booking Policy</h3>
-      <ul style="margin-bottom:16px;margin-left:20px;">
-        <li style="margin-bottom:6px;">All court bookings must be made through our official website or approved booking channels.</li>
-        <li style="margin-bottom:6px;">Bookings are confirmed only after full or required payment is received.</li>
-        <li style="margin-bottom:6px;">Walk-in players are subject to court availability.</li>
-        <li>We reserve the right to reschedule or cancel bookings due to maintenance, weather conditions, or unforeseen circumstances.</li>
-      </ul>
-
-      <h3 style="font-size:1.1rem;font-weight:700;color:#f8fafc;margin-top:14px;margin-bottom:8px;">3. Payments</h3>
-      <ul style="margin-bottom:16px;margin-left:20px;">
-        <li style="margin-bottom:6px;">Court fees must be paid according to the published rates.</li>
-        <li style="margin-bottom:6px;">Soft opening and promotional rates are only valid within the specified period.</li>
-        <li>All payments must be completed before the scheduled playtime.</li>
-      </ul>
-
-      <h3 style="font-size:1.1rem;font-weight:700;color:#f8fafc;margin-top:14px;margin-bottom:8px;">4. Cancellation & Refund Policy</h3>
-      <div style="padding:12px;background:rgba(239, 68, 68, 0.1);border-radius:8px;border-left:3px solid #ef4444;margin-bottom:16px;">
-        <ul style="margin-left:20px;">
-          <li style="margin-bottom:6px;"><strong>All bookings are final.</strong></li>
-          <li style="margin-bottom:6px;"><strong>No cancellations are allowed once a booking is confirmed.</strong></li>
-          <li style="margin-bottom:6px;"><strong>No refunds will be issued for any reason, including no-shows, late arrivals, or change of plans.</strong></li>
-          <li>Customers are responsible for ensuring their selected date and time before confirming payment.</li>
-        </ul>
-      </div>
-
-      <h3 style="font-size:1.1rem;font-weight:700;color:#f8fafc;margin-top:14px;margin-bottom:8px;">5. User Conduct</h3>
-      <p style="margin-bottom:8px;">All players are expected to:</p>
-      <ul style="margin-bottom:16px;margin-left:20px;">
-        <li style="margin-bottom:6px;">Respect other players and staff</li>
-        <li style="margin-bottom:6px;">Follow proper sportsmanship at all times</li>
-        <li style="margin-bottom:6px;">Avoid any behavior that may cause harm or disturbance</li>
-        <li>Take care of the facilities and equipment</li>
-      </ul>
-      <p style="margin-bottom:16px;">We reserve the right to refuse entry or service to anyone violating these rules.</p>
-
-      <h3 style="font-size:1.1rem;font-weight:700;color:#f8fafc;margin-top:14px;margin-bottom:8px;">6. Safety & Liability</h3>
-      <ul style="margin-bottom:16px;margin-left:20px;">
-        <li style="margin-bottom:6px;">Players participate at their own risk.</li>
-        <li style="margin-bottom:6px;">Pickle Social - Cebu is not liable for any injuries, accidents, or loss of personal belongings during play or within the premises.</li>
-        <li>We encourage all players to warm up properly and follow safety guidelines.</li>
-      </ul>
-
-      <h3 style="font-size:1.1rem;font-weight:700;color:#f8fafc;margin-top:14px;margin-bottom:8px;">7. Facility Rules</h3>
-      <ul style="margin-bottom:16px;margin-left:20px;">
-        <li style="margin-bottom:6px;">Proper sports attire and non-marking shoes are required.</li>
-        <li style="margin-bottom:6px;">Food and drinks may be restricted in certain areas.</li>
-        <li>Any damage to property caused by negligence may result in charges.</li>
-      </ul>
-
-      <h3 style="font-size:1.1rem;font-weight:700;color:#f8fafc;margin-top:14px;margin-bottom:8px;">8. Changes to Terms</h3>
-      <p style="margin-bottom:16px;">
-        We may update or modify these Terms & Conditions at any time without prior notice. Continued use of our services means you accept any changes made.
-      </p>
-
-      <h3 style="font-size:1.1rem;font-weight:700;color:#f8fafc;margin-top:14px;margin-bottom:8px;">9. Contact Us</h3>
-      <p style="margin-bottom:16px;">
-        For questions or concerns regarding these Terms & Conditions, please contact us through our official page or website.
-      </p>
-
-      <div style="margin-top:20px;padding:12px;background:rgba(255,255,255,0.02);border-radius:8px;border-left:3px solid var(--accent);">
-        <p style="margin:0;"><strong style="color:#10b981;">🏓 Pickle Social - Cebu</strong></p>
-        <p style="margin:6px 0 0 0;color:#9ca3af;">📍 Cebu City, Philippines</p>
-        <p style="margin:4px 0 0 0;color:#9ca3af;">Building a strong pickleball community.</p>
-      </div>
-    </div>
-
-    <div class="modal-actions" style="margin-top:16px;">
-      <button class="btn-confirm" onclick="closeTermsModal()" style="width:100%;">Close</button>
-    </div>
-  </div>
-</div>
-
-<!-- CONTACT US MODAL -->
-<div class="modal-overlay" id="contactModal">
-  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="contactTitle">
-    <h2 id="contactTitle" style="color:var(--accent);">Contact Us</h2>
-    <p style="color:#9ca3af;font-size:0.9rem;margin-bottom:16px;">We'd love to hear from you! If you have any questions, booking inquiries, or concerns, feel free to reach out through any of the following channels:</p>
-    
-    <div style="display:flex;flex-direction:column;gap:14px;">
-      <!-- Messenger Button -->
-      <a href="https://www.messenger.com/t/61589519277936" target="_blank" rel="noreferrer" style="display:flex;align-items:center;gap:12px;padding:14px;background:rgba(59, 130, 246, 0.1);border:1px solid rgba(59, 130, 246, 0.3);border-radius:10px;text-decoration:none;color:#3b82f6;transition:all 0.3s;" onmouseover="this.style.background='rgba(59, 130, 246, 0.2)';this.style.borderColor='rgba(59, 130, 246, 0.5)';" onmouseout="this.style.background='rgba(59, 130, 246, 0.1)';this.style.borderColor='rgba(59, 130, 246, 0.3)';">
-        <svg viewBox="0 0 24 24" fill="currentColor" width="24" height="24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-          <path d="M12.01 2C6.48 2 2 5.94 2 10.5c0 2.86 1.76 5.43 4.6 7.05v3.46l3.05-1.68c.8.2 1.64.31 2.46.31 5.53 0 10.01-3.94 10.01-8.5S17.54 2 12.01 2zm1.86 10.19l-1.17-1.27-2.26 1.27 2.26-2.75 1.17 1.27 2.26-1.27-2.26 2.75z"/>
-        </svg>
-        <div>
-          <div style="font-weight:700;color:#3b82f6;">Message on our Facebook Page</div>
-          <div style="font-size:0.85rem;color:#9ca3af;margin-top:2px;">Chat with us directly</div>
+      <div id="receiptScanStatus" style="color:#9ca3af;font-size:0.95rem;">No receipt uploaded yet.</div>
+      <div id="receiptTimer" style="color:#7dd3fc;font-size:0.95rem;margin-top:4px;">Time remaining: 30:00</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+        <div style="padding:12px;border-radius:10px;background:rgba(15,23,42,0.9);">
+          <div style="font-size:0.8rem;color:#9ca3af;margin-bottom:6px;">Expected Booking Ref</div>
+          <div id="receiptBookingRef" style="font-weight:700;color:#fff;">—</div>
         </div>
-      </a>
-
-      <!-- Phone Button -->
-      <a href="tel:+639941321319" style="display:flex;align-items:center;gap:12px;padding:14px;background:rgba(34, 197, 94, 0.1);border:1px solid rgba(34, 197, 94, 0.3);border-radius:10px;text-decoration:none;color:#22c55e;transition:all 0.3s;" onmouseover="this.style.background='rgba(34, 197, 94, 0.2)';this.style.borderColor='rgba(34, 197, 94, 0.5)';" onmouseout="this.style.background='rgba(34, 197, 94, 0.1)';this.style.borderColor='rgba(34, 197, 94, 0.3)';">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="24" height="24" aria-hidden="true">
-          <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
-        </svg>
-        <div>
-          <div style="font-weight:700;color:#22c55e;">Call Us</div>
-          <div style="font-size:0.85rem;color:#9ca3af;margin-top:2px;">0994 132 1319</div>
+        <div style="padding:12px;border-radius:10px;background:rgba(15,23,42,0.9);">
+          <div style="font-size:0.8rem;color:#9ca3af;margin-bottom:6px;">Receipt Reference</div>
+          <div id="receiptRef" style="font-weight:700;color:#fff;">—</div>
         </div>
-      </a>
-
-      <!-- Email Button -->
-      <a href="mailto:picklesocial26@gmail.com" style="display:flex;align-items:center;gap:12px;padding:14px;background:rgba(236, 72, 153, 0.1);border:1px solid rgba(236, 72, 153, 0.3);border-radius:10px;text-decoration:none;color:#ec4899;transition:all 0.3s;" onmouseover="this.style.background='rgba(236, 72, 153, 0.2)';this.style.borderColor='rgba(236, 72, 153, 0.5)';" onmouseout="this.style.background='rgba(236, 72, 153, 0.1)';this.style.borderColor='rgba(236, 72, 153, 0.3)';">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="24" height="24" aria-hidden="true">
-          <rect x="2" y="4" width="20" height="16" rx="2"/>
-          <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
-        </svg>
-        <div>
-          <div style="font-weight:700;color:#ec4899;">Email Us</div>
-          <div style="font-size:0.85rem;color:#9ca3af;margin-top:2px;">picklesocial26@gmail.com</div>
+        <div style="padding:12px;border-radius:10px;background:rgba(15,23,42,0.9);">
+          <div style="font-size:0.8rem;color:#9ca3af;margin-bottom:6px;">Total Amount</div>
+          <div id="receiptAmount" style="font-weight:700;color:#fff;">—</div>
         </div>
-      </a>
-    </div>
-
-    <div style="margin-top:20px;padding:14px;background:rgba(255,255,255,0.02);border-radius:10px;border-left:3px solid var(--accent);">
-      <p style="margin:0;color:#d1d5db;font-size:0.9rem;line-height:1.6;">
-        <strong style="color:#f8fafc;">Response Time:</strong> We aim to respond as quickly as possible during our operating hours. Thank you for choosing Pickle Social - Cebu! 🏓
-      </p>
-    </div>
-
-    <div class="modal-actions" style="margin-top:16px;">
-      <button class="btn-confirm" onclick="closeContactModal()" style="width:100%;">Close</button>
+        <div style="grid-column:1 / -1;padding:12px;border-radius:10px;background:rgba(15,23,42,0.9);">
+          <div style="font-size:0.8rem;color:#9ca3af;margin-bottom:6px;">Date / Time</div>
+          <div id="receiptDateTime" style="font-weight:700;color:#fff;">—</div>
+        </div>
+      </div>
+      <div id="receiptManualFields" style="margin-top:14px;display:grid;gap:12px;">
+      </div>
+      <div id="receiptMismatch" style="color:#fca5a5;font-size:0.95rem;"></div>
+      <div class="modal-actions" style="margin-top:8px;">
+        <button class="btn-cancel" onclick="closeReceiptModal()">Cancel</button>
+        <button class="btn-confirm" id="verifyReceiptBtn" onclick="verifyReceipt()" disabled>Submit Booking</button>
+      </div>
     </div>
   </div>
 </div>
 
 <div class="toast" id="toast"></div>
-
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
