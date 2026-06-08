@@ -8,7 +8,9 @@ let receiptFile = null;
 let receiptBookingReference = '';
 let receiptBookingTotal = 0;
 let receiptRefUploaded = false;
-const TEST_MODE_FORCE_ONE_PHP = true; // Force all booking totals to ₱1 for test purposes
+const SOFT_OPENING_RATE = 350; // Soft opening rate per hour
+const REGULAR_RATE = 450; // Regular rate per hour
+let isRegularRateActive = false; // Set to true to switch to regular rate
 
 function showToast(message) {
   const toast = document.getElementById('toast');
@@ -211,15 +213,15 @@ document.addEventListener("DOMContentLoaded", async () => {
   try {
     const result = await callBackendAPI('check-connection');
     
-    dot.style.background = "#4ade80";
-    dot.style.boxShadow = "0 0 10px #4ade80";
-    label.textContent = "Connected";
-    label.style.color = "#4ade80";
+    if (dot) dot.style.background = "#4ade80";
+    if (dot) dot.style.boxShadow = "0 0 10px #4ade80";
+    if (label) label.textContent = "Connected";
+    if (label) label.style.color = "#4ade80";
   } catch (err) {
     console.error(err);
-    dot.style.background = "#f87171";
-    label.textContent = "Offline Mode";
-    label.style.color = "#f87171";
+    if (dot) dot.style.background = "#f87171";
+    if (label) label.textContent = "Offline Mode";
+    if (label) label.style.color = "#f87171";
   }
 
   // Booked slots cache for the current selectedDate
@@ -352,17 +354,9 @@ document.addEventListener("DOMContentLoaded", async () => {
     return `${DAYS[d.getDay()]}, ${MONTHS[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}`;
   }
 
-  // Day rate: 6AM-6PM (slots starting 6AM through 5PM)
-  // Night rate: 6PM-6AM (slots starting 6PM through 5AM)
-  function getRate(slot) {
-    if (TEST_MODE_FORCE_ONE_PHP) {
-      return 1;
-    }
-    const daySlots = [
-      '6:00 AM', '7:00 AM', '8:00 AM', '9:00 AM', '10:00 AM', '11:00 AM',
-      '12:00 PM', '1:00 PM', '2:00 PM', '3:00 PM', '4:00 PM', '5:00 PM'
-    ];
-    return daySlots.some(t => slot.startsWith(t)) ? 450 : 500;
+  // Fixed rate per hour - manually switch between soft opening and regular
+  function getRate(slot, dateStr) {
+    return isRegularRateActive ? REGULAR_RATE : SOFT_OPENING_RATE;
   }
 
   // Helper function to check if a slot is in the past
@@ -474,6 +468,29 @@ document.addEventListener("DOMContentLoaded", async () => {
     loadAndRenderTable();
   };
 
+  function updatePendingTimerButtons() {
+    const now = Date.now();
+    const thirtyMins = 30 * 60 * 1000;
+    const pendingButtons = document.querySelectorAll('.slot-pending');
+    let needsRerender = false;
+
+    pendingButtons.forEach(btn => {
+      const slotKey = btn.dataset.slotKey;
+      if (!slotKey) return;
+      const start = pendingSlotsWithTimer[slotKey];
+      if (!start || now - start >= thirtyMins) {
+        delete pendingSlotsWithTimer[slotKey];
+        needsRerender = true;
+        return;
+      }
+      btn.textContent = `PENDING\n${getRemainingTime(start)}`;
+    });
+
+    if (needsRerender) {
+      renderTable();
+    }
+  }
+
   function renderTable() {
     const dk = dateKey(selectedDate);
     document.getElementById('selectedDateLabel').textContent = formatDateDisplay(selectedDate);
@@ -507,6 +524,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         // Check if slot is pending (receipt uploaded, awaiting admin confirmation)
         else if (pendingSlotsWithTimer[key] && (Date.now() - pendingSlotsWithTimer[key]) < 30 * 60 * 1000) {
           btn.classList.add('slot-pending');
+          btn.dataset.slotKey = key;
           const remaining = getRemainingTime(pendingSlotsWithTimer[key]);
           btn.textContent = `PENDING\n${remaining}`;
           btn.style.whiteSpace = 'pre-wrap';
@@ -533,7 +551,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             selectedSlots.add(key);
           }
           updateCart();
-          renderTable();
+          debounceRenderTable();
         };
 
         tdC.appendChild(btn);
@@ -547,7 +565,8 @@ document.addEventListener("DOMContentLoaded", async () => {
   function updateCart() {
     const count = selectedSlots.size;
     const total = [...selectedSlots].reduce((sum, key) => {
-      return sum + getRate(key.split('|')[1]);
+      const parts = key.split('|');
+      return sum + getRate(parts[1], parts[0]);
     }, 0);
 
     document.getElementById('cartCount').textContent = `${count} slot${count !== 1 ? 's' : ''} selected`;
@@ -600,7 +619,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       const slot = parts[1];
       const courtIndex = parseInt(parts[2], 10);
       const court = COURTS[courtIndex] || 'Court';
-      const price = getRate(slot);
+      const price = getRate(slot, date);
       total += price;
 
       const card = document.createElement('div');
@@ -656,18 +675,24 @@ document.addEventListener("DOMContentLoaded", async () => {
     const section = document.getElementById('successPaySection');
     const nextSteps = document.querySelector('.next-steps-card');
     const messengerBtn = document.querySelector('.btn-messenger');
+    const bookingRefCard = document.getElementById('bookingRefCardContainer');
+    const bookingRefCardBottom = document.getElementById('bookingRefCardContainerBottom');
     const actionText = document.getElementById('successPayActionText');
     if (!checkbox || !section || !nextSteps) return;
     if (checkbox.checked) {
       section.style.display = 'block';
       nextSteps.style.display = 'grid';
       if (messengerBtn) messengerBtn.style.display = 'inline-flex';
+      if (bookingRefCard) bookingRefCard.style.display = 'block';
+      if (bookingRefCardBottom) bookingRefCardBottom.style.display = 'block';
       if (actionText) actionText.textContent = 'You may now scan the QR code and upload your payment receipt to complete this booking.';
       await downloadBookingConfirmationImage();
     } else {
       section.style.display = 'none';
       nextSteps.style.display = 'none';
       if (messengerBtn) messengerBtn.style.display = 'none';
+      if (bookingRefCard) bookingRefCard.style.display = 'none';
+      if (bookingRefCardBottom) bookingRefCardBottom.style.display = 'none';
       if (actionText) actionText.textContent = 'Check the box to reveal the scan-to-pay section and upload your receipt proof.';
     }
   };
@@ -752,7 +777,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     const dateEl = document.getElementById('successDate');
     const timeEl = document.getElementById('successTime');
     const paidTotalEl = document.getElementById('successPaidTotal');
-    const refCodeEl = document.getElementById('bookingRefCode');
+    const refCodeEl = document.getElementById('successRefDisplay');
+    const refCodeBottomEl = document.getElementById('successRefDisplayBottom');
     const statusEl = document.getElementById('successBookingStatus');
     const expiryEl = document.getElementById('successExpiryNote');
     const saveCopyCheckbox = document.getElementById('successSaveCopy');
@@ -762,6 +788,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (titleEl) titleEl.textContent = 'Booking Submitted!';
     if (messageEl) messageEl.textContent = 'Save a copy of this confirmation. When you are ready, scan to pay and upload your receipt proof.';
     if (refCodeEl) refCodeEl.textContent = reference;
+    if (refCodeBottomEl) refCodeBottomEl.textContent = reference;
     if (statusEl) statusEl.textContent = 'PENDING';
     if (expiryEl) expiryEl.textContent = 'Expires in 4 hours if not confirmed';
     if (actionText) actionText.textContent = 'Check the box to reveal the scan-to-pay section and upload your receipt proof.';
@@ -817,6 +844,16 @@ document.addEventListener("DOMContentLoaded", async () => {
   window.closeSuccessModal = function() {
     document.getElementById('successModal').classList.remove('open');
     bookingSubmissionTime = null; // Reset timer when modal closes
+  };
+
+  window.copyBookingReference = function() {
+    const refCode = document.getElementById('successRefDisplay')?.textContent || document.getElementById('successRefDisplayBottom')?.textContent || receiptBookingReference || 'PKL-000000';
+    navigator.clipboard.writeText(refCode).then(() => {
+      showToast(`✅ Copied: ${refCode}`);
+    }).catch(err => {
+      console.error('Failed to copy:', err);
+      showToast('Failed to copy booking reference');
+    });
   };
 
   window.handleDoneBooking = async function() {
@@ -971,8 +1008,8 @@ Phone: ${firstBooking.phone_number || ''}
           time_slot: slot,
           court_name: COURTS[parseInt(courtIndex)],
           court: COURTS[parseInt(courtIndex)],
-          price: getRate(slot),
-          rate: getRate(slot),
+          price: getRate(slot, date),
+          rate: getRate(slot, date),
           status: 'pending',
           fromExistingBooking: false,
           persistedInDb: false
@@ -1270,25 +1307,7 @@ Phone: ${firstBooking.phone_number || ''}
 
   // Refresh available slots from server and re-render table
   window.refreshSlots = async function() {
-    try {
-      const refreshBtn = document.getElementById('refreshBtn');
-      if (refreshBtn) {
-        refreshBtn.disabled = true;
-        const prev = refreshBtn.textContent;
-        refreshBtn.textContent = 'Refreshing...';
-        await loadAndRenderTable();
-        refreshBtn.textContent = prev || 'Refresh';
-        refreshBtn.disabled = false;
-      } else {
-        await loadAndRenderTable();
-      }
-      showToast('Slots refreshed');
-    } catch (err) {
-      console.error('Failed to refresh slots', err);
-      showToast('Failed to refresh slots');
-      const refreshBtn = document.getElementById('refreshBtn');
-      if (refreshBtn) refreshBtn.disabled = false;
-    }
+    location.reload();
   };
 
   window.openReceiptModal = function(reference, totalAmount) {
@@ -1794,14 +1813,16 @@ Phone: ${firstBooking.phone_number || ''}
     const successTimeEl = document.getElementById('successTime');
     const successPaidTotalEl = document.getElementById('successPaidTotal');
     const scanTitleAmountEl = document.getElementById('scanTitleAmount');
-    const bookingRefCodeEl = document.getElementById('bookingRefCode');
+    const successRefDisplayEl = document.getElementById('successRefDisplay');
+    const successRefDisplayBottomEl = document.getElementById('successRefDisplayBottom');
 
     if (successCourtEl) successCourtEl.textContent = successCourt;
     if (successDateEl) successDateEl.textContent = successDate;
     if (successTimeEl) successTimeEl.textContent = successTime;
     if (successPaidTotalEl) successPaidTotalEl.textContent = successPaidTotal;
     if (scanTitleAmountEl) scanTitleAmountEl.textContent = successPaidTotal;
-    if (bookingRefCodeEl) bookingRefCodeEl.textContent = receiptBookingReference;
+    if (successRefDisplayEl) successRefDisplayEl.textContent = receiptBookingReference;
+    if (successRefDisplayBottomEl) successRefDisplayBottomEl.textContent = receiptBookingReference;
     renderSuccessBookingItems(entriesToRender);
     document.getElementById('successModal').classList.add('open');
     bookingSubmissionTime = Date.now();
@@ -1829,6 +1850,14 @@ Phone: ${firstBooking.phone_number || ''}
   let bookingSubmissionTime = null;
   // Polling interval id for checking backend confirmations of pending slots
   let pendingPollInterval = null;
+  let renderTableTimeout = null;
+  
+  function debounceRenderTable() {
+    clearTimeout(renderTableTimeout);
+    renderTableTimeout = setTimeout(() => {
+      renderTable();
+    }, 50);
+  }
 
   function startPendingPoll() {
     if (pendingPollInterval) return;
@@ -1843,7 +1872,7 @@ Phone: ${firstBooking.phone_number || ''}
       } catch (e) {
         console.error('Pending poll load failed', e);
       }
-    }, 5000); // poll every 5s while pending slots exist
+    }, 10000); // poll every 10s (reduced from 5s) while pending slots exist
   }
 
   // Update timer display every second
@@ -1851,16 +1880,19 @@ Phone: ${firstBooking.phone_number || ''}
     const now = Date.now();
     const thirtyMins = 30 * 60 * 1000;
     const fifteenMins = 15 * 60 * 1000;
-    
-    // Update pending slots timer (30 minutes)
+    let tableNeedsRefresh = false;
+
+    // Remove expired pending timers and update button labels directly.
     Object.keys(pendingSlotsWithTimer).forEach(key => {
       if (now - pendingSlotsWithTimer[key] >= thirtyMins) {
         delete pendingSlotsWithTimer[key];
+        tableNeedsRefresh = true;
       }
     });
 
-    // Re-render pending slots every second so the timer countdown stays live.
     if (Object.keys(pendingSlotsWithTimer).length > 0) {
+      updatePendingTimerButtons();
+    } else if (tableNeedsRefresh) {
       renderTable();
     }
 
