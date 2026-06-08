@@ -12,74 +12,17 @@ const SOFT_OPENING_RATE = 350; // Soft opening rate per hour
 const REGULAR_RATE = 450; // Regular rate per hour
 let isRegularRateActive = false; // Set to true to switch to regular rate
 
-function openAboutModal() {
-  const modal = document.getElementById('aboutModal');
-  if (modal) modal.style.display = 'flex';
-}
-
-function closeAboutModal() {
-  const modal = document.getElementById('aboutModal');
-  if (modal) modal.style.display = 'none';
-}
-
-function openPrivacyModal() {
-  const modal = document.getElementById('privacyModal');
-  if (modal) modal.style.display = 'flex';
-}
-
-function closePrivacyModal() {
-  const modal = document.getElementById('privacyModal');
-  if (modal) modal.style.display = 'none';
-}
-
-function openTermsModal() {
-  const modal = document.getElementById('termsModal');
-  if (modal) modal.style.display = 'flex';
-}
-
-function closeTermsModal() {
-  const modal = document.getElementById('termsModal');
-  if (modal) modal.style.display = 'none';
-}
-
-function openContactModal() {
-  const modal = document.getElementById('contactModal');
-  if (modal) modal.style.display = 'flex';
-}
-
-function closeContactModal() {
-  const modal = document.getElementById('contactModal');
-  if (modal) modal.style.display = 'none';
-}
-
-function showToast(message, isHtml = false) {
+function showToast(message) {
   const toast = document.getElementById('toast');
   if (!toast) {
     console.warn('Toast element not found:', message);
     return;
   }
-  if (isHtml) {
-    toast.innerHTML = message;
-  } else {
-    toast.textContent = message;
-  }
+  toast.textContent = message;
   toast.classList.add('show');
   setTimeout(() => {
     toast.classList.remove('show');
   }, 3000);
-}
-
-function showBookingUpdateToast() {
-  const message = `
-    <div style="text-align:center;">
-      <div style="font-size:1.5rem;margin-bottom:8px;">⚠️</div>
-      <div style="font-weight:700;font-size:1.1rem;margin-bottom:10px;color:#fbbf24;">Booking Update</div>
-      <div style="font-size:0.95rem;line-height:1.6;margin-bottom:10px;">Your selected date and time has already been reserved by another player.</div>
-      <div style="font-size:0.95rem;line-height:1.6;margin-bottom:10px;">Please click <strong>Refresh</strong> and choose another available schedule.</div>
-      <div style="font-size:0.9rem;color:#a1a1a1;">Thank you for your understanding and support! 🏓</div>
-    </div>
-  `;
-  showToast(message, true);
 }
 
 function updateSuccessReceiptUploadState() {
@@ -295,11 +238,11 @@ document.addEventListener("DOMContentLoaded", async () => {
       .substring(0, 2);
   }
 
-  // Helper function to get remaining time for pending slots (1 hour)
+  // Helper function to get remaining time for pending slots (30 mins)
   function getRemainingTime(timestamp) {
     const now = Date.now();
     const elapsed = now - timestamp;
-    const thirtyMins = 60 * 60 * 1000;
+    const thirtyMins = 30 * 60 * 1000;
     if (elapsed >= thirtyMins) return '0:00';
     const remaining = thirtyMins - elapsed;
     const mins = Math.floor(remaining / 60000);
@@ -329,8 +272,8 @@ document.addEventListener("DOMContentLoaded", async () => {
               } catch (e) {
                 ts = Date.now();
               }
-              // Only set pending timer if still within 1 hour window
-              const thirtyMins = 60 * 60 * 1000;
+              // Only set pending timer if still within 30 minutes window
+              const thirtyMins = 30 * 60 * 1000;
               if ((Date.now() - ts) < thirtyMins) {
                 pendingSlotsWithTimer[key] = ts;
               } else {
@@ -527,7 +470,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   function updatePendingTimerButtons() {
     const now = Date.now();
-    const thirtyMins = 60 * 60 * 1000;
+    const thirtyMins = 30 * 60 * 1000;
     const pendingButtons = document.querySelectorAll('.slot-pending');
     let needsRerender = false;
 
@@ -579,7 +522,7 @@ document.addEventListener("DOMContentLoaded", async () => {
           btn.disabled = true;
         }
         // Check if slot is pending (receipt uploaded, awaiting admin confirmation)
-        else if (pendingSlotsWithTimer[key] && (Date.now() - pendingSlotsWithTimer[key]) < 60 * 60 * 1000) {
+        else if (pendingSlotsWithTimer[key] && (Date.now() - pendingSlotsWithTimer[key]) < 30 * 60 * 1000) {
           btn.classList.add('slot-pending');
           btn.dataset.slotKey = key;
           const remaining = getRemainingTime(pendingSlotsWithTimer[key]);
@@ -735,10 +678,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const bookingRefCard = document.getElementById('bookingRefCardContainer');
     const bookingRefCardBottom = document.getElementById('bookingRefCardContainerBottom');
     const actionText = document.getElementById('successPayActionText');
-    const doneBtn = document.getElementById('successDoneBtn');
-    
     if (!checkbox || !section || !nextSteps) return;
-    
     if (checkbox.checked) {
       section.style.display = 'block';
       nextSteps.style.display = 'grid';
@@ -746,11 +686,6 @@ document.addEventListener("DOMContentLoaded", async () => {
       if (bookingRefCard) bookingRefCard.style.display = 'block';
       if (bookingRefCardBottom) bookingRefCardBottom.style.display = 'block';
       if (actionText) actionText.textContent = 'You may now scan the QR code and upload your payment receipt to complete this booking.';
-      if (doneBtn) {
-        doneBtn.disabled = false;
-        doneBtn.style.opacity = '1';
-        doneBtn.style.cursor = 'pointer';
-      }
       await downloadBookingConfirmationImage();
     } else {
       section.style.display = 'none';
@@ -759,11 +694,6 @@ document.addEventListener("DOMContentLoaded", async () => {
       if (bookingRefCard) bookingRefCard.style.display = 'none';
       if (bookingRefCardBottom) bookingRefCardBottom.style.display = 'none';
       if (actionText) actionText.textContent = 'Check the box to reveal the scan-to-pay section and upload your receipt proof.';
-      if (doneBtn) {
-        doneBtn.disabled = true;
-        doneBtn.style.opacity = '0.5';
-        doneBtn.style.cursor = 'not-allowed';
-      }
     }
   };
 
@@ -911,16 +841,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     document.getElementById('bookingModal').classList.remove('open');
   };
 
-  window.openSuccessModal = function() {
-    // Use the booking reference and total from the search result
-    if (receiptBookingReference && receiptBookingTotal) {
-      openBookingSubmittedModal(receiptBookingReference, receiptBookingTotal);
-    } else {
-      console.warn('No booking reference or amount found');
-      showToast('Please search for a booking first');
-    }
-  };
-
   window.closeSuccessModal = function() {
     document.getElementById('successModal').classList.remove('open');
     bookingSubmissionTime = null; // Reset timer when modal closes
@@ -937,13 +857,6 @@ document.addEventListener("DOMContentLoaded", async () => {
   };
 
   window.handleDoneBooking = async function() {
-    // Check if checkbox is checked
-    const checkbox = document.getElementById('successSaveCopy');
-    if (!checkbox || !checkbox.checked) {
-      showToast('Please click the checkbox first to save and proceed.');
-      return;
-    }
-    
     // Check if receipt was uploaded
     const receiptUploaded = receiptRefUploaded === true;
     const currentRef = receiptBookingReference;
@@ -1135,7 +1048,7 @@ Phone: ${firstBooking.phone_number || ''}
         });
       } catch (err) {
         console.error('Error saving pending booking:', err);
-        showBookingUpdateToast();
+        showToast('❌ Failed to save booking. Please try again.');
         if (confirmBtn) {
           confirmBtn.disabled = false;
           confirmBtn.textContent = 'Next';
@@ -1431,9 +1344,9 @@ Phone: ${firstBooking.phone_number || ''}
     if (previewImg) previewImg.src = '';
     if (removeBtn) removeBtn.style.display = 'none';
     const timerField = document.getElementById('receiptTimer');
-    if (timerField) timerField.textContent = 'Time remaining: 60:00';
+    if (timerField) timerField.textContent = 'Time remaining: 30:00';
 
-    const expiry = Date.now() + 60 * 60 * 1000;
+    const expiry = Date.now() + 30 * 60 * 1000;
     receiptTimerInterval = setInterval(() => {
       const remainingMs = expiry - Date.now();
       if (remainingMs <= 0) {
@@ -1451,7 +1364,7 @@ Phone: ${firstBooking.phone_number || ''}
       clearReceiptModalTimer();
       closeReceiptModal();
       showToast('Payment time expired. Please reopen the receipt upload and try again.');
-    }, 60 * 60 * 1000);
+    }, 30 * 60 * 1000);
 
     document.getElementById('receiptModal').classList.add('open');
   };
@@ -1965,7 +1878,7 @@ Phone: ${firstBooking.phone_number || ''}
   // Update timer display every second
   setInterval(() => {
     const now = Date.now();
-    const thirtyMins = 60 * 60 * 1000;
+    const thirtyMins = 30 * 60 * 1000;
     const fifteenMins = 15 * 60 * 1000;
     let tableNeedsRefresh = false;
 
