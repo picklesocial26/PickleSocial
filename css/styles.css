@@ -205,10 +205,11 @@
     .footer-bottom { border-top: 1px solid rgba(255,255,255,0.06); text-align: center; padding: 14px 20px; font-size: 0.8rem; color: var(--muted); }
 
     /* MODAL */
-    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 1000; align-items: center; justify-content: center; contain: layout style paint; }
-    .modal-overlay.open { display: flex; }
-    .modal { background: linear-gradient(135deg, rgba(15,23,42,0.97), rgba(12,17,28,0.99)); border: 1px solid rgba(236,72,153,0.2); border-radius: 18px; width: 90%; max-width: 500px; padding: 28px; box-shadow: 0 20px 60px rgba(0,0,0,0.4), inset 0 1px 1px rgba(255,255,255,0.05); animation: slideUp 0.15s ease; max-height: 90vh; overflow-y: auto; contain: layout style paint; }
-    @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 1000; align-items: center; justify-content: center; contain: layout style paint; opacity: 0; transition: opacity 0.2s ease; }
+    .modal-overlay.open { display: flex; opacity: 1; }
+    .modal { background: linear-gradient(135deg, rgba(15,23,42,0.97), rgba(12,17,28,0.99)); border: 1px solid rgba(236,72,153,0.2); border-radius: 18px; width: 90%; max-width: 500px; padding: 28px; box-shadow: 0 20px 60px rgba(0,0,0,0.4), inset 0 1px 1px rgba(255,255,255,0.05); max-height: 90vh; overflow-y: auto; contain: layout style paint; opacity: 0; transition: opacity 0.2s ease; }
+    .modal-overlay.open .modal { opacity: 1; }
+    @keyframes slideUp { from { opacity: 0; } to { opacity: 1; } }
     .modal-top { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
     .modal-top .check-icon { width: 36px; height: 36px; background: rgba(236,72,153,0.14); border: 1px solid rgba(236,72,153,0.32); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--accent); font-size: 1rem; }
     .modal h2 { font-size: 1.25rem; font-weight: 800; color: white; }
@@ -664,8 +665,41 @@
       .policies-section { padding: 16px; }
       .desktop-only { display: none !important; }
       .mobile-only { display: inline !important; }
+      .messenger-fab { bottom: 140px; right: 16px; width: 44px; height: 44px; }
+      .messenger-fab svg { width: 18px; height: 18px; }
     }
     @media (min-width: 769px) {
       .desktop-only { display: inline !important; }
       .mobile-only { display: none !important; }
+    }
+
+    /* Optimized Success Modal - Simplified Animations */
+    .success-checkmark {
+      animation: fadeInScale 0.5s ease-out;
+      will-change: opacity;
+    }
+
+    @keyframes fadeInScale {
+      from {
+        opacity: 0;
+        transform: scale(0.9);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    /* Interactive booking ref card - CSS hover instead of inline JS */
+    .booking-ref-interactive {
+      cursor: pointer;
+      transition: opacity 0.2s ease;
+    }
+
+    .booking-ref-interactive:hover {
+      opacity: 0.8;
+    }
+
+    .booking-ref-interactive:active {
+      opacity: 0.7;
     }

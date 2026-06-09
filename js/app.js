@@ -4,10 +4,8 @@ let selectedSlots = new Set();
 let supabaseClient = null;
 let pendingBookingEntries = [];
 let pendingSlotsWithTimer = {}; // Track pending slots with timestamps
-let receiptFile = null;
-let receiptBookingReference = '';
-let receiptBookingTotal = 0;
-let receiptRefUploaded = false;
+let searchedBookingReference = ''; // Store searched reference for success modal
+let searchedBookingData = null; // Store searched booking data
 const SOFT_OPENING_RATE = 350; // Soft opening rate per hour
 const REGULAR_RATE = 450; // Regular rate per hour
 let isRegularRateActive = false; // Set to true to switch to regular rate
@@ -76,9 +74,82 @@ function closeContactUsModal() {
   if (modal) modal.classList.remove('open');
 }
 
+function populateSuccessModal() {
+  if (!searchedBookingData || searchedBookingData.length === 0) {
+    console.warn('No booking data to populate');
+    return;
+  }
+
+  const totalAmount = searchedBookingData.reduce((sum, b) => sum + (b.price || b.rate || 0), 0);
+  const firstBooking = searchedBookingData[0];
+  
+  // Populate basic info
+  document.getElementById('successName').textContent = firstBooking.customer_name || '—';
+  
+  let displayDate = 'N/A';
+  try {
+    if (firstBooking.booking_date) {
+      displayDate = formatDateDisplay(firstBooking.booking_date);
+    }
+  } catch (dateErr) {
+    displayDate = firstBooking.booking_date || 'N/A';
+  }
+  document.getElementById('successDate').textContent = displayDate;
+  document.getElementById('successPaidTotal').textContent = '₱' + totalAmount.toFixed(2);
+  document.getElementById('scanTitleAmount').textContent = '₱' + totalAmount.toFixed(2);
+  document.getElementById('successRefDisplay').textContent = searchedBookingReference;
+  
+  // Populate booking items (courts and times)
+  const courtGroups = {};
+  searchedBookingData.forEach(booking => {
+    const courtName = booking.court_name || booking.court || 'Court';
+    const timeSlot = booking.time_slot || booking.booking_time || 'Unknown time';
+    if (!courtGroups[courtName]) {
+      courtGroups[courtName] = [];
+    }
+    courtGroups[courtName].push(timeSlot);
+  });
+
+  const bookingItemsHtml = Object.entries(courtGroups).map(([court, times]) => {
+    const sortedTimes = times.slice().sort();
+    const timesHtml = sortedTimes.map((time, index) => {
+      const timeEmojis = ['🕚', '🕛', '🕐', '🕑', '🕒', '🕓', '🕔', '🕕', '🕖', '🕗', '🕘', '🕙'];
+      return `
+        <div style="display:flex;align-items:center;gap:8px;margin:6px 0;">
+          <span>${timeEmojis[index % timeEmojis.length]}</span>
+          <span style="color:#f8fafc;font-size:0.95rem;">${time}</span>
+        </div>
+      `;
+    }).join('');
+    
+    return `
+      <div style="padding:12px;border-radius:12px;border:1px solid rgba(236,72,153,0.14);background:rgba(255,255,255,0.03);margin-bottom:10px;">
+        <div style="font-weight:700;color:#f8fafc;margin-bottom:8px;">🏟️ ${court}</div>
+        ${timesHtml}
+      </div>
+    `;
+  }).join('');
+
+  document.getElementById('successBookingItems').innerHTML = bookingItemsHtml;
+  
+  // Update expiry note
+  document.getElementById('successExpiryNote').textContent = 'Expires in 60 minutes to pay';
+}
+
+function openSuccessModal() {
+  populateSuccessModal();
+  const modal = document.getElementById('successModal');
+  if (modal) modal.classList.add('open');
+}
+
+function closeSuccessModal() {
+  const modal = document.getElementById('successModal');
+  if (modal) modal.classList.remove('open');
+}
+
 // Close modals when clicking on overlay
 document.addEventListener('DOMContentLoaded', function() {
-  const modals = ['aboutUsModal', 'privacyPolicyModal', 'termsModal', 'contactUsModal'];
+  const modals = ['aboutUsModal', 'privacyPolicyModal', 'termsModal', 'contactUsModal', 'successModal'];
   
   modals.forEach(modalId => {
     const modal = document.getElementById(modalId);
@@ -89,47 +160,13 @@ document.addEventListener('DOMContentLoaded', function() {
           else if (modalId === 'privacyPolicyModal') closePrivacyPolicyModal();
           else if (modalId === 'termsModal') closeTermsModal();
           else if (modalId === 'contactUsModal') closeContactUsModal();
+          else if (modalId === 'successModal') closeSuccessModal();
         }
       });
     }
   });
 });
 
-
-function updateSuccessReceiptUploadState() {
-  // Receipt upload state tracking removed
-}
-
-async function uploadReceiptImage(file, reference) {
-  if (!supabaseClient || !file) return null;
-
-  const extension = file.name.split('.').pop().toLowerCase() || 'jpg';
-  const safeReference = reference.replace(/[^a-zA-Z0-9_-]/g, '_');
-  const filePath = `receipts/${safeReference}_${Date.now()}.${extension}`;
-
-  const { data, error } = await supabaseClient.storage
-    .from('receipts')
-    .upload(filePath, file, { cacheControl: '3600', upsert: false });
-
-  if (error) {
-    console.error('Receipt upload failed', error);
-    const message = error?.message || 'Receipt upload failed. Check your Supabase storage policy.';
-    showToast(message);
-    return null;
-  }
-
-  const { data: publicData, error: publicError } = await supabaseClient.storage
-    .from('receipts')
-    .getPublicUrl(filePath);
-
-  if (publicError) {
-    console.error('Could not get public URL for receipt', publicError);
-    showToast('Could not get receipt URL after upload.');
-    return null;
-  }
-
-  return publicData?.publicUrl || null;
-}
 
 document.addEventListener("DOMContentLoaded", async () => {
   // Remove direct Supabase client - now using backend API
@@ -1303,6 +1340,8 @@ Phone: ${firstBooking.phone_number || ''}
         `;
         if (payBtn) payBtn.style.display = 'inline-block';
         receiptBookingTotal = totalAmount;
+        searchedBookingReference = ref;
+        searchedBookingData = result.bookings;
 
         pendingBookingEntries = result.bookings.map(booking => ({
           booking_date: booking.booking_date,
