@@ -1,669 +1,363 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>Pickle Social - Cebu</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/jpeg" href="./logo.jpeg">
+    <title>Maintenance - Pickle Social</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="preconnect"/>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
-<link rel="icon" href="logo.jpeg" type="image/jpeg">
+        html, body {
+            width: 100%;
+            height: 100%;
+            min-height: 100vh;
+        }
 
-<link rel="stylesheet" href="css/styles.css">
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', sans-serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a0f1a 20%, #0d0d0f 50%, #0a1515 80%, #000000 100%);
+            color: #e5e7eb;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
 
-<style>
-  @keyframes checkPopIn {
-    0% { transform: scale(0.3); opacity: 0; }
-    100% { transform: scale(1); opacity: 1; will-change: auto; }
-  }
-  @keyframes circleDraw {
-    to { stroke-dashoffset: 0; }
-  }
-  @keyframes circleFill {
-    to { opacity: 0.1; }
-  }
-  @keyframes checkDraw {
-    to { stroke-dashoffset: 0; }
-  }
-  @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-  }
-  .maintenance-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(135deg, #1e293b, #0f172a);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 10000;
-    contain: layout style paint;
-  }
-  .maintenance-content {
-    text-align: center;
-    color: #f8fafc;
-  }
-  .maintenance-logo {
-    width: 120px;
-    height: 120px;
-    margin-bottom: 30px;
-    animation: spin 2s linear infinite;
-    will-change: transform;
-  }
-  .maintenance-title {
-    font-size: 48px;
-    font-weight: 800;
-    margin-bottom: 12px;
-    background: linear-gradient(135deg, #ec4899, #2dd4bf);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-  .maintenance-subtitle {
-    font-size: 20px;
-    color: #cbd5e1;
-    margin-bottom: 24px;
-  }
-  .maintenance-message {
-    font-size: 16px;
-    color: #94a3b8;
-    max-width: 400px;
-    margin: 0 auto;
-  }
-</style>
+        .maintenance-container {
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 24px;
+            padding: 40px 60px;
+            text-align: center;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        .left-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            max-width: 700px;
+        }
+
+        .right-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            max-width: 550px;
+        }
+
+        .logo-container {
+            width: 120px;
+            height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .logo-container img {
+            width: 100%;
+            height: auto;
+            border-radius: 18px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+        }
+
+        .brand-text {
+            text-align: center;
+            margin-bottom: 12px;
+        }
+
+        .brand-text h2 {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: #f8fafc;
+            margin-bottom: 0;
+            letter-spacing: -0.3px;
+        }
+
+        .brand-text p {
+            font-size: 0.9rem;
+            color: #9ca3af;
+            font-weight: 400;
+            letter-spacing: 0.6px;
+            text-transform: uppercase;
+        }
+
+        .maintenance-icon {
+            display: none;
+        }
+
+        .thank-you-section {
+            text-align: center;
+            margin-top: 12px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(236, 72, 153, 0.1);
+        }
+
+        .thank-you-icon {
+            display: none;
+        }
+
+        .thank-you-section p {
+            color: #d1d5db;
+            font-size: 0.95rem;
+            line-height: 1.8;
+            margin-bottom: 10px;
+            font-weight: 300;
+        }
+
+        .facebook-section {
+            text-align: center;
+            padding-top: 12px;
+        }
+
+        .facebook-label {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.18em;
+            color: #6b7280;
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+
+        .facebook-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 14px 32px;
+            background: linear-gradient(135deg, #ec4899 0%, #db2777 100%);
+            color: #fff;
+            text-decoration: none;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            border: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 24px rgba(236, 72, 153, 0.25);
+            cursor: pointer;
+            letter-spacing: 0.3px;
+        }
+
+        .facebook-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 32px rgba(236, 72, 153, 0.35);
+        }
+
+        .facebook-btn:active {
+            transform: translateY(-1px);
+        }
+
+        .facebook-icon {
+            width: 18px;
+            height: 18px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .status-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 16px;
+            background: rgba(236, 72, 153, 0.08);
+            border: 1px solid rgba(236, 72, 153, 0.15);
+            border-radius: 12px;
+            font-size: 0.85rem;
+            color: #9ca3af;
+            font-weight: 500;
+            letter-spacing: 0.4px;
+            margin-top: 8px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #ec4899;
+            animation: blink 2s ease-in-out infinite;
+        }
+
+        .pickleball-animation {
+            width: 70px;
+            height: 70px;
+            margin-top: 8px;
+            object-fit: contain;
+            animation: roll 4s ease-in-out infinite;
+        }
+
+        @keyframes roll {
+            0%, 100% {
+                transform: translateX(-200px) rotateZ(0deg);
+            }
+            50% {
+                transform: translateX(200px) rotateZ(360deg);
+            }
+        }
+
+        @keyframes blink {
+            0%, 100% {
+                opacity: 0.6;
+            }
+            50% {
+                opacity: 1;
+            }
+        }
+
+        @media (max-width: 1200px) {
+            .maintenance-container {
+                gap: 40px;
+                padding: 40px;
+            }
+
+            h1 {
+                font-size: 2.8rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .maintenance-container {
+                padding: 20px 15px;
+                gap: 16px;
+                height: auto;
+                min-height: 100vh;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            .maintenance-title {
+                font-size: 1.1rem;
+            }
+
+            .logo-container {
+                width: 100px;
+                height: 100px;
+            }
+
+            .brand-text h2 {
+                font-size: 1.2rem;
+            }
+
+            .maintenance-message {
+                font-size: 0.95rem;
+            }
+
+            .facebook-btn {
+                padding: 12px 24px;
+                font-size: 0.9rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .maintenance-container {
+                padding: 20px;
+                gap: 12px;
+                min-height: auto;
+            }
+
+            h1 {
+                font-size: 1.6rem;
+            }
+
+            .maintenance-title {
+                font-size: 1rem;
+                margin-bottom: 12px;
+            }
+
+            .maintenance-message {
+                font-size: 0.9rem;
+            }
+
+            .logo-container {
+                width: 80px;
+                height: 80px;
+            }
+
+            .brand-text h2 {
+                font-size: 1rem;
+            }
+
+            .facebook-btn {
+                width: 100%;
+                padding: 12px 16px;
+                font-size: 0.85rem;
+            }
+        }
+    </style>
 </head>
-
 <body>
-
-<!-- MAINTENANCE MODE OVERLAY -->
-<div class="maintenance-overlay" id="maintenanceOverlay" style="display:none;">
-  <div class="maintenance-content">
-    <img src="logo.jpeg" alt="Pickle Social" class="maintenance-logo">
-    <div class="maintenance-title">Updating the Web</div>
-    <div class="maintenance-subtitle">We're making improvements</div>
-    <div class="maintenance-message">Our service is temporarily under maintenance. We'll be back online shortly. Thank you for your patience!</div>
-  </div>
-</div>
-
-<script>
-  // Check maintenance mode on load
-  if (localStorage.getItem('maintenanceMode') === 'true') {
-    document.getElementById('maintenanceOverlay').style.display = 'flex';
-    document.body.style.overflow = 'hidden';
-  }
-</script>
-
-<nav>
-  <div class="nav-brand">
-    <img src="logo.jpeg" alt="Pickle Social logo" class="nav-logo">
-    Pickle Social <span>Cebu</span>
-  </div>
-  <button class="hamburger" aria-label="Open search" onclick="openModal()">
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-      <path d="M3 6h18M3 12h18M3 18h18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-    </svg>
-  </button>
-  <div class="nav-actions">
-    <button class="btn-primary" onclick="openModal()" aria-label="Search Booking">
-      <svg class="icon-search" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-        <path d="M11 4a7 7 0 1 0 4.95 11.95l4.54 4.54 1.41-1.41-4.54-4.54A7 7 0 0 0 11 4zm0 2a5 5 0 1 1 0 10A5 5 0 0 1 11 6z" />
-      </svg>
-      Search Booking
-    </button>
-  </div>
-</nav>
-
-<div class="hero-banner">
-  <img src="banner.jpeg" alt="Pickle Social banner" class="hero-banner-image">
-</div>
-
-<main>
-  <div class="photo-grid">
-    <div class="main-photo">
-      <span class="court-label">📸 Court View</span>
-    </div>
-    <div class="photo-mini"></div>
-    <div class="photo-mini"></div>
-    <div class="photo-mini"></div>
-    <div class="photo-mini"></div>
-  </div>
-
-  <div class="venue-header">
-    <h1>Book a Court at Pickle Social - Cebu</h1>
-    <div class="venue-meta">
-      <span>📍 <a href="https://maps.app.goo.gl/ewXraZnbkGZVhZsX6" target="_blank" rel="noreferrer" style="color:#2dd4bf;">Pickle Social - Cebu, Barangay Pang Pang, Talisay, 6000 Cebu</a></span>
-      <span>🕒 60-min slots • 24hrs</span>
-      <span>📞 +63 917 000 0000</span>
-    </div>
-  </div>
-
-  <div class="pricing-banner">
-    <div class="rate">🎉 Soft Opening: ₱350 / hour for 3 days!</div>
-    <div class="note">Tap available slots to select multiple. Open 24 hours.</div>
-    <div style="margin-top: 12px; padding: 12px; background: rgba(74, 222, 128, 0.1); border-radius: 8px; font-size: 0.85em; color: #10b981; border-left: 3px solid #10b981;">📢 <strong>Coming Soon:</strong> New pricing - Weekdays: ₱450/hour, Weekends: ₱500/hour</div>
-  </div>
-
-  <div class="booking-section">
-    <div class="calendar-card">
-      <div class="cal-header">
-        <button class="cal-nav" id="prevBtn">&#8249;</button>
-        <h3 id="calMonthYear"></h3>
-        <button class="cal-nav" id="nextBtn">&#8250;</button>
-      </div>
-      <div class="cal-grid" id="calGrid"></div>
-      <div class="legend">
-        <div class="legend-title">Legend</div>
-        <div class="legend-item"><div class="dot dot-green"></div> Available</div>
-        <div class="legend-item"><div class="dot dot-pink"></div> Selected</div>
-        <div class="legend-item"><div class="dot dot-red"></div> Booked</div>
-      </div>
-    </div>
-
-    <div class="table-panel">
-        <div class="table-header">
-          <h2>📅 <span id="selectedDateLabel"></span></h2>
-          <div style="color:#9ca3af;font-size:0.9rem;font-weight:600;">Tap available slots to select multiple.</div>
-          <button class="btn-primary" id="refreshBtn" onclick="refreshSlots()">Refresh</button>
-        </div>
-      <div class="table-scroll">
-        <table>
-          <thead>
-            <tr>
-              <th>Time</th>
-              <th>🏟 Court One</th>
-              <th>🏟 Court Two</th>
-            </tr>
-          </thead>
-          <tbody id="slotBody"></tbody>
-        </table>
-      </div>
-    </div>
-  </div>
-</main>
-
-<footer>
-  <div class="footer-inner">
-    <div class="footer-brand">
-      <h2>Pickle Social <span>Cebu</span></h2>
-      <p>Easy. Fast. Reliable Court Booking.</p>
-      <div class="social-links">
-        <a class="social-link" href="https://www.facebook.com/profile.php?id=61589519277936" target="_blank" rel="noreferrer" aria-label="Facebook">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true">
-            <path d="M22.675 0h-21.35C.597 0 0 .597 0 1.333v21.333C0 23.403.597 24 1.325 24H12.82v-9.294H9.692V11.12h3.128V8.414c0-3.1 1.893-4.788 4.659-4.788 1.325 0 2.463.099 2.795.143v3.24l-1.918.001c-1.504 0-1.796.715-1.796 1.764v2.314h3.587l-.467 3.586h-3.12V24h6.116C23.403 24 24 23.403 24 22.667V1.333C24 .597 23.403 0 22.675 0z"/>
-          </svg>
-        </a>
-        <a class="social-link" href="https://www.instagram.com/picklesocial.ph/?hl=en" target="_blank" rel="noreferrer" aria-label="Instagram">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true">
-            <path d="M7.75 2h8.5A5.75 5.75 0 0 1 22 7.75v8.5A5.75 5.75 0 0 1 16.25 22h-8.5A5.75 5.75 0 0 1 2 16.25v-8.5A5.75 5.75 0 0 1 7.75 2Zm0 1.5A4.25 4.25 0 0 0 3.5 7.75v8.5A4.25 4.25 0 0 0 7.75 20.5h8.5A4.25 4.25 0 0 0 20.5 16.25v-8.5A4.25 4.25 0 0 0 16.25 3.5h-8.5ZM12 7.25a4.75 4.75 0 1 1 0 9.5 4.75 4.75 0 0 1 0-9.5Zm0 1.5a3.25 3.25 0 1 0 0 6.5 3.25 3.25 0 0 0 0-6.5Zm4.88-.88a1.12 1.12 0 1 1-2.24 0 1.12 1.12 0 0 1 2.24 0Z"/>
-          </svg>
-        </a>
-        <a class="social-link" href="mailto:picklesocial26@gmail.com" aria-label="Email">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true">
-            <path d="M20 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2Zm0 2v.511l-8 5.333-8-5.333V6h16Zm-16 12V8.155l7.404 4.936a1 1 0 0 0 1.192 0L20 8.155V18H4Z"/>
-          </svg>
-        </a>
-      </div>
-    </div>
-    <div class="footer-links">
-      <a href="#" onclick="openAboutUsModal(event)">About Us</a>
-      <a href="#" onclick="openPrivacyPolicyModal(event)">Privacy Policy</a>
-      <a href="#" onclick="openTermsModal(event)">Terms of Service</a>
-      <a href="#" onclick="openContactUsModal(event)">Contact Us</a>
-    </div>
-  </div>
-  <div class="footer-bottom">
-    © 2026 Pickle Social - Cebu. All rights reserved.
-    <br>
-    Developer: <a target="_blank" rel="noreferrer" style="color:#ec4899;">Heoiscod</a>
-  </div>
-</footer>
-
-<!-- CART BAR -->
-<div class="cart-bar" id="cartBar">
-  <div class="cart-info">
-    <div class="cart-count" id="cartCount">0 slots selected</div>
-    <div class="cart-total">Total: <span id="cartTotal">₱0</span></div>
-  </div>
-  <div class="cart-actions">
-    <button class="btn-clear" onclick="clearForm()">Clear</button>
-    <button class="btn-checkout" onclick="openConfirmModal()">Proceed →</button>
-  </div>
-</div>
-
-<!-- BOOKING MODAL -->
-<div class="modal-overlay" id="bookingModal">
-  <div class="modal">
-    <div class="modal-top">
-      <div class="check-icon">📋</div>
-      <h2>Check Your Booking</h2>
-    </div>
-    <p class="subtitle">Review your selections and provide contact details</p>
-    
-    <div class="modal-progress" aria-hidden="true">
-      <div class="modal-progress-fill"></div>
-    </div>
-
-    <p class="subtitle">Enter your booking reference number to check your booking status</p>
-
-    <div class="form-group">
-      <label for="searchRef">Booking Reference Number</label>
-      <input type="text" id="searchRef" placeholder="E.G. 26FEB07A1B" autocomplete="off">
-      <div class="modal-hint">You received this when you made your booking</div>
-    </div>
-
-    <div id="bookingCheckResults" style="display:none;margin-top:16px;">
-      <div id="bookingResultsContent"></div>
-    </div>
-
-    <div class="modal-actions">
-      <button class="btn-cancel" onclick="closeModal()">Cancel</button>
-      <button class="btn-checkout" id="checkRefBtn" onclick="checkReference()" disabled>Check Status</button>
-      <button class="btn-checkout" id="payNowBtn" onclick="openReceiptModal()" style="display:none;background:linear-gradient(135deg, #ec4899, #db2777);">Pay & Upload Receipt</button>
-    </div>
-  </div>
-</div>
-
-<!-- CONFIRMATION MODAL (opened from cart Proceed) -->
-<div class="modal-overlay" id="confirmModal">
-  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="confirmTitle">
-    <h2 id="confirmTitle" style="color:var(--accent);">Confirm Booking</h2>
-    <p class="subtitle">You're almost ready to play!</p>
-
-    <div style="margin-top:12px;">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
-        <div style="color:#9ca3af">Date</div>
-        <div id="confirmDate" style="font-weight:700;color:var(--text-primary);">--</div>
-      </div>
-
-      <div id="confirmSlotsContainer" style="display:flex;flex-direction:column;gap:10px;margin-bottom:12px;">
-        <!-- Selected slot cards populated by JS -->
-      </div>
-
-      <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 12px;border-radius:8px;background:rgba(255,255,255,0.02);margin-bottom:12px;">
-        <div style="color:#9ca3af">Total (<span id="confirmCount">0</span> slot)</div>
-        <div id="confirmTotal" style="font-weight:800;color:var(--accent);">₱0</div>
-      </div>
-
-      <div style="background:linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border-left:4px solid rgba(245,158,11,0.16);padding:12px;border-radius:8px;color:#e5e7eb;margin-bottom:12px;">
-        <div style="font-weight:700;color:#fbbf24;margin-bottom:6px;">⏱ Pending bookings expire in 60 minutes if not confirmed.</div>
-        <div style="color:#9ca3af">Please complete payment promptly.</div>
-      </div>
-
-      <div class="form-group">
-        <label for="confirmName">Facebook Profile Name</label>
-        <input type="text" id="confirmName" placeholder="Enter your name">
-      </div>
-      <div class="form-group">
-        <label for="confirmPhone">Phone Number</label>
-        <input type="tel" id="confirmPhone" placeholder="e.g., 917 123 4567">
-        <div class="modal-hint">Mobile number (e.g., 917 123 4567)</div>
-      </div>
-    </div>
-
-    <div class="modal-actions" style="margin-top:14px;">
-      <button class="btn-cancel" onclick="closeConfirmModal()">Cancel</button>
-      <button class="btn-confirm" id="confirmModalBtn" onclick="submitBooking()" disabled>Next</button>
-    </div>
-  </div>
-</div>
-
-<!-- SUCCESS MODAL -->
-<div class="modal-overlay" id="successModal">
-  <div class="modal success-modal">
-    <div class="success-body-box">
-      <div class="success-download-card">
-        <div class="success-icon">
-          <svg width="78" height="78" viewBox="0 0 80 80" style="animation: checkPopIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);">
-            <circle cx="40" cy="40" r="36" fill="none" stroke="currentColor" stroke-width="3" opacity="0.18"/>
-            <circle cx="40" cy="40" r="36" fill="none" stroke="currentColor" stroke-width="3" stroke-dasharray="226" stroke-dashoffset="226" style="animation: circleDraw 0.5s ease-out 0.1s forwards;"/>
-            <polyline points="28,42 36,50 54,30" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="50" stroke-dashoffset="50" style="animation: checkDraw 0.5s ease-out 0.3s forwards;"/>
-          </svg>
-        </div>
-        <h2 id="successTitle">Booking Submitted!</h2>
-        <p class="success-subtitle" id="successMessage">Save a copy of this confirmation. When you are ready, scan to pay and upload your receipt proof.</p>
-
-        <div class="success-summary-grid">
-          <div class="summary-pill">
-            <span>Name</span>
-            <strong id="successName">—</strong>
-          </div>
-          <div class="summary-pill">
-            <span>Date</span>
-            <strong id="successDate">—</strong>
-          </div>
+    <div class="maintenance-container">
+        <div class="left-section">
+            <h1>Website - Maintenance</h1>
+            <div class="maintenance-title">
+                We're enhancing your experience
+            </div>
+            <div class="maintenance-message">
+                Our booking platform is undergoing scheduled maintenance to improve your reservation experience. We're optimizing our system to serve you better. We appreciate your patience and will be back online shortly.
+            </div>
         </div>
 
-        <div class="paid-total-card">
-          <span>Paid Total</span>
-          <strong id="successPaidTotal">—</strong>
-        </div>
+        <div class="right-section">
+            <div class="logo-container">
+                <img src="./logo.jpeg" alt="Pickle Social Logo">
+            </div>
 
-        <div class="success-bookings-list" id="successBookingItems"></div>
+            <div class="brand-text">
+                <h2>Pickleball Social - Cebu</h2>
+            </div>
 
-        <div id="bookingRefCardContainer" class="booking-ref-card" style="cursor:pointer;transition:all 0.3s;" onclick="copyBookingReference()" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'">
-          <div class="booking-ref-label">
-            <span class="desktop-only" style="display:none;">Booking Reference</span>
-            <span class="mobile-only">TAP TO COPY</span>
-          </div>
-          <div class="booking-ref-code" id="successRefDisplay">PKL-000000</div>
-        </div>
+            <img src="./pickleball.png" alt="Animated Pickleball" class="pickleball-animation">
 
-        <div class="status-row">
-          <span class="pending-timer" id="successExpiryNote">Expires in 15 minutes to pay</span>
-        </div>
-      </div>
+            <div class="maintenance-icon"></div>
 
-      <label class="save-copy-checkbox save-copy-download">
-        <input type="checkbox" id="successSaveCopy" onchange="toggleSuccessPaymentExtension()" />
-        <div>
-          <div class="checkbox-label">Save a copy of this confirmation and I'm ready to pay</div>
-          <div class="checkbox-description">We'll create an image on your device you can keep for payment proof.</div>
-        </div>
-      </label>
+            <div class="thank-you-section">
+                <div class="thank-you-icon"></div>
+                <p><strong>Thank you</strong> for your continued support and patience.</p>
+                <p>We're committed to delivering the best experience for the Pickle Social community.</p>
+            </div>
 
-      <div id="successPaySection" class="success-pay-section">
-        <div class="scan-title">
-          <span>Scan to pay</span>
-          <span class="scan-title-label">Total Amount: <span id="scanTitleAmount" class="scan-title-amount">—</span></span>
-        </div>
-        <div id="successPayActionText" class="scan-note">Once checked, the scan-to-pay QR section will expand below.</div>
-        <div class="scan-card">
-          <div class="scan-card-title">Scan this QR to pay</div>
-          <img src="../GcashQR.jpg" alt="GCash QR code" />
-        </div>
-      </div>
+            <div class="facebook-section">
+                <div class="facebook-label">Stay Updated</div>
+                <a href="https://www.facebook.com/pages/Pickle-Social/1070406479496408" target="_blank" rel="noreferrer" class="facebook-btn">
+                    <span class="facebook-icon">
+                        <svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                        </svg>
+                    </span>
+                    Follow Us on Facebook
+                </a>
+            </div>
 
-      <div class="next-steps-card">
-        <div class="next-steps-heading">NEXT STEPS</div>
-        <div style="display:flex;flex-direction:column;gap:16px;">
-          <div>
-            <div style="font-weight:700;font-size:1.1rem;color:#f8fafc;margin-bottom:6px;">1. Pay</div>
-            <div style="color:#d1d5db;font-size:0.95rem;">Scan the QR code above and complete your payment.</div>
-          </div>
-          <div>
-            <div style="font-weight:700;font-size:1.1rem;color:#f8fafc;margin-bottom:6px;">2. Send payment proof</div>
-            <div style="color:#d1d5db;font-size:0.95rem;">Once you have uploaded the receipt, please send both the BOOKING REFERENCE and the GCASH PAYMENT RECEIPT through Messenger for verification.</div>
-          </div>
-          <div>
-            <div style="font-weight:700;font-size:1.1rem;color:#f8fafc;margin-bottom:6px;">3. Wait for confirmation</div>
-            <div style="color:#d1d5db;font-size:0.95rem;">Pickle Social will confirm your booking after we verify your payment.</div>
-          </div>
+            <div class="status-indicator">
+                <span class="status-dot"></span>
+                Maintenance in progress
+            </div>
         </div>
-      </div>
-
-      <div style="display:flex;flex-direction:column;gap:10px;margin-top:12px;">
-        <div id="bookingRefCardContainerBottom" class="booking-ref-card" style="cursor:pointer;transition:all 0.3s;display:none;" onclick="copyBookingReference()" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'">
-          <div class="booking-ref-label">
-            <span class="desktop-only" style="display:none;">CLICK TO COPY</span>
-            <span class="mobile-only">TAP TO COPY</span>
-          </div>
-          <div class="booking-ref-code" id="successRefDisplayBottom">PKL-000000</div>
-        </div>
-        <a id="successMessengerBtn" class="btn-messenger" href="https://www.messenger.com/t/1070406479496408" target="_blank" rel="noreferrer">
-          <span class="btn-messenger-icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18" xmlns="http://www.w3.org/2000/svg"><path d="M12.01 2C6.48 2 2 5.94 2 10.5c0 2.86 1.76 5.43 4.6 7.05v3.46l3.05-1.68c.8.2 1.64.31 2.46.31 5.53 0 10.01-3.94 10.01-8.5S17.54 2 12.01 2zm1.86 10.19l-1.17-1.27-2.26 1.27 2.26-2.75 1.17 1.27 2.26-1.27-2.26 2.75z"/></svg>
-          </span>
-          Message us on Messenger
-        </a>
-      </div>
     </div>
-
-    <div class="modal-actions">
-      <button id="successDoneBtn" class="btn-confirm" style="flex:1;" onclick="handleDoneBooking()" disabled>Done</button>
-    </div>
-  </div>
-</div>
-
-<!-- RECEIPT VERIFICATION MODAL -->
-<div class="modal-overlay" id="receiptModal">
-  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="receiptTitle">
-    <h2 id="receiptTitle" style="color:var(--accent);">Upload GCash Receipt</h2>
-    <p class="subtitle">Upload your GCash receipt image and verify the booking reference, total amount, and payment details.<br><br>If you're paying via GoTyme, Maya, or Bank Transfer, no need to upload receipt here — just send your receipt through Messenger for verification.</p>
-    <div style="display:flex;flex-direction:column;gap:12px;margin-top:12px;">
-      <div style="display:flex;flex-direction:column;align-items:center;gap:10px;">
-      </div>
-      <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
-        <label style="cursor:pointer;display:flex;justify-content:center;width:100%;">
-          <span style="display:inline-block;padding:10px 14px;border-radius:10px;background:rgba(236,72,153,0.12);color:#fda4af;">Upload receipt screenshot</span>
-          <input type="file" id="receiptFileInput" accept="image/*" style="display:none" onchange="handleReceiptFile(event)">
-        </label>
-        <button class="btn-cancel" type="button" id="receiptRemoveBtn" onclick="clearReceiptUpload()" style="opacity:0.6;">Remove Photo</button>
-      </div>
-      <div id="receiptUploadedNote" style="display:none;margin-top:4px;font-size:0.88rem;color:#34d399;">✅ Receipt uploaded!</div>
-      <div id="receiptPreviewContainer" style="display:none;flex-direction:column;gap:10px;">
-        <img id="receiptPreview" alt="Receipt preview" style="max-width:100%;border-radius:12px;border:1px solid rgba(255,255,255,0.08);"/>
-      </div>
-      <div id="receiptScanStatus" style="color:#9ca3af;font-size:0.95rem;">No receipt uploaded yet.</div>
-      <div id="receiptTimer" style="color:#7dd3fc;font-size:0.95rem;margin-top:4px;">Time remaining: 30:00</div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
-        <div style="padding:12px;border-radius:10px;background:rgba(15,23,42,0.9);">
-          <div style="font-size:0.8rem;color:#9ca3af;margin-bottom:6px;">Expected Booking Ref</div>
-          <div id="receiptBookingRef" style="font-weight:700;color:#fff;">—</div>
-        </div>
-        <div style="padding:12px;border-radius:10px;background:rgba(15,23,42,0.9);">
-          <div style="font-size:0.8rem;color:#9ca3af;margin-bottom:6px;">Receipt Reference</div>
-          <div id="receiptRef" style="font-weight:700;color:#fff;">—</div>
-        </div>
-        <div style="padding:12px;border-radius:10px;background:rgba(15,23,42,0.9);">
-          <div style="font-size:0.8rem;color:#9ca3af;margin-bottom:6px;">Total Amount</div>
-          <div id="receiptAmount" style="font-weight:700;color:#fff;">—</div>
-        </div>
-        <div style="grid-column:1 / -1;padding:12px;border-radius:10px;background:rgba(15,23,42,0.9);">
-          <div style="font-size:0.8rem;color:#9ca3af;margin-bottom:6px;">Date / Time</div>
-          <div id="receiptDateTime" style="font-weight:700;color:#fff;">—</div>
-        </div>
-      </div>
-      <div id="receiptManualFields" style="margin-top:14px;display:grid;gap:12px;">
-      </div>
-      <div id="receiptMismatch" style="color:#fca5a5;font-size:0.95rem;"></div>
-      <div class="modal-actions" style="margin-top:8px;">
-        <button class="btn-cancel" onclick="closeReceiptModal()">Cancel</button>
-        <button class="btn-confirm" id="verifyReceiptBtn" onclick="verifyReceipt()" disabled>Submit Booking</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<div class="toast" id="toast"></div>
-
-<!-- ABOUT US MODAL -->
-<div class="modal-overlay" id="aboutUsModal">
-  <div class="modal modal-info">
-    <button class="modal-close-btn" onclick="closeAboutUsModal()" aria-label="Close About Us">&times;</button>
-    <h2>About Us</h2>
-    <div class="modal-info-content">
-      <h3>Pickle Social - Cebu</h3>
-      <p><strong>Located:</strong> Cebu City, Philippines<br>
-      📍 <a href="https://maps.app.goo.gl/wjSce8V1DpoGts5K8" target="_blank" rel="noreferrer">Google Maps</a></p>
-      <p>Pickle Social - Cebu is a dedicated pickleball space built for everyone—from beginners discovering the sport for the first time to experienced players looking for competitive and fun matches. Our goal is to grow the pickleball community in Cebu by providing a welcoming environment where people can connect, play, and improve their skills.</p>
-      <p>We believe sports bring people together, and pickleball is one of the fastest-growing games that promotes fitness, friendship, and enjoyment for all ages. At Pickle Social, we aim to create a place where players can unwind, stay active, and enjoy quality court time with friends, family, and fellow enthusiasts.</p>
-      <p>Whether you're coming for casual play, training sessions, or organized games, our facility is designed to give you a smooth and enjoyable experience every time you step on the court. We are continuously improving our services to make sure every visit is worth it.</p>
-      <p>Join us as we build a strong pickleball community here in Cebu—one game at a time. 🏓✨</p>
-    </div>
-    <div class="modal-actions">
-      <button class="btn-confirm" onclick="closeAboutUsModal()">Close</button>
-    </div>
-  </div>
-</div>
-
-<!-- PRIVACY POLICY MODAL -->
-<div class="modal-overlay" id="privacyPolicyModal">
-  <div class="modal modal-info modal-scrollable">
-    <button class="modal-close-btn" onclick="closePrivacyPolicyModal()" aria-label="Close Privacy Policy">&times;</button>
-    <h2>Privacy Policy</h2>
-    <div class="modal-info-content">
-      <h3>Pickle Social - Cebu</h3>
-      <h4>1. Introduction</h4>
-      <p>Pickle Social - Cebu ("we," "our," or "us") values your privacy and is committed to protecting the personal information of all our customers and website users. This Privacy Policy explains how we collect, use, store, and protect your information when you use our services, website, or contact us through social media or messaging platforms.</p>
-      <p>By using our services, you agree to the terms outlined in this Privacy Policy.</p>
-      <h4>2. Information We Collect</h4>
-      <p>We may collect the following types of information:</p>
-      <ul>
-        <li>Full name</li>
-        <li>Contact information (phone number, email address, Messenger/Instagram details)</li>
-        <li>Booking details (date, time, court reservation)</li>
-        <li>Payment information (if applicable, processed through third-party providers)</li>
-        <li>Messages and inquiries you send to us</li>
-      </ul>
-      <h4>3. How We Use Your Information</h4>
-      <p>We use the collected information to:</p>
-      <ul>
-        <li>Process and confirm court bookings</li>
-        <li>Communicate with you regarding your reservation</li>
-        <li>Provide customer support and respond to inquiries</li>
-        <li>Improve our services and customer experience</li>
-        <li>Send important updates, announcements, or promotions (if you opt in)</li>
-      </ul>
-      <h4>4. Data Protection</h4>
-      <p>We take appropriate security measures to protect your personal information from unauthorized access, alteration, disclosure, or destruction. However, please note that no method of online transmission or electronic storage is 100% secure.</p>
-      <h4>5. Sharing of Information</h4>
-      <p>We do not sell, rent, or trade your personal information. We may only share your data when necessary:</p>
-      <ul>
-        <li>With payment processors (for transaction purposes)</li>
-        <li>When required by law or legal processes</li>
-        <li>To protect our rights, safety, or property</li>
-      </ul>
-      <h4>6. Cookies and Website Usage</h4>
-      <p>Our website may use cookies or similar technologies to improve user experience, track website performance, and understand visitor behavior. You may disable cookies in your browser settings if you prefer.</p>
-      <h4>7. Third-Party Links</h4>
-      <p>Our website or social media pages may contain links to third-party sites. We are not responsible for the privacy practices or content of these external websites.</p>
-      <h4>8. Your Rights</h4>
-      <p>You have the right to:</p>
-      <ul>
-        <li>Access your personal data</li>
-        <li>Request corrections or updates</li>
-        <li>Request deletion of your information (subject to legal or operational requirements)</li>
-      </ul>
-      <p>To exercise these rights, you may contact us directly.</p>
-      <h4>9. Updates to This Policy</h4>
-      <p>We may update this Privacy Policy from time to time. Any changes will be posted on our official website or social media pages.</p>
-      <h4>10. Contact Us</h4>
-      <p>If you have any questions about this Privacy Policy, please contact us through our official page or booking website.</p>
-      <p><strong>Pickle Social - Cebu</strong><br>📍 Cebu City, Philippines<br>🏓 Building a strong and active pickleball community.</p>
-    </div>
-    <div class="modal-actions">
-      <button class="btn-confirm" onclick="closePrivacyPolicyModal()">Close</button>
-    </div>
-  </div>
-</div>
-
-<!-- TERMS & CONDITIONS MODAL -->
-<div class="modal-overlay" id="termsModal">
-  <div class="modal modal-info modal-scrollable">
-    <button class="modal-close-btn" onclick="closeTermsModal()" aria-label="Close Terms & Conditions">&times;</button>
-    <h2>Terms & Conditions</h2>
-    <div class="modal-info-content">
-      <h3>Pickle Social - Cebu</h3>
-      <h4>1. Introduction</h4>
-      <p>Welcome to Pickle Social - Cebu. By accessing our website, booking a court, or using our facilities, you agree to be bound by these Terms & Conditions. Please read them carefully before making any reservation or using our services.</p>
-      <h4>2. Booking Policy</h4>
-      <ul>
-        <li>All court bookings must be made through our official website or approved booking channels.</li>
-        <li>Bookings are confirmed only after full or required payment is received.</li>
-        <li>Walk-in players are subject to court availability.</li>
-        <li>We reserve the right to reschedule or cancel bookings due to maintenance, weather conditions, or unforeseen circumstances.</li>
-      </ul>
-      <h4>3. Payments</h4>
-      <ul>
-        <li>Court fees must be paid according to the published rates.</li>
-        <li>Soft opening and promotional rates are only valid within the specified period.</li>
-        <li>All payments are non-transferable unless stated otherwise.</li>
-      </ul>
-      <h4>4. Cancellation & Refunds</h4>
-      <ul>
-        <li><strong>All bookings are final.</strong></li>
-        <li><strong>No cancellations are allowed once a booking is confirmed.</strong></li>
-        <li><strong>No refunds will be issued for any reason, including no-shows, late arrivals, or change of plans.</strong></li>
-        <li>Customers are responsible for ensuring their selected date and time before confirming payment.</li>
-      </ul>
-      <h4>5. User Conduct</h4>
-      <p>All players are expected to:</p>
-      <ul>
-        <li>Respect other players and staff</li>
-        <li>Follow proper sportsmanship at all times</li>
-        <li>Avoid any behavior that may cause harm or disturbance</li>
-        <li>Take care of the facilities and equipment</li>
-      </ul>
-      <p>We reserve the right to refuse entry or service to anyone violating these rules.</p>
-      <h4>6. Safety & Liability</h4>
-      <ul>
-        <li>Players participate at their own risk.</li>
-        <li>Pickle Social - Cebu is not liable for any injuries, accidents, or loss of personal belongings during play or within the premises.</li>
-        <li>We encourage all players to warm up properly and follow safety guidelines.</li>
-      </ul>
-      <h4>7. Facility Rules</h4>
-      <ul>
-        <li>Proper sports attire and non-marking shoes are required.</li>
-        <li>Food and drinks may be restricted in certain areas.</li>
-        <li>Any damage to property caused by negligence may result in charges.</li>
-      </ul>
-      <h4>8. Changes to Terms</h4>
-      <p>We may update or modify these Terms & Conditions at any time without prior notice. Continued use of our services means you accept any changes made.</p>
-      <h4>9. Contact Us</h4>
-      <p>For questions or concerns regarding these Terms & Conditions, please contact us through our official page or website.</p>
-      <p><strong>Pickle Social - Cebu</strong><br>📍 Cebu City, Philippines<br>🏓 Building a strong pickleball community.</p>
-    </div>
-    <div class="modal-actions">
-      <button class="btn-confirm" onclick="closeTermsModal()">Close</button>
-    </div>
-  </div>
-</div>
-
-<!-- CONTACT US MODAL -->
-<div class="modal-overlay" id="contactUsModal">
-  <div class="modal modal-info">
-    <button class="modal-close-btn" onclick="closeContactUsModal()" aria-label="Close Contact Us">&times;</button>
-    <h2>Contact Us</h2>
-    <div class="modal-info-content">
-      <p style="margin-bottom: 20px;">We'd love to hear from you! If you have any questions, booking inquiries, or concerns, feel free to reach out through any of the following channels:</p>
-      
-      <div class="contact-method">
-        <h4>💬 Messenger</h4>
-        <p>Message us directly on our official Facebook page</p>
-        <a href="https://www.facebook.com/profile.php?id=61589519277936" target="_blank" rel="noreferrer" class="contact-link">Visit Our Facebook Page</a>
-      </div>
-      
-      <div class="contact-method">
-        <h4>📱 Mobile Number</h4>
-        <p><a href="tel:+639941321131" class="contact-link">0994 132 1131</a></p>
-      </div>
-      
-      <div class="contact-method">
-        <h4>📧 Email</h4>
-        <p><a href="mailto:picklesocia26@gmail.com" class="contact-link">picklesocia26@gmail.com</a></p>
-      </div>
-      
-      <p style="margin-top: 20px; color: #9ca3af; font-size: 0.9rem;">We aim to respond as quickly as possible during operating hours. Thank you for choosing Pickle Social - Cebu! 🏓</p>
-    </div>
-    <div class="modal-actions">
-      <button class="btn-confirm" onclick="closeContactUsModal()">Close</button>
-    </div>
-  </div>
-</div>
-
-<!-- MESSENGER BUTTON (Fixed) -->
-<a href="https://www.facebook.com/profile.php?id=61589519277936" target="_blank" rel="noreferrer" class="messenger-fab" aria-label="Message us on Messenger" title="Message us on Messenger">
-  <svg viewBox="0 0 24 24" fill="currentColor" width="24" height="24" xmlns="http://www.w3.org/2000/svg"><path d="M12.01 2C6.48 2 2 5.94 2 10.5c0 2.86 1.76 5.43 4.6 7.05v3.46l3.05-1.68c.8.2 1.64.31 2.46.31 5.53 0 10.01-3.94 10.01-8.5S17.54 2 12.01 2zm1.86 10.19l-1.17-1.27-2.26 1.27 2.26-2.75 1.17 1.27 2.26-1.27-2.26 2.75z"/></svg>
-</a>
-
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script>
-  // Local development fallback for direct frontend Supabase access (safe for local testing only)
-  window.SUPABASE_FALLBACK = {
-    url: 'https://nozisfmqzkeywefrqkok.supabase.co',
-    key: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5vemlzZm1xemtleXdlZnJxa29rIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg1NzY2NzcsImV4cCI6MjA5NDE1MjY3N30.9CyqA4zZ9o5glyVl40Baah9ce-mqPIB3fAi2wp2-Ppk'
-  };
-</script>
-<script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/tesseract.js@4.0.2/dist/tesseract.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
-
-<script src="js/app.js"></script>
-
 </body>
 </html>
