@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <link rel="icon" type="image/jpeg" href="./logo.jpeg">
     <title>Maintenance - Pickle Social</title>
     <style>
@@ -299,10 +299,19 @@
         }
 
         @media (max-width: 480px) {
+            body {
+                overflow: hidden;
+                height: 100vh;
+                position: fixed;
+                width: 100%;
+                touch-action: none;
+            }
+
             .maintenance-container {
                 padding: 12px 12px;
                 gap: 8px;
                 height: 100vh;
+                overflow: hidden;
             }
 
             h1 {
