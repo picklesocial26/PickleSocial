@@ -1338,7 +1338,6 @@ Phone: ${firstBooking.phone_number || ''}
     const btn = document.getElementById('checkRefBtn');
     const resultsEl = document.getElementById('bookingCheckResults');
     const contentEl = document.getElementById('bookingResultsContent');
-    const payBtn = document.getElementById('payNowBtn');
 
     if (!refEl) return;
     const ref = refEl.value.trim();
@@ -1362,7 +1361,6 @@ Phone: ${firstBooking.phone_number || ''}
           contentEl.innerHTML = '<div style="color:#f87171;text-align:center;padding:16px;">🔎 Reference not found</div>';
         }
         if (resultsEl) resultsEl.style.display = 'block';
-        if (payBtn) payBtn.style.display = 'none';
         return;
       }
 
@@ -1422,7 +1420,6 @@ Phone: ${firstBooking.phone_number || ''}
             <div style="color:#a7f3d0;font-weight:700;">Reference: ${ref}</div>
           </div>
         `;
-        if (payBtn) payBtn.style.display = 'none';
       } else if (status === 'pending') {
         resultHtml += `
           <div style="text-align:center;padding:16px;border:2px solid #f59e0b;border-radius:12px;background:rgba(245,158,11,0.1);">
@@ -1430,7 +1427,6 @@ Phone: ${firstBooking.phone_number || ''}
             <div style="color:#fcd34d;">Payment required to confirm</div>
           </div>
         `;
-        if (payBtn) payBtn.style.display = 'inline-block';
         receiptBookingTotal = totalAmount;
         searchedBookingReference = ref;
         searchedBookingData = result.bookings;
@@ -1478,7 +1474,6 @@ Phone: ${firstBooking.phone_number || ''}
         contentEl.innerHTML = `<div style="color:#f87171;text-align:center;padding:16px;">❌ Error: ${errorMsg}</div>`;
       }
       if (resultsEl) resultsEl.style.display = 'block';
-      if (payBtn) payBtn.style.display = 'none';
     } finally {
       if (btn) {
         btn.disabled = false;

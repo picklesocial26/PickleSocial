@@ -56,8 +56,30 @@
       "src": "/api/bookings",
       "dest": "api/bookings.js"
     },
-   
-    
+    {
+      "src": "/",
+      "dest": "/index.html"
+    },
+    {
+      "src": "/about-us",
+      "dest": "/about-us.html"
+    },
+    {
+      "src": "/contact-us",
+      "dest": "/contact-us.html"
+    },
+    {
+      "src": "/privacy-policy",
+      "dest": "/privacy-policy.html"
+    },
+    {
+      "src": "/terms-of-service",
+      "dest": "/terms-of-service.html"
+    },
+    {
+      "src": "/maintenance",
+      "dest": "/maintenance.html"
+    },
     {
       "handle": "filesystem"
     },
