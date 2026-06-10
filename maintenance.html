@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="icon" type="image/jpeg" href="./logo.jpeg">
+    <title>Maintenance - Pickle Social</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            min-height: 100vh;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', sans-serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a0f1a 20%, #0d0d0f 50%, #0a1515 80%, #000000 100%);
+            color: #e5e7eb;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .maintenance-container {
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 16px;
+            padding: 40px 60px;
+            text-align: center;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        .left-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            max-width: 700px;
+        }
+
+        .right-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            max-width: 550px;
+        }
+
+        .logo-container {
+            width: 120px;
+            height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .logo-container img {
+            width: 100%;
+            height: auto;
+            border-radius: 18px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+        }
+
+        .brand-text {
+            text-align: center;
+            margin-bottom: 12px;
+        }
+
+        .brand-text h2 {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: #f8fafc;
+            margin-bottom: 0;
+            letter-spacing: -0.3px;
+        }
+
+        .brand-text p {
+            font-size: 0.9rem;
+            color: #9ca3af;
+            font-weight: 400;
+            letter-spacing: 0.6px;
+            text-transform: uppercase;
+        }
+
+        .maintenance-icon {
+            display: none;
+        }
+
+        .thank-you-section {
+            text-align: center;
+            margin-top: 12px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(236, 72, 153, 0.1);
+        }
+
+        .thank-you-icon {
+            display: none;
+        }
+
+        .thank-you-section p {
+            color: #d1d5db;
+            font-size: 0.95rem;
+            line-height: 1.8;
+            margin-bottom: 10px;
+            font-weight: 300;
+        }
+
+        .facebook-section {
+            text-align: center;
+            padding-top: 12px;
+        }
+
+        .facebook-label {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.18em;
+            color: #6b7280;
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+
+        .facebook-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 14px 32px;
+            background: linear-gradient(135deg, #ec4899 0%, #db2777 100%);
+            color: #fff;
+            text-decoration: none;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            border: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 24px rgba(236, 72, 153, 0.25);
+            cursor: pointer;
+            letter-spacing: 0.3px;
+        }
+
+        .facebook-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 32px rgba(236, 72, 153, 0.35);
+        }
+
+        .facebook-btn:active {
+            transform: translateY(-1px);
+        }
+
+        .facebook-icon {
+            width: 18px;
+            height: 18px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .status-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 16px;
+            background: rgba(236, 72, 153, 0.08);
+            border: 1px solid rgba(236, 72, 153, 0.15);
+            border-radius: 12px;
+            font-size: 0.85rem;
+            color: #9ca3af;
+            font-weight: 500;
+            letter-spacing: 0.4px;
+            margin-top: 8px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #ec4899;
+            animation: blink 2s ease-in-out infinite;
+        }
+
+        .pickleball-animation {
+            width: 70px;
+            height: 70px;
+            margin-top: 8px;
+            object-fit: contain;
+            animation: roll 4s ease-in-out infinite;
+        }
+
+        @keyframes roll {
+            0%, 100% {
+                transform: translateX(-200px) rotateZ(0deg);
+            }
+            50% {
+                transform: translateX(200px) rotateZ(360deg);
+            }
+        }
+
+        @keyframes blink {
+            0%, 100% {
+                opacity: 0.6;
+            }
+            50% {
+                opacity: 1;
+            }
+        }
+
+        @media (max-width: 1200px) {
+            .maintenance-container {
+                gap: 40px;
+                padding: 40px;
+            }
+
+            h1 {
+                font-size: 2.8rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .maintenance-container {
+                padding: 16px;
+                gap: 12px;
+                height: 100vh;
+            }
+
+            h1 {
+                font-size: 1.4rem;
+                margin: 0;
+            }
+
+            .left-section {
+                gap: 8px;
+                margin-bottom: 6px;
+            }
+
+            .maintenance-title {
+                font-size: 0.95rem;
+            }
+
+            .maintenance-message {
+                font-size: 0.85rem;
+                line-height: 1.5;
+            }
+
+            .logo-container {
+                width: 80px;
+                height: 80px;
+            }
+
+            .brand-text h2 {
+                font-size: 1rem;
+            }
+
+            .pickleball-animation {
+                width: 55px;
+                height: 55px;
+            }
+
+            .thank-you-section {
+                padding-top: 10px;
+            }
+
+            .thank-you-section p {
+                font-size: 0.8rem;
+                margin-bottom: 6px;
+            }
+
+            .facebook-btn {
+                padding: 11px 20px;
+                font-size: 0.85rem;
+            }
+
+            .status-indicator {
+                font-size: 0.8rem;
+                padding: 8px 14px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                overflow: hidden;
+                height: 100vh;
+                position: fixed;
+                width: 100%;
+                touch-action: none;
+            }
+
+            .maintenance-container {
+                padding: 12px 12px;
+                gap: 8px;
+                height: 100vh;
+                overflow: hidden;
+            }
+
+            h1 {
+                font-size: 1.1rem;
+                margin: 0;
+                line-height: 1.2;
+            }
+
+            .left-section {
+                gap: 8px;
+                margin-bottom: 8px;
+            }
+
+            .maintenance-title {
+                font-size: 0.9rem;
+                margin-bottom: 6px;
+                color: #cbd5e1;
+            }
+
+            .maintenance-message {
+                font-size: 0.8rem;
+                line-height: 1.4;
+                color: #94a3b8;
+            }
+
+            .right-section {
+                gap: 8px;
+            }
+
+            .logo-container {
+                width: 60px;
+                height: 60px;
+                margin-bottom: 8px;
+            }
+
+            .brand-text {
+                margin-bottom: 4px;
+            }
+
+            .brand-text h2 {
+                font-size: 0.9rem;
+                margin-bottom: 0;
+            }
+
+            .brand-text p {
+                font-size: 0.75rem;
+            }
+
+            .pickleball-animation {
+                width: 50px;
+                height: 50px;
+                margin-top: 4px;
+            }
+
+            .thank-you-section {
+                margin-top: 6px;
+                padding-top: 8px;
+                gap: 4px;
+            }
+
+            .thank-you-section p {
+                font-size: 0.75rem;
+                line-height: 1.3;
+                margin-bottom: 4px;
+            }
+
+            .facebook-section {
+                padding-top: 6px;
+            }
+
+            .facebook-label {
+                font-size: 0.7rem;
+                margin-bottom: 6px;
+            }
+
+            .facebook-btn {
+                width: 100%;
+                padding: 10px 12px;
+                font-size: 0.8rem;
+                gap: 6px;
+            }
+
+            .facebook-icon {
+                width: 14px;
+                height: 14px;
+            }
+
+            .status-indicator {
+                padding: 8px 12px;
+                font-size: 0.75rem;
+                margin-top: 4px;
+            }
+
+            .status-dot {
+                width: 6px;
+                height: 6px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="maintenance-container">
+        <div class="left-section">
+            <h1>Website - Maintenance</h1>
+            <div class="maintenance-title">
+                We're enhancing your experience
+            </div>
+            <div class="maintenance-message">
+                Our booking platform is undergoing scheduled maintenance to improve your reservation experience. We're optimizing our system to serve you better. We appreciate your patience and will be back online shortly.
+            </div>
+        </div>
+
+        <div class="right-section">
+            <div class="logo-container">
+                <img src="./logo.jpeg" alt="Pickle Social Logo">
+            </div>
+
+            <div class="brand-text">
+                <h2>Pickleball Social - Cebu</h2>
+            </div>
+
+            <img src="./pickleball.png" alt="Animated Pickleball" class="pickleball-animation">
+
+            <div class="maintenance-icon"></div>
+
+            <div class="thank-you-section">
+                <div class="thank-you-icon"></div>
+                <p><strong>Thank you</strong> for your continued support and patience.</p>
+                <p>We're committed to delivering the best experience for the Pickle Social community.</p>
+            </div>
+
+            <div class="facebook-section">
+                <div class="facebook-label">Stay Updated</div>
+                <a href="https://www.facebook.com/pages/Pickle-Social/1070406479496408" target="_blank" rel="noreferrer" class="facebook-btn">
+                    <span class="facebook-icon">
+                        <svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                        </svg>
+                    </span>
+                    Follow Us on Facebook
+                </a>
+            </div>
+
+            <div class="status-indicator">
+                <span class="status-dot"></span>
+                Maintenance in progress
+            </div>
+        </div>
+    </div>
+</body>
+</html>

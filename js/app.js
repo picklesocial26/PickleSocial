@@ -6,9 +6,30 @@ let pendingBookingEntries = [];
 let pendingSlotsWithTimer = {}; // Track pending slots with timestamps
 let searchedBookingReference = ''; // Store searched reference for success modal
 let searchedBookingData = null; // Store searched booking data
+let receiptBookingReference = ''; // Booking reference for current session
+let receiptBookingTotal = 0; // Total amount for current booking
+let receiptFile = null; // Receipt file upload (removed)
+let lastSubmissionTime = 0; // Track last submission timestamp for duplicate prevention
+let lastSubmissionSlots = []; // Track last submission slot keys for duplicate prevention
 const SOFT_OPENING_RATE = 350; // Soft opening rate per hour
 const REGULAR_RATE = 450; // Regular rate per hour
 let isRegularRateActive = false; // Set to true to switch to regular rate
+
+// Form validation handler for confirm modal
+function updateConfirmModalButtonState() {
+  const confirmBtn = document.getElementById('confirmModalBtn');
+  const nameInput = document.getElementById('confirmName');
+  const phoneInput = document.getElementById('confirmPhone');
+  
+  if (!confirmBtn || !nameInput || !phoneInput) return;
+  
+  const name = nameInput.value.trim();
+  const phone = phoneInput.value.trim();
+  const isValid = name.length > 0 && phone.length > 0;
+  
+  confirmBtn.disabled = !isValid;
+  console.log('Form validation:', { name: !!name, phone: !!phone, disabled: !isValid });
+}
 
 function showToast(message) {
   const toast = document.getElementById('toast');
@@ -23,56 +44,9 @@ function showToast(message) {
   }, 3000);
 }
 
-// Modal Functions for About Us, Privacy Policy, Terms & Conditions, Contact Us
-function openAboutUsModal(event) {
-  if (event) event.preventDefault();
-  const modal = document.getElementById('aboutUsModal');
-  if (modal) modal.classList.add('open');
-}
 
-function closeAboutUsModal() {
-  const modal = document.getElementById('aboutUsModal');
-  if (modal) modal.classList.remove('open');
-}
 
-function openPrivacyPolicyModal(event) {
-  if (event) event.preventDefault();
-  const modal = document.getElementById('privacyPolicyModal');
-  if (modal) {
-    modal.classList.add('open');
-    modal.scrollTop = 0;
-  }
-}
 
-function closePrivacyPolicyModal() {
-  const modal = document.getElementById('privacyPolicyModal');
-  if (modal) modal.classList.remove('open');
-}
-
-function openTermsModal(event) {
-  if (event) event.preventDefault();
-  const modal = document.getElementById('termsModal');
-  if (modal) {
-    modal.classList.add('open');
-    modal.scrollTop = 0;
-  }
-}
-
-function closeTermsModal() {
-  const modal = document.getElementById('termsModal');
-  if (modal) modal.classList.remove('open');
-}
-
-function openContactUsModal(event) {
-  if (event) event.preventDefault();
-  const modal = document.getElementById('contactUsModal');
-  if (modal) modal.classList.add('open');
-}
-
-function closeContactUsModal() {
-  const modal = document.getElementById('contactUsModal');
-  if (modal) modal.classList.remove('open');
-}
 
 function populateSuccessModal() {
   if (!searchedBookingData || searchedBookingData.length === 0) {
@@ -704,6 +678,8 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   // Open the confirm modal which summarizes selected slots and collects name/phone
   window.openConfirmModal = function() {
+    console.log('openConfirmModal called, selectedSlots:', [...selectedSlots]);
+    
     const container = document.getElementById('confirmSlotsContainer');
     const dateEl = document.getElementById('confirmDate');
     const countEl = document.getElementById('confirmCount');
@@ -712,7 +688,10 @@ document.addEventListener("DOMContentLoaded", async () => {
     const phoneEl = document.getElementById('confirmPhone');
     const confirmBtn = document.getElementById('confirmModalBtn');
 
-    if (!container || !dateEl || !countEl || !totalEl) return openModal();
+    if (!container || !dateEl || !countEl || !totalEl) {
+      console.error('Missing modal elements:', { container: !!container, dateEl: !!dateEl, countEl: !!countEl, totalEl: !!totalEl });
+      return openModal();
+    }
 
     // Populate date
     dateEl.textContent = formatDateDisplay(selectedDate);
@@ -763,17 +742,24 @@ document.addEventListener("DOMContentLoaded", async () => {
     document.getElementById('confirmModal').classList.add('open');
     setTimeout(() => { if (nameEl) nameEl.focus(); }, 120);
 
-    // Wire input events for validation
-    function updateConfirmModalButtonState() {
-      const name = (document.getElementById('confirmName') || {}).value || '';
-      const phone = (document.getElementById('confirmPhone') || {}).value || '';
-      if (!confirmBtn) return;
-      confirmBtn.disabled = !(name.trim() && phone.trim());
+    // Remove old listeners and attach the global validation function
+    if (nameEl) {
+      nameEl.removeEventListener('input', updateConfirmModalButtonState);
+      nameEl.addEventListener('input', updateConfirmModalButtonState);
     }
-
-    if (nameEl) nameEl.addEventListener('input', updateConfirmModalButtonState);
-    if (phoneEl) phoneEl.addEventListener('input', updateConfirmModalButtonState);
+    if (phoneEl) {
+      phoneEl.removeEventListener('input', updateConfirmModalButtonState);
+      phoneEl.addEventListener('input', updateConfirmModalButtonState);
+    }
+    
+    // Initial check to enable/disable button
     updateConfirmModalButtonState();
+    
+    console.log('openConfirmModal complete, button state:', {
+      disabled: confirmBtn.disabled,
+      nameValue: nameEl?.value,
+      phoneValue: phoneEl?.value
+    });
   };
 
   window.closeConfirmModal = function() { document.getElementById('confirmModal').classList.remove('open'); };
@@ -785,7 +771,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     const messengerBtn = document.querySelector('.btn-messenger');
     const bookingRefCard = document.getElementById('bookingRefCardContainer');
     const bookingRefCardBottom = document.getElementById('bookingRefCardContainerBottom');
-    const actionText = document.getElementById('successPayActionText');
     const doneBtn = document.getElementById('successDoneBtn');
     if (!checkbox || !section || !nextSteps) return;
     if (checkbox.checked) {
@@ -794,7 +779,6 @@ document.addEventListener("DOMContentLoaded", async () => {
       if (messengerBtn) messengerBtn.style.display = 'inline-flex';
       if (bookingRefCard) bookingRefCard.style.display = 'block';
       if (bookingRefCardBottom) bookingRefCardBottom.style.display = 'block';
-      if (actionText) actionText.textContent = 'You may now scan the QR code and upload your payment receipt to complete this booking.';
       if (doneBtn) doneBtn.disabled = false;
       await downloadBookingConfirmationImage();
     } else {
@@ -803,7 +787,6 @@ document.addEventListener("DOMContentLoaded", async () => {
       if (messengerBtn) messengerBtn.style.display = 'none';
       if (bookingRefCard) bookingRefCard.style.display = 'none';
       if (bookingRefCardBottom) bookingRefCardBottom.style.display = 'none';
-      if (actionText) actionText.textContent = 'Check the box to reveal the scan-to-pay section and upload your receipt proof.';
       if (doneBtn) doneBtn.disabled = true;
     }
   };
@@ -968,22 +951,17 @@ document.addEventListener("DOMContentLoaded", async () => {
   };
 
   window.handleDoneBooking = async function() {
-    // Check if receipt was uploaded
-    const receiptUploaded = receiptRefUploaded === true;
     const currentRef = receiptBookingReference;
     
     // Close the success modal and return to dashboard
     closeSuccessModal();
     
-    // Show message if receipt wasn't uploaded
-    if (!receiptUploaded && currentRef) {
-      showToast(`📋 Pay Later: Copy your Booking Reference ${currentRef} • Search to pay your reservation`);
+    // Show message with booking reference
+    if (currentRef) {
+      showToast(`📋 Booking Reference: ${currentRef} • Complete your payment via Messenger`);
     }
     
-    // Clear receipt state and pending entries for next booking
-    receiptFile = null;
-    receiptRefUploaded = false;
-    receiptTextExtracted = '';
+    // Clear pending entries for next booking
     receiptBookingReference = '';
     receiptBookingTotal = 0;
     pendingBookingEntries = [];
@@ -1081,6 +1059,32 @@ Phone: ${firstBooking.phone_number || ''}
   };
 
   window.submitBooking = async function() {
+    console.log('submitBooking called, selectedSlots:', [...selectedSlots]);
+    
+    // IMMEDIATELY disable button to prevent rapid clicks
+    const confirmBtn = document.getElementById('confirmBtn') || document.getElementById('confirmModalBtn');
+    if (confirmBtn && confirmBtn.disabled) {
+      console.log('Button already disabled, ignoring duplicate click');
+      showToast('⏱️ Please wait - your booking is being submitted...');
+      return;
+    }
+    
+    if (confirmBtn) {
+      confirmBtn.disabled = true;
+      confirmBtn.textContent = 'Processing...';
+      console.log('Button disabled immediately');
+    }
+    
+    // Require slots to be selected
+    if (selectedSlots.size === 0) {
+      showToast('⚠️ Please select at least one time slot');
+      if (confirmBtn) {
+        confirmBtn.disabled = false;
+        confirmBtn.textContent = 'Next';
+      }
+      return;
+    }
+
     // Read values from either the detailed booking modal or the compact confirm modal
     // Prefer values from the confirm modal when present (user-filled there)
     const nameField = document.getElementById('confirmName') || document.getElementById('bookingName');
@@ -1091,17 +1095,46 @@ Phone: ${firstBooking.phone_number || ''}
     const phone = phoneField ? phoneField.value.trim() : '';
     const notes = notesField ? notesField.value.trim() : '';
 
+    console.log('Form values:', { name, phone, notes });
+
     // Require name and phone
     if (!name || !phone) {
       showToast('⚠️ Please fill in your name and phone');
+      if (confirmBtn) {
+        confirmBtn.disabled = false;
+        confirmBtn.textContent = 'Next';
+      }
       return;
     }
 
-    const confirmBtn = document.getElementById('confirmBtn') || document.getElementById('confirmModalBtn');
-    if (confirmBtn) {
-      confirmBtn.disabled = true;
-      confirmBtn.textContent = 'Processing...';
+    // Duplicate prevention: Check if this is the same submission within 60 seconds
+    const currentSlots = [...selectedSlots].sort(); // Sort for consistent comparison
+    const now = Date.now();
+    const timeSinceLastSubmission = now - lastSubmissionTime;
+    const slotsMatch = currentSlots.length === lastSubmissionSlots.length && 
+                       currentSlots.every((slot, idx) => slot === lastSubmissionSlots[idx]);
+
+    console.log('Duplicate check:', { slotsMatch, timeSinceLastSubmission, lastSubmissionSlots, currentSlots });
+
+    if (slotsMatch && timeSinceLastSubmission < 60000 && lastSubmissionSlots.length > 0) {
+      console.log('DUPLICATE DETECTED! Blocking submission');
+      alert('⚠️ This time slot is no longer available.\n\nAnother player has already reserved your selected date and time. Please refresh your browser and choose a different available date or time slot.\n\nThank you for your understanding.');
+      showToast('⏱️ Please wait before submitting again');
+      if (confirmBtn) {
+        confirmBtn.disabled = false;
+        confirmBtn.textContent = 'Next';
+      }
+      return;
     }
+
+    // Update submission tracking IMMEDIATELY to prevent rapid duplicate clicks
+    // This must happen before any async operations so rapid clicks are caught
+    const previousSubmissionTime = lastSubmissionTime;
+    const previousSubmissionSlots = lastSubmissionSlots;
+    lastSubmissionTime = Date.now();
+    lastSubmissionSlots = [...currentSlots]; // Use currentSlots (already sorted)
+    
+    console.log('Submission tracking updated:', { lastSubmissionTime, lastSubmissionSlots });
 
     try {
       // Generate booking reference
@@ -1132,6 +1165,58 @@ Phone: ${firstBooking.phone_number || ''}
 
       const totalAmount = pendingBookingEntries.reduce((s, b) => s + (b.price || 0), 0);
 
+      // Pre-check: Verify all selected slots are still available before saving
+      const verifySlots = async () => {
+        const uniqueDates = [...new Set(pendingBookingEntries.map(e => e.booking_date))];
+        
+        for (const date of uniqueDates) {
+          try {
+            const { bookings } = await callBackendAPI('get-booked-slots', { bookingDate: date });
+            const bookedSlots = new Set();
+            
+            // Add confirmed and valid pending slots to booked set
+            bookings.forEach(b => {
+              if (b.status === 'confirmed') {
+                bookedSlots.add(`${b.time_slot}|${b.court}`);
+              } else if (b.status === 'pending') {
+                // Check if pending slot is still within the 60-minute window
+                const createdAt = new Date(b.created_at).getTime();
+                const now = Date.now();
+                const expiresAt = createdAt + (60 * 60 * 1000); // 60-minute hold
+                if (now < expiresAt) {
+                  bookedSlots.add(`${b.time_slot}|${b.court}`);
+                }
+              }
+            });
+            
+            // Check if any of our selected slots for this date are already booked
+            const slotsForDate = pendingBookingEntries.filter(e => e.booking_date === date);
+            for (const entry of slotsForDate) {
+              const slotKey = `${entry.time_slot}|${entry.court}`;
+              if (bookedSlots.has(slotKey)) {
+                return false; // Slot is unavailable
+              }
+            }
+          } catch (err) {
+            console.error('Error verifying slot availability:', err);
+            return false;
+          }
+        }
+        
+        return true; // All slots are available
+      };
+
+      // Verify slots before saving
+      const slotsAvailable = await verifySlots();
+      if (!slotsAvailable) {
+        showToast('⚠️ This time slot is no longer available.\n\nAnother player has already reserved your selected date and time. Please refresh your browser and choose a different available date or time slot.\n\nThank you for your understanding.');
+        if (confirmBtn) {
+          confirmBtn.disabled = false;
+          confirmBtn.textContent = 'Next';
+        }
+        return;
+      }
+
       // Persist pending booking entries to Supabase immediately so the admin dashboard can show them
       try {
         const bookingsToSave = pendingBookingEntries.map(entry => ({
@@ -1159,7 +1244,13 @@ Phone: ${firstBooking.phone_number || ''}
         });
       } catch (err) {
         console.error('Error saving pending booking:', err);
-        showToast('⚠️ Booking Update\n\nYour selected date and time has already been reserved by another player.\n\nPlease click Refresh and choose another available schedule.\n\nThank you for your understanding and support! 🏓');
+        // Restore previous submission tracking if save failed (allow retry)
+        lastSubmissionTime = previousSubmissionTime;
+        lastSubmissionSlots = previousSubmissionSlots;
+        console.log('Submission tracking restored due to error:', { lastSubmissionTime, lastSubmissionSlots });
+        
+        alert('⚠️ This time slot is no longer available.\n\nAnother player has already reserved your selected date and time. Please refresh your browser and choose a different available date or time slot.\n\nThank you for your understanding.');
+        showToast('⚠️ This time slot is no longer available.\n\nAnother player has already reserved your selected date and time. Please refresh your browser and choose a different available date or time slot.\n\nThank you for your understanding.');
         if (confirmBtn) {
           confirmBtn.disabled = false;
           confirmBtn.textContent = 'Next';
@@ -1173,6 +1264,7 @@ Phone: ${firstBooking.phone_number || ''}
         const slotKey = `${date}|${slot}|${courtIndex}`;
         pendingSlotsWithTimer[slotKey] = Date.now(); // 60-minute pending timer
       });
+      
       startPendingPoll(); // Start polling to detect admin confirmations
 
       // Close booking/confirm modal and show the booking submitted summary
@@ -1397,7 +1489,7 @@ Phone: ${firstBooking.phone_number || ''}
 
   receiptBookingReference = '';
   receiptBookingTotal = 0;
-  let receiptTextExtracted = '';
+  // Receipt upload functionality removed - simplified to payment via Messenger only
 
   let receiptTimerInterval = null;
   let receiptModalTimeout = null;
@@ -1423,297 +1515,24 @@ Phone: ${firstBooking.phone_number || ''}
     location.reload();
   };
 
-  window.openReceiptModal = function(reference, totalAmount) {
-    clearReceiptModalTimer();
-    // Use global variables as fallback if parameters aren't provided
-    receiptBookingReference = reference || receiptBookingReference || '';
-    receiptBookingTotal = totalAmount != null ? totalAmount : receiptBookingTotal;
-    receiptTextExtracted = '';
-    receiptFile = null;
-    receiptRefUploaded = false;
-    updateSuccessReceiptUploadState();
-
-    const bookingRefField = document.getElementById('receiptBookingRef');
-    const refField = document.getElementById('receiptRef');
-    const amountField = document.getElementById('receiptAmount');
-    const dateTimeField = document.getElementById('receiptDateTime');
-    const statusField = document.getElementById('receiptScanStatus');
-    const mismatchField = document.getElementById('receiptMismatch');
-    const verifyBtn = document.getElementById('verifyReceiptBtn');
-    const previewContainer = document.getElementById('receiptPreviewContainer');
-    const fileInput = document.getElementById('receiptFileInput');
-    const previewImg = document.getElementById('receiptPreview');
-    const removeBtn = document.getElementById('receiptRemoveBtn');
-
-    if (bookingRefField) bookingRefField.textContent = receiptBookingReference || '—';
-    if (refField) refField.textContent = 'Waiting for receipt scan...';
-    if (amountField) amountField.textContent = receiptBookingTotal ? `₱${receiptBookingTotal.toLocaleString()}` : '₱0';
-    if (dateTimeField) dateTimeField.textContent = 'Waiting for upload...';
-    if (statusField) statusField.textContent = 'Upload the GCash receipt image to verify payment.';
-    if (mismatchField) mismatchField.textContent = '';
-    if (verifyBtn) verifyBtn.disabled = true;
-    if (previewContainer) previewContainer.style.display = 'none';
-    if (fileInput) fileInput.value = '';
-    if (previewImg) previewImg.src = '';
-    if (removeBtn) removeBtn.style.display = 'none';
-    const timerField = document.getElementById('receiptTimer');
-    if (timerField) timerField.textContent = 'Time remaining: 30:00';
-
-    const expiry = Date.now() + 60 * 60 * 1000;
-    receiptTimerInterval = setInterval(() => {
-      const remainingMs = expiry - Date.now();
-      if (remainingMs <= 0) {
-        if (timerField) timerField.textContent = 'Time remaining: 00:00';
-        clearReceiptModalTimer();
-        closeReceiptModal();
-        showToast('Payment time expired. Please reopen the receipt upload and try again.');
-        return;
-      }
-      const minutes = Math.floor(remainingMs / 60000);
-      const seconds = Math.floor((remainingMs % 60000) / 1000);
-      if (timerField) timerField.textContent = `Time remaining: ${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-    }, 1000);
-    receiptModalTimeout = setTimeout(() => {
-      clearReceiptModalTimer();
-      closeReceiptModal();
-      showToast('Payment time expired. Please reopen the receipt upload and try again.');
-    }, 60 * 60 * 1000);
-
-    document.getElementById('receiptModal').classList.add('open');
-  };
-
   window.closeReceiptModal = function() {
-    clearReceiptModalTimer();
-    document.getElementById('receiptModal').classList.remove('open');
-    clearReceiptUpload();
+    // Receipt upload removed
   };
 
-  function parseReceiptText(text) {
-    const cleaned = (text || '')
-      .replace(/\r/g, '\n')
-      .replace(/\t/g, ' ')
-      .replace(/[\u00A0\u202F\u2060]/g, ' ')
-      .replace(/\s+/g, ' ')
-      .trim();
-    const upper = cleaned.toUpperCase();
+  function parseReceiptText() { return { reference: '', amount: null }; }
+  function setReceiptFields() {}
+  function getParsedReceiptData() { return { reference: '', amount: null }; }
+  function updateReceiptVerificationState() {}
+  function updateSuccessReceiptUploadState() {}
+  function clearReceiptModalTimer() {}
+  async function decodeReceiptImage() { return { canvas: null, dataUrl: '' }; }
 
-    const dateMatch = upper.match(/(\d{1,2}[\/\-.]\d{1,2}[\/\-.]\d{2,4})|(\d{4}[\/\-.]\d{1,2}[\/\-.]\d{1,2})/);
-    const timeMatch = upper.match(/(\d{1,2}:\d{2}\s*(AM|PM))|(\d{1,2}:\d{2})/);
-    const refMatch = upper.match(/(?:RECEIPT\s*REFERENCE|RECEIPT\s*REF(?:ERENCE)?|RECEIPT\s*NO|RECEIPT\s*#|REF(?:ERENCE)?(?:\s*NO\.?)?|RRN|REFERENCE(?:\s*NO)?|REF#|REFERENCE#|BOOKING\s*REF)[\s:\-]*([A-Z0-9\-\s]{4,})/i);
-    const fallbackRefMatch = upper.match(/(?:REF(?:\.|\s*NO\.?|\s*NUMBER)?|RRN|REFERENCE)[\s:\-]*([0-9][0-9\s\-]{8,})/i)
-      || upper.match(/\b(\d{4}\s*\d{3}\s*\d{6,7})\b/);
-    const amountMatch = upper.match(/(?:TOTAL\s*AMOUNT\s*SENT|TOTAL\s*AMOUNT|TOTAL\s*PAID|AMOUNT\s*PAID|AMOUNT\s*SENT|GRAND\s*TOTAL|AMOUNT|TOTAL)(?:\s*[:\-]?\s*)₱?\s*([\d,]+\.\d{2}|[\d,]+)/i)
-      || upper.match(/₱\s*([\d,]+\.\d{1,2}|[\d,]+)/);
-
-    const amount = amountMatch ? Number(amountMatch[1].replace(/,/g, '')) : null;
-    const extractedRef = (refMatch || fallbackRefMatch) ? (refMatch || fallbackRefMatch)[1].trim() : '';
-    const digitsMatch = cleaned.match(/\b(\d(?:[\s\-]?\d){12})\b/);
-    const extracted13Digits = digitsMatch ? digitsMatch[1].replace(/\D/g, '') : extractedRef.replace(/\D/g, '').slice(0, 13);
-    const reference = extracted13Digits.length === 13 ? extracted13Digits : '';
-    const date = dateMatch ? dateMatch[0] : '';
-    const time = timeMatch ? timeMatch[0] : '';
-
-    return { raw: cleaned, date, time, amount, reference };
-  }
-
-  function setReceiptFields(parsed) {
-    const refField = document.getElementById('receiptRef');
-    const amountField = document.getElementById('receiptAmount');
-    const dateTimeField = document.getElementById('receiptDateTime');
-
-    if (refField) refField.textContent = parsed.reference || 'Not found';
-    if (amountField) amountField.textContent = parsed.amount != null ? `₱${parsed.amount.toLocaleString()}` : `₱${receiptBookingTotal.toLocaleString()}`;
-    if (dateTimeField) dateTimeField.textContent = [parsed.date, parsed.time].filter(Boolean).join(' ') || 'Date / time not found';
-  }
-
-
-
-  function getParsedReceiptData() {
-    return receiptTextExtracted ? parseReceiptText(receiptTextExtracted) : { reference: '', amount: null };
-  }
-
-  function updateReceiptVerificationState() {
-    const verifyBtn = document.getElementById('verifyReceiptBtn');
-    const statusEl = document.getElementById('receiptScanStatus');
-    if (!verifyBtn) return;
-
-    const parsed = getParsedReceiptData();
-    const reference = parsed.reference;
-    const amount = parsed.amount;
-    const hasReceiptFile = Boolean(receiptFile);
-    const amountMissing = amount == null;
-    const amountMatches = amountMissing ? false : Number(amount.toFixed(2)) === Number(receiptBookingTotal.toFixed(2));
-    const valid = hasReceiptFile && reference && amountMatches;
-
-    verifyBtn.disabled = !valid;
-
-    if (statusEl) {
-      if (!hasReceiptFile) {
-        statusEl.textContent = 'Upload the receipt screenshot to continue.';
-      } else if (!reference) {
-        statusEl.textContent = 'Receipt reference could not be detected. Try a clearer photo.';
-      } else if (amountMissing) {
-        statusEl.textContent = 'Receipt amount could not be detected. Try a clearer photo.';
-      } else if (!amountMatches) {
-        statusEl.textContent = 'Receipt total does not match booking total. Check the amount.';
-      } else {
-        statusEl.textContent = 'Ready to verify receipt.';
-      }
-    }
-  }
-
-  async function decodeReceiptImage(file) {
-    const reader = new FileReader();
-    return new Promise((resolve, reject) => {
-      reader.onerror = () => reject(reader.error);
-      reader.onload = () => {
-        const img = new Image();
-        img.onload = () => {
-          const canvas = document.createElement('canvas');
-          canvas.width = img.naturalWidth;
-          canvas.height = img.naturalHeight;
-          const ctx = canvas.getContext('2d');
-          ctx.drawImage(img, 0, 0);
-          resolve({ canvas, dataUrl: reader.result });
-        };
-        img.onerror = reject;
-        img.src = reader.result;
-      };
-      reader.readAsDataURL(file);
-    });
-  }
-
-  window.handleReceiptFile = async function(event) {
-    const file = event.target.files && event.target.files[0];
-    if (!file) return;
-    receiptFile = file;
-    const statusEl = document.getElementById('receiptScanStatus');
-    const previewContainer = document.getElementById('receiptPreviewContainer');
-    const previewImg = document.getElementById('receiptPreview');
-    const verifyBtn = document.getElementById('verifyReceiptBtn');
-    const mismatchEl = document.getElementById('receiptMismatch');
-    const removeBtn = document.getElementById('receiptRemoveBtn');
-    const uploadBtn = document.getElementById('receiptUploadBtn');
-    const uploadNote = document.getElementById('receiptUploadedNote');
-    const fileInput = document.getElementById('receiptFileInput');
-
-    if (statusEl) statusEl.textContent = 'Reading receipt and scanning QR...';
-    if (mismatchEl) mismatchEl.textContent = '';
-    if (previewContainer) previewContainer.style.display = 'none';
-    if (verifyBtn) verifyBtn.disabled = true;
-    if (removeBtn) removeBtn.style.display = 'none';
-    if (uploadBtn) uploadBtn.disabled = true;
-    if (fileInput) fileInput.disabled = true;
-    if (uploadNote) {
-      uploadNote.style.display = 'none';
-    }
-
-    try {
-      const { canvas, dataUrl } = await decodeReceiptImage(file);
-      if (previewImg) previewImg.src = dataUrl;
-      if (previewContainer) previewContainer.style.display = 'flex';
-      if (removeBtn) removeBtn.style.display = 'inline-flex';
-
-      let qrText = '';
-      if (window.jsQR) {
-        try {
-          const ctx = canvas.getContext('2d');
-          const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-          const qr = jsQR(imageData.data, imageData.width, imageData.height);
-          if (qr && qr.data) {
-            qrText = qr.data;
-          }
-        } catch (e) {
-          console.warn('QR scan failed', e);
-        }
-      }
-
-      let parsedText = '';
-      if (window.Tesseract && typeof window.Tesseract.recognize === 'function') {
-        const result = await Tesseract.recognize(canvas, 'eng', {
-          logger: m => {
-            if (m.status === 'recognizing text' && m.progress === 1) {
-              console.log('Tesseract completed');
-            }
-          }
-        });
-        parsedText = result?.data?.text || '';
-      }
-
-      if (!parsedText) {
-        if (statusEl) statusEl.textContent = 'Receipt text could not be extracted. Please try a clearer image.';
-        updateReceiptVerificationState();
-        return;
-      }
-
-      receiptTextExtracted = parsedText;
-      const parsed = parseReceiptText(parsedText);
-      setReceiptFields(parsed);
-
-      let mismatchMessage = '';
-      if (parsed.amount != null && Number(parsed.amount.toFixed(2)) !== Number(receiptBookingTotal.toFixed(2))) {
-        mismatchMessage += `Amount mismatch: receipt shows ₱${parsed.amount.toLocaleString()} but booking total is ₱${receiptBookingTotal.toLocaleString()}. `;
-      }
-      if (statusEl) {
-        const summary = [parsed.date, parsed.time, parsed.reference, parsed.amount != null ? `₱${parsed.amount.toLocaleString()}` : null].filter(Boolean).join(' · ');
-        statusEl.textContent = qrText ? `QR scanned · ${summary}` : `Receipt data extracted · ${summary}`;
-      }
-      if (mismatchEl) mismatchEl.textContent = mismatchMessage;
-      const hasReceiptRef = Boolean(parsed.reference);
-      receiptRefUploaded = hasReceiptRef;
-      updateSuccessReceiptUploadState();
-      updateReceiptVerificationState();
-
-      if (uploadNote && hasReceiptRef) {
-        uploadNote.style.display = 'block';
-        uploadNote.textContent = '✅ Receipt uploaded!';
-      }
-
-      if (!hasReceiptRef) {
-        if (uploadBtn) {
-          uploadBtn.disabled = false;
-        }
-        if (fileInput) fileInput.disabled = false;
-      }
-
-    } catch (err) {
-      console.error('Receipt upload error', err);
-      if (statusEl) statusEl.textContent = 'Failed to read receipt. Please upload a clear image.';
-      if (uploadBtn) uploadBtn.disabled = false;
-      if (fileInput) fileInput.disabled = false;
-      if (uploadNote) uploadNote.style.display = 'none';
-      receiptRefUploaded = false;
-      updateSuccessReceiptUploadState();
-    }
+  window.handleReceiptFile = function() {
+    showToast('Receipt upload has been simplified. Please pay via Messenger with your booking reference.');
   };
 
   window.clearReceiptUpload = function() {
-    receiptTextExtracted = '';
-    receiptFile = null;
-    const statusEl = document.getElementById('receiptScanStatus');
-    const previewContainer = document.getElementById('receiptPreviewContainer');
-    const previewImg = document.getElementById('receiptPreview');
-    const previewRemoveBtn = document.getElementById('receiptRemoveBtn');
-    const fileInput = document.getElementById('receiptFileInput');
-    const verifyBtn = document.getElementById('verifyReceiptBtn');
-    const mismatchEl = document.getElementById('receiptMismatch');
-    const uploadBtn = document.getElementById('receiptUploadBtn');
-    const uploadNote = document.getElementById('receiptUploadedNote');
-
-    if (previewImg) previewImg.src = '';
-    if (previewContainer) previewContainer.style.display = 'none';
-    if (previewRemoveBtn) previewRemoveBtn.style.display = 'none';
-    if (fileInput) {
-      fileInput.value = '';
-      fileInput.disabled = false;
-    }
-    if (uploadBtn) uploadBtn.disabled = false;
-    if (uploadNote) uploadNote.style.display = 'none';
-    if (verifyBtn) verifyBtn.disabled = true;
-    if (statusEl) statusEl.textContent = 'Receipt upload removed. Choose a different image.';
-    if (mismatchEl) mismatchEl.textContent = '';
-    receiptRefUploaded = false;
-    updateSuccessReceiptUploadState();
+    // Receipt upload removed
   };
 
   // NOTE: For full protection against race conditions, add a unique DB constraint
@@ -1759,192 +1578,8 @@ Phone: ${firstBooking.phone_number || ''}
     }
   }
 
-  window.verifyReceipt = async function() {
-    if (!receiptFile) {
-      showToast('Upload the receipt screenshot first.');
-      return;
-    }
-    const parsed = getParsedReceiptData();
-    const receiptReference = parsed.reference;
-    const receiptAmount = parsed.amount;
-    const mismatchEl = document.getElementById('receiptMismatch');
-    
-    // Determine whether this booking already exists in Supabase (from search or earlier save)
-    const isExistingBooking = Boolean(pendingBookingEntries[0]?.fromExistingBooking || pendingBookingEntries[0]?.persistedInDb);
-    
-    console.log('Parsed receipt data:', { receiptReference, receiptAmount, receiptBookingTotal: receiptBookingTotal });
-    console.log('Full booking entry:', JSON.stringify(pendingBookingEntries[0], null, 2));
-    console.log('Reference code from entry:', pendingBookingEntries[0]?.reference_code);
-    console.log('Is existing booking?', isExistingBooking);
-    
-    if (!receiptReference) {
-      if (mismatchEl) mismatchEl.textContent = 'Receipt reference could not be detected from the image. Please try a clearer photo.';
-      return;
-    }
-    if (receiptAmount == null) {
-      if (mismatchEl) mismatchEl.textContent = 'Receipt amount could not be detected from the image. Please try a clearer photo.';
-      return;
-    }
-    if (Number(receiptAmount.toFixed(2)) !== Number(receiptBookingTotal.toFixed(2))) {
-      if (mismatchEl) mismatchEl.textContent = 'Receipt total amount does not match the booking total.';
-      return;
-    }
-
-    if (!pendingBookingEntries || pendingBookingEntries.length === 0) {
-      showToast('Booking data is missing. Please restart the booking process.');
-      return;
-    }
-
-    if (!isExistingBooking) {
-      const slotCheck = await checkSlotAvailability(pendingBookingEntries);
-      if (!slotCheck.ok) {
-        const conflictText = slotCheck.conflicts.length > 0
-          ? slotCheck.conflicts.map(conflict => `${conflict.court} ${conflict.booking_date} ${conflict.booking_time}`).join('; ')
-          : 'Could not verify slot availability.';
-        const message = slotCheck.conflicts.length > 0
-          ? `⚠️ **Booking Update**\n\nYour selected date and time has already been reserved by another player.\n\nPlease click **Refresh** and choose another available schedule.\n\nThank you for your understanding and support! 🏓`
-          : 'Could not verify slot availability. Please try again.';
-        if (mismatchEl) mismatchEl.textContent = message;
-        showToast(message);
-        return;
-      }
-    }
-
-    // Check if receipt reference already exists in database to prevent duplicates
-    try {
-      const checkResult = await callBackendAPI('check-duplicate-receipt', { 
-        receipt_reference: parsed.reference 
-      });
-      
-      if (checkResult.exists) {
-        if (mismatchEl) mismatchEl.textContent = 'This receipt has already been used. Duplicate booking not allowed.';
-        showToast('Duplicate receipt detected. This receipt already exists in the system.');
-        return;
-      }
-    } catch (err) {
-      console.error('Error checking for duplicate receipt:', err);
-      if (mismatchEl) mismatchEl.textContent = 'Error checking receipt. Please try again.';
-      return;
-    }
-
-    // Check if this is an existing booking (from database search) or a new booking
-    // (isExistingBooking already declared above for slot availability check)
-    
-    let updateError = null;
-    try {
-      if (isExistingBooking) {
-        // Update existing booking with receipt - stays pending until admin confirms
-        const result = await callBackendAPI('update-booking-receipt', {
-          reference_code: pendingBookingEntries[0].reference_code,
-          receipt_reference: parsed.reference,
-          status: 'pending'
-        });
-        console.log('Update receipt API response:', result);
-        if (!result.success) {
-          updateError = new Error(result.error || 'Failed to update booking');
-        }
-      } else {
-        // Insert new booking
-        const bookingsToInsert = pendingBookingEntries.map(entry => ({
-          booking_date: entry.booking_date,
-          booking_time: entry.booking_time,
-          time_slot: entry.time_slot,
-          court: entry.court,
-          court_name: entry.court_name,
-          customer_name: entry.customer_name,
-          phone_number: entry.phone_number,
-          reference_code: entry.reference_code,
-          receipt_reference: parsed.reference,
-          status: 'pending',
-          price: entry.price,
-          rate: entry.rate,
-          notes: entry.notes
-        }));
-        console.log('Inserting new bookings:', bookingsToInsert);
-        const result = await callBackendAPI('bulk-insert-bookings', { bookings: bookingsToInsert });
-        console.log('Insert bookings API response:', result);
-        if (!result.success) {
-          updateError = new Error(result.error || 'Failed to insert bookings');
-        }
-      }
-    } catch (err) {
-      updateError = err;
-    }
-
-    if (updateError) {
-      console.error('Receipt verification error:', updateError);
-      console.error('API error body:', updateError?.body);
-      console.error('Error details:', JSON.stringify(updateError, null, 2));
-      const errorText = updateError?.body?.message || updateError?.message || updateError?.body?.error || updateError?.error_description || updateError?.details || JSON.stringify(updateError);
-      const errorMsg = String(errorText || 'Unknown database error');
-      let userMessage = `Booking update failed: ${errorMsg}`;
-
-      if (mismatchEl) mismatchEl.textContent = userMessage;
-      showToast(userMessage);
-
-      await loadAndRenderTable();
-      return;
-    }
-
-    console.log('Receipt verification successful:', { referenceCode: receiptBookingReference, parsed });
-
-    // No server-side email sending configured in this build.
-
-    const entriesToRender = [...pendingBookingEntries];
-    
-    // For existing bookings (already in database), skip pending slot marking
-    // For new bookings, mark slots as pending with 60-minute timer
-    if (!isExistingBooking) {
-      entriesToRender.forEach(entry => {
-        const courtIndex = COURTS.indexOf(entry.court_name || entry.court);
-        const key = `${entry.booking_date}|${entry.booking_time || entry.time_slot}|${courtIndex}`;
-        pendingSlotsWithTimer[key] = Date.now(); // 60-minute pending timer
-      });
-      startPendingPoll();
-    }
-
-    const successName = entriesToRender[0]?.customer_name || '';
-    const successCourt = entriesToRender[0]?.court_name || entriesToRender[0]?.court || '';
-    const successDate = entriesToRender[0]?.booking_date ? formatDateDisplay(entriesToRender[0].booking_date) : '';
-    const successTime = entriesToRender[0]?.booking_time || entriesToRender[0]?.time_slot || '';
-    const successPaidTotal = `₱${entriesToRender.reduce((sum, entry) => sum + (entry.price || entry.rate || 0), 0).toLocaleString()}`;
-
-    pendingBookingEntries = [];
-    selectedSlots.clear();
-    updateCart();
-    await loadAndRenderTable();
-
-    closeReceiptModal();
-    closeModal(); // Close the search booking modal as well
-    document.getElementById('successTitle').textContent = 'Booking Submitted';
-    document.getElementById('successMessage').textContent = isExistingBooking 
-      ? `Receipt uploaded for ${receiptBookingReference}. Awaiting admin approval.`
-      : `Booking submitted for ${receiptBookingReference}. Awaiting admin approval.`;
-    document.getElementById('successName').textContent = successName;
-    const successCourtEl = document.getElementById('successCourt');
-    const successDateEl = document.getElementById('successDate');
-    const successTimeEl = document.getElementById('successTime');
-    const successPaidTotalEl = document.getElementById('successPaidTotal');
-    const scanTitleAmountEl = document.getElementById('scanTitleAmount');
-    const successRefDisplayEl = document.getElementById('successRefDisplay');
-    const successRefDisplayBottomEl = document.getElementById('successRefDisplayBottom');
-
-    if (successCourtEl) successCourtEl.textContent = successCourt;
-    if (successDateEl) successDateEl.textContent = successDate;
-    if (successTimeEl) successTimeEl.textContent = successTime;
-    if (successPaidTotalEl) successPaidTotalEl.textContent = successPaidTotal;
-    if (scanTitleAmountEl) scanTitleAmountEl.textContent = successPaidTotal;
-    if (successRefDisplayEl) successRefDisplayEl.textContent = receiptBookingReference;
-    if (successRefDisplayBottomEl) successRefDisplayBottomEl.textContent = receiptBookingReference;
-    renderSuccessBookingItems(entriesToRender);
-    document.getElementById('successModal').classList.add('open');
-    bookingSubmissionTime = Date.now();
-    receiptRefUploaded = true;
-    updateSuccessReceiptUploadState();
-    const statusNote = document.getElementById('receiptUploadedStatus');
-    if (statusNote) {
-      statusNote.style.display = 'block';
-    }
+  window.verifyReceipt = function() {
+    showToast('Payment processing via Messenger. Please send your booking reference and GCash receipt proof.');
   };
 
   // Close modal on overlay click
