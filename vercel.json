@@ -19,6 +19,22 @@
       "use": "@vercel/static"
     },
     {
+      "src": "about-us.html",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "privacy-policy.html",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "terms-of-service.html",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "contact-us.html",
+      "use": "@vercel/static"
+    },
+    {
       "src": "css/**",
       "use": "@vercel/static"
     },
