@@ -207,12 +207,12 @@
     /* MODAL */
     .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 1000; align-items: center; justify-content: center; contain: layout style paint; opacity: 0; transition: opacity 0.2s ease; }
     .modal-overlay.open { display: flex; opacity: 1; }
-    .modal { background: linear-gradient(135deg, rgba(0,0,0,0.98), rgba(10,0,20,0.99)); border: 2px solid rgba(255,153,207,0.4); border-radius: 18px; width: 90%; max-width: 500px; padding: 28px; box-shadow: 0 20px 60px rgba(0,0,0,0.8), inset 0 1px 1px rgba(0,255,136,0.1); max-height: 90vh; overflow-y: auto; contain: layout style paint; opacity: 0; transition: opacity 0.2s ease; }
+    .modal { background: linear-gradient(135deg, rgba(0,0,0,0.98), rgba(10,0,20,0.99)); border: 2px solid rgba(255,153,207,0.4); border-radius: 18px; width: 90%; max-width: 520px; padding: 24px; box-shadow: 0 20px 60px rgba(0,0,0,0.8), inset 0 1px 1px rgba(0,255,136,0.1); max-height: 90vh; overflow-y: auto; contain: layout style paint; opacity: 0; transition: opacity 0.2s ease; }
     .modal-overlay.open .modal { opacity: 1; }
     @keyframes slideUp { from { opacity: 0; } to { opacity: 1; } }
     .modal-top { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
     .modal-top .check-icon { width: 36px; height: 36px; background: rgba(255,153,207,0.14); border: 1px solid rgba(255,153,207,0.4); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--accent); font-size: 1rem; }
-    .modal h2 { font-size: 1.25rem; font-weight: 800; color: white; }
+    .modal h2 { font-size: 1.2rem; font-weight: 800; color: white; }
     .modal .subtitle { font-size: 0.85rem; color: var(--gray-text); margin-bottom: 20px; }
     .modal-progress { height: 4px; background: #1a1a1a; border-radius: 2px; margin-bottom: 20px; }
     .modal-progress-fill { height: 100%; background: linear-gradient(90deg, var(--accent-deep), var(--accent)); border-radius: 2px; width: 80%; }
@@ -264,9 +264,9 @@
       background: rgba(255,255,255,0.03);
       border: none;
       border-radius: 24px;
-      padding: 22px 22px 18px;
+      padding: 20px 18px 16px;
       display: grid;
-      gap: 16px;
+      gap: 14px;
     }
     .success-download-card {
       background: transparent;
@@ -291,43 +291,43 @@
     .success-body-box .status-row { margin-bottom: 0; }
     .success-body-box .save-copy-checkbox { margin-bottom: 0; }
     .success-body-box .success-pay-section { margin-top: 10px; }
-    .success-pay-section { display: none; margin-top: 18px; padding: 18px; border-radius: 20px; background: rgba(255,255,255,0.03); border: none; }
+    .success-pay-section { display: none; margin-top: 14px; padding: 16px; border-radius: 20px; background: rgba(255,255,255,0.03); border: none; }
     .success-pay-section .scan-title { font-weight: 700; color: #f8fafc; margin-bottom: 8px; }
     .success-pay-section .scan-note { color: #c4b5fd; font-size: 0.95rem; margin-bottom: 12px; }
-    .success-pay-section .scan-card { display: grid; gap: 14px; padding: 16px; border-radius: 18px; background: rgba(255,255,255,0.02); border: none; }
+    .success-pay-section .scan-card { display: grid; gap: 12px; padding: 14px; border-radius: 18px; background: rgba(255,255,255,0.02); border: none; }
     .success-pay-section .scan-card-title { font-weight: 700; color: #f8fafc; }
-    .success-pay-section .scan-card img { width: 100%; max-width: 260px; margin: 0 auto; border-radius: 18px; border: none; }
+    .success-pay-section .scan-card img { width: 100%; max-width: 240px; margin: 0 auto; border-radius: 18px; border: none; }
     .success-pay-section .scan-card p { color: #c4b5fd; font-size: 0.94rem; line-height: 1.6; }
     .success-pay-section .btn-upload-receipt { margin-top: 8px; }
-    .next-steps-card { display: none; background: rgba(22, 27, 36, 0.95); border: 1px solid rgba(236,72,153,0.16); border-radius: 18px; padding: 18px; display: grid; gap: 12px; margin-top: 16px; }
+    .next-steps-card { display: none; background: rgba(22, 27, 36, 0.95); border: 1px solid rgba(236,72,153,0.16); border-radius: 18px; padding: 16px; display: grid; gap: 10px; margin-top: 14px; }
     .next-steps-heading { font-size: 0.85rem; font-weight: 800; letter-spacing: 0.18em; color: #f8fafc; text-transform: uppercase; }
     .next-steps-list { list-style: none; display: grid; gap: 10px; padding: 0; margin: 0; }
-    .next-steps-list li { display: grid; grid-template-columns: auto 1fr; gap: 10px; align-items: flex-start; color: #c4b5fd; font-size: 0.94rem; line-height: 1.6; }
+    .next-steps-list li { display: grid; grid-template-columns: auto 1fr; gap: 8px; align-items: flex-start; color: #c4b5fd; font-size: 0.92rem; line-height: 1.5; }
     .next-steps-list li strong { color: #f8fafc; font-weight: 700; }
     .btn-messenger { display: inline-flex; align-items: center; justify-content: center; width: 100%; padding: 13px 16px; border-radius: 14px; background: linear-gradient(135deg, #ec4899, #db2777); color: #fff; font-weight: 700; text-decoration: none; transition: all 0.2s ease; border: 1px solid rgba(236, 72, 153, 0.4); letter-spacing: 0.3px; font-size: 0.95rem; }
     .btn-messenger:hover { box-shadow: 0 8px 20px rgba(236, 72, 153, 0.35); }
     .btn-messenger-icon { display: inline-flex; align-items: center; justify-content: center; color: #fff; }
     .receipt-uploaded-note { color: #34d399; font-weight: 700; margin-top: 10px; text-align: center; }
     .success-modal .success-icon { display: flex; justify-content: center; margin: 0 auto 18px; color: #ec4899; }
-    .success-subtitle { color: #c4b5fd; margin-top: 10px; line-height: 1.6; }
-    .success-summary-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-top: 22px; }
-    .summary-pill { display: flex; flex-direction: column; gap: 6px; padding: 14px 16px; background: rgba(255,255,255,0.04); border: none; border-radius: 16px; }
+    .success-subtitle { color: #c4b5fd; margin-top: 8px; line-height: 1.5; font-size: 0.92rem; }
+    .success-summary-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin-top: 16px; }
+    .summary-pill { display: flex; flex-direction: column; gap: 5px; padding: 13px 15px; background: rgba(255,255,255,0.04); border: none; border-radius: 16px; }
     .summary-pill span { color: #94a3af; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; }
     .summary-pill strong { font-size: 0.96rem; font-weight: 800; color: #f8fafc; }
-    .paid-total-card { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 16px 18px; margin-top: 18px; background: linear-gradient(135deg, rgba(236,72,153,0.16), rgba(236,72,153,0.08)); border: none; border-radius: 18px; }
+    .paid-total-card { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 15px 16px; margin-top: 16px; background: linear-gradient(135deg, rgba(236,72,153,0.16), rgba(236,72,153,0.08)); border: none; border-radius: 18px; }
     .paid-total-card span { color: #fde68a; font-size: 0.8rem; letter-spacing: 0.12em; text-transform: uppercase; }
     .paid-total-card strong { font-size: 1.3rem; font-weight: 900; color: #fff; }
-    .success-bookings-list { margin-top: 18px; display: grid; gap: 12px; }
-    .success-booking-item { display: grid; grid-template-columns: 1fr auto; gap: 12px; align-items: flex-start; padding: 14px 16px; background: rgba(255,255,255,0.04); border: none; border-radius: 16px; }
+    .success-bookings-list { margin-top: 16px; display: grid; gap: 10px; }
+    .success-booking-item { display: grid; grid-template-columns: 1fr auto; gap: 10px; align-items: flex-start; padding: 13px 15px; background: rgba(255,255,255,0.04); border: none; border-radius: 16px; }
     .success-booking-item-info { display: grid; gap: 4px; }
     .success-booking-item-title { font-weight: 700; color: #f8fafc; }
     .success-booking-item-meta { color: #94a3af; font-size: 0.92rem; }
     .success-booking-item-right { display: grid; gap: 8px; justify-items: end; align-items: center; }
     .success-booking-item-price { font-weight: 800; color: #ec4899; }
-    .booking-ref-card { margin-top: 20px; padding: 18px 20px; background: rgba(255,255,255,0.03); border: none; border-radius: 18px; text-align: center; }
+    .booking-ref-card { margin-top: 16px; padding: 16px 18px; background: rgba(255,255,255,0.03); border: none; border-radius: 18px; text-align: center; }
     .booking-ref-label { font-size: 0.75rem; color: #94a3af; letter-spacing: 0.16em; text-transform: uppercase; margin-bottom: 8px; }
     .booking-ref-code { font-size: 1rem; font-weight: 800; letter-spacing: 0.16em; color: #ec4899; }
-    .status-row { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-top: 18px; }
+    .status-row { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-top: 14px; }
     .status-note { color: #f9a8d4; font-size: 0.92rem; }
     .success-note { display:none; }
     .success-screenshot-note { display:none; }
@@ -337,13 +337,13 @@
     @keyframes mintGlow { 0%, 100% { box-shadow: 0 0 12px rgba(16, 185, 129, 0.25); } 50% { box-shadow: 0 0 20px rgba(16, 185, 129, 0.45); } }
     .save-copy-checkbox {
       display: flex;
-      gap: 14px;
+      gap: 12px;
       align-items: flex-start;
       border: 1px solid rgba(236,72,153,0.24);
       background: rgba(236,72,153,0.06);
-      padding: 16px;
+      padding: 14px 15px;
       border-radius: 18px;
-      margin-top: 18px;
+      margin-top: 16px;
       cursor: pointer;
       transition: border-color 0.2s, background 0.2s;
     }
@@ -654,6 +654,21 @@
       .venue-header h1 { font-size: 1.35rem; }
       .calendar-card { position: static; }
       .cart-bar { padding: 12px 16px; }
+      
+      /* Tablet/Medium Screen Optimization */
+      .modal { width: 96%; max-width: 520px; padding: 20px; }
+      .success-modal { width: 96%; max-width: 580px; padding: 20px; }
+      .success-body-box { padding: 18px 16px 14px; gap: 14px; }
+      .success-summary-grid { grid-template-columns: repeat(2, 1fr); gap: 11px; margin-top: 18px; }
+      .summary-pill { padding: 13px 15px; }
+      .paid-total-card { padding: 15px 17px; margin-top: 16px; }
+      .success-bookings-list { margin-top: 16px; gap: 11px; }
+      .success-booking-item { padding: 13px 15px; gap: 11px; }
+      .booking-ref-card { margin-top: 18px; padding: 16px 18px; }
+      .save-copy-checkbox { padding: 14px 15px; margin-top: 16px; gap: 13px; }
+      .next-steps-card { padding: 16px; margin-top: 14px; gap: 11px; }
+      .next-steps-list li { font-size: 0.91rem; }
+      
       body { background: linear-gradient(135deg, #0a0a0a 0%, #1a0f1a 20%, #0d0d0f 50%, #0a1515 80%, #000000 100%); }
       nav, .hero-banner-image, .calendar-card, .table-panel, .cart-bar, .modal { box-shadow: none !important; }
       .court-label { backdrop-filter: none; background: rgba(0,0,0,0.78); }
@@ -661,7 +676,32 @@
     @media (max-width: 480px) {
       main { padding: 12px 12px 40px; }
       .venue-header h1 { font-size: 1.15rem; }
-      .modal { width: 95%; padding: 18px; }
+      .modal { width: 98%; max-width: calc(100vw - 16px); padding: 16px; margin: 0 auto; }
+      .success-modal { width: 98%; max-width: calc(100vw - 16px); padding: 16px; margin: 0 auto; }
+      
+      /* Success Modal Mobile Optimization */
+      .success-body-box { padding: 16px 14px 12px; gap: 12px; }
+      .success-summary-grid { grid-template-columns: 1fr; gap: 10px; margin-top: 16px; }
+      .summary-pill { padding: 12px 14px; }
+      .paid-total-card { padding: 14px 16px; margin-top: 14px; }
+      .paid-total-card strong { font-size: 1.15rem; }
+      .success-bookings-list { margin-top: 14px; gap: 10px; }
+      .success-booking-item { padding: 12px 14px; gap: 10px; }
+      .booking-ref-card { margin-top: 14px; padding: 14px 16px; }
+      .booking-ref-code { font-size: 0.9rem; letter-spacing: 0.12em; }
+      .save-copy-checkbox { padding: 12px 14px; margin-top: 14px; gap: 12px; }
+      .save-copy-checkbox label { font-size: 0.9rem; }
+      
+      .modal h2 { font-size: 1.1rem; }
+      .modal .subtitle { font-size: 0.8rem; margin-bottom: 16px; }
+      .modal .status-row { margin-top: 14px; }
+      .next-steps-card { padding: 14px; margin-top: 12px; gap: 10px; }
+      .next-steps-list li { font-size: 0.88rem; gap: 8px; }
+      
+      .success-pay-section { margin-top: 12px; padding: 14px; }
+      .success-pay-section .scan-card { gap: 12px; padding: 12px; }
+      .success-pay-section .scan-card img { max-width: 200px; }
+      
       .policies-section { padding: 16px; }
       .desktop-only { display: none !important; }
       .mobile-only { display: inline !important; }
