@@ -973,6 +973,11 @@ document.addEventListener("DOMContentLoaded", async () => {
     
     // Reload the table to show the new booking in pending or confirmed state
     await loadAndRenderTable();
+    
+    // Refresh the site
+    setTimeout(() => {
+      location.reload();
+    }, 500);
   };
 
   // Admin function to confirm a pending booking and copy confirmation message
