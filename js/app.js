@@ -12,8 +12,23 @@ let receiptFile = null; // Receipt file upload (removed)
 let lastSubmissionTime = 0; // Track last submission timestamp for duplicate prevention
 let lastSubmissionSlots = []; // Track last submission slot keys for duplicate prevention
 const SOFT_OPENING_RATE = 350; // Soft opening rate per hour
-const REGULAR_RATE = 450; // Regular rate per hour
-let isRegularRateActive = false; // Set to true to switch to regular rate
+const WEEKDAY_RATE = 400; // Regular weekday rate (Mon-Fri)
+const WEEKEND_RATE = 450; // Regular weekend rate (Sat-Sun)
+
+// Blocked dates (YYYY-MM-DD format)
+const BLOCKED_DATES = [
+  '2026-06-23', // June 23, 2026
+  '2026-06-24'  // June 24, 2026
+];
+
+// Soft opening period (dates where soft opening rates apply)
+const SOFT_OPENING_DATES = [
+  '2026-06-25',
+  '2026-06-26',
+  '2026-06-27'
+];
+
+let isRegularRateActive = false; // Legacy flag - not used with new date-based pricing
 
 // Form validation handler for confirm modal
 function updateConfirmModalButtonState() {
@@ -309,6 +324,11 @@ document.addEventListener("DOMContentLoaded", async () => {
   // Booked slots cache for the current selectedDate
   let bookedSlots = {};
 
+  // Check if a date is blocked from bookings
+  function isDateBlocked(dateStr) {
+    return BLOCKED_DATES.includes(dateStr);
+  }
+
   // Helper function to get initials from a name
   function getInitials(name) {
     if (!name) return '?';
@@ -436,9 +456,25 @@ document.addEventListener("DOMContentLoaded", async () => {
     return `${DAYS[d.getDay()]}, ${MONTHS[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}`;
   }
 
-  // Fixed rate per hour - manually switch between soft opening and regular
+  // Fixed rate per hour - based on date and day of week
   function getRate(slot, dateStr) {
-    return isRegularRateActive ? REGULAR_RATE : SOFT_OPENING_RATE;
+    // If in soft opening period, use soft opening rate
+    if (SOFT_OPENING_DATES.includes(dateStr)) {
+      return SOFT_OPENING_RATE;
+    }
+    
+    // After soft opening, use day-of-week based rates
+    // Parse date string (YYYY-MM-DD) and get day of week
+    const date = new Date(dateStr + 'T00:00:00');
+    const dayOfWeek = date.getDay(); // 0=Sunday, 1=Monday, ..., 6=Saturday
+    
+    // Weekends: Saturday (6) and Sunday (0)
+    if (dayOfWeek === 0 || dayOfWeek === 6) {
+      return WEEKEND_RATE;
+    }
+    
+    // Weekdays: Monday-Friday
+    return WEEKDAY_RATE;
   }
 
   // Helper function to check if a slot is in the past
@@ -502,15 +538,18 @@ document.addEventListener("DOMContentLoaded", async () => {
       day.textContent = d;
 
       const thisDate = new Date(viewYear, viewMonth, d);
+      const dateKeyStr = dateKey(thisDate);
       const isToday = d === today.getDate() && viewMonth === today.getMonth() && viewYear === today.getFullYear();
       const isSelected = d === selectedDate.getDate() && viewMonth === selectedDate.getMonth() && viewYear === selectedDate.getFullYear();
       const isPast = thisDate < new Date(today.getFullYear(), today.getMonth(), today.getDate());
+      const isBlocked = isDateBlocked(dateKeyStr);
 
       if (isToday) day.classList.add('today');
       if (isSelected && !isToday) day.classList.add('selected');
       if (isPast) day.classList.add('past');
+      if (isBlocked) day.classList.add('blocked');
 
-      if (!isPast) {
+      if (!isPast && !isBlocked) {
         day.onclick = () => {
           selectedDate = new Date(viewYear, viewMonth, d);
           renderCalendar();
@@ -579,6 +618,21 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     const body = document.getElementById('slotBody');
     body.innerHTML = '';
+
+    // Check if the date is blocked
+    if (isDateBlocked(dk)) {
+      const tr = document.createElement('tr');
+      const td = document.createElement('td');
+      td.colSpan = 3;
+      td.style.textAlign = 'center';
+      td.style.padding = '24px';
+      td.style.color = '#ef4444';
+      td.style.fontWeight = '700';
+      td.textContent = '🚫 This date is blocked for bookings';
+      tr.appendChild(td);
+      body.appendChild(tr);
+      return;
+    }
 
     SLOTS.forEach(slot => {
       const tr = document.createElement('tr');
