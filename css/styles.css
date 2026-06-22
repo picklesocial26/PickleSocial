@@ -704,6 +704,15 @@
       .success-pay-section .scan-card img { max-width: 200px; }
       
       .policies-section { padding: 16px; }
+      
+      /* Mobile Table Optimization */
+      table { min-width: auto; font-size: 0.75rem; }
+      thead th { padding: 8px 6px; font-size: 0.75rem; }
+      thead th:first-child { text-align: left; }
+      tbody td { padding: 6px 4px; font-size: 0.75rem; }
+      .time-cell { font-size: 0.73rem; }
+      .slot-btn { padding: 6px 4px; font-size: 0.7rem; }
+      
       .desktop-only { display: none !important; }
       .mobile-only { display: inline !important; }
       .messenger-fab { bottom: 140px; right: 16px; width: 44px; height: 44px; }
