@@ -628,7 +628,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       td.style.padding = '24px';
       td.style.color = '#ef4444';
       td.style.fontWeight = '700';
-      td.textContent = '🚫 This date is blocked for bookings';
+      td.textContent = '🚫 This date is blocked for bookings. Please choose other dates. Thank you';
       tr.appendChild(td);
       body.appendChild(tr);
       return;
