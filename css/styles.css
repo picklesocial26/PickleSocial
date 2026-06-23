@@ -671,7 +671,7 @@
       .next-steps-card { padding: 16px; margin-top: 14px; gap: 11px; }
       .next-steps-list li { font-size: 0.91rem; }
       
-      body { background: linear-gradient(135deg, #0a0a0a 0%, #1a0f1a 20%, #0d0d0f 50%, #0a1515 80%, #000000 100%); }
+      body { background: linear-gradient(135deg, #3d1a2d 0%, #000000 35%, #2a0f1a 65%, #000000 100%); }
       nav, .hero-banner-image, .calendar-card, .table-panel, .cart-bar, .modal { box-shadow: none !important; }
       .court-label { backdrop-filter: none; background: rgba(0,0,0,0.78); }
     }
