@@ -1640,6 +1640,9 @@ Phone: ${firstBooking.phone_number || ''}
   document.getElementById('bookingModal').onclick = function(e) {
     if (e.target === this && window.innerWidth > 768) closeModal();
   };
+  document.getElementById('confirmModal').onclick = function(e) {
+    if (e.target === this && window.innerWidth > 768) closeConfirmModal();
+  };
   document.getElementById('successModal').onclick = function(e) {
     if (e.target === this && window.innerWidth > 768) closeSuccessModal();
   };
