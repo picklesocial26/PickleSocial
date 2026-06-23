@@ -1636,15 +1636,20 @@ Phone: ${firstBooking.phone_number || ''}
     showToast('Payment processing via Messenger. Please send your booking reference and GCash receipt proof.');
   };
 
-  // Close modal on overlay click (disabled on mobile)
+  // Detect mobile/touch devices (Android, iOS, etc.)
+  const isMobileDevice = () => {
+    return window.innerWidth <= 768 || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || (navigator.maxTouchPoints && navigator.maxTouchPoints > 2);
+  };
+
+  // Close modal on overlay click (DISABLED on mobile/touch devices)
   document.getElementById('bookingModal').onclick = function(e) {
-    if (e.target === this && window.innerWidth > 768) closeModal();
+    if (e.target === this && !isMobileDevice()) closeModal();
   };
   document.getElementById('confirmModal').onclick = function(e) {
-    if (e.target === this && window.innerWidth > 768) closeConfirmModal();
+    if (e.target === this && !isMobileDevice()) closeConfirmModal();
   };
   document.getElementById('successModal').onclick = function(e) {
-    if (e.target === this && window.innerWidth > 768) closeSuccessModal();
+    if (e.target === this && !isMobileDevice()) closeSuccessModal();
   };
 
   // Initialize
