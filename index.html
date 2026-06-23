@@ -232,6 +232,47 @@
   </div>
 </main>
 
+<section class="faq-section">
+  <div class="faq-container">
+    <h2>Frequently Asked Questions</h2>
+    
+    <div class="faq-item-new">
+      <button class="faq-toggle" onclick="toggleFAQ(this)">
+        <span class="faq-question">How to book?</span>
+        <span class="faq-icon">▼</span>
+      </button>
+      <div class="faq-answer">
+        <p>Simply go to our booking website and select your preferred date and time slot. Fill in your details and confirm your reservation.</p>
+      </div>
+    </div>
+
+    <div class="faq-item-new">
+      <button class="faq-toggle" onclick="toggleFAQ(this)">
+        <span class="faq-question">Where to send payment?</span>
+        <span class="faq-icon">▼</span>
+      </button>
+      <div class="faq-answer">
+        <p>After payment, please send:</p>
+        <ul>
+          <li>Your Booking Reference Code (PKL-0000000)</li>
+          <li>A screenshot or photo of your <strong>GCash receipt</strong></li>
+        </ul>
+        <p>Send these details in Messenger for verification.</p>
+      </div>
+    </div>
+
+    <div class="faq-item-new">
+      <button class="faq-toggle" onclick="toggleFAQ(this)">
+        <span class="faq-question">What to do when you arrive?</span>
+        <span class="faq-icon">▼</span>
+      </button>
+      <div class="faq-answer">
+        <p>Just show your <strong>booking confirmation</strong> at the counter, and you're ready to play!</p>
+      </div>
+    </div>
+  </div>
+</section>
+
 <footer>
   <div class="footer-inner">
     <div class="footer-brand">
@@ -456,7 +497,7 @@
           </div>
           <div class="booking-ref-code" id="successRefDisplayBottom">PKL-000000</div>
         </div>
-        <a id="successMessengerBtn" class="btn-messenger" href="https://www.messenger.com/t/1070406479496408" target="_blank" rel="noreferrer">
+        <a id="successMessengerBtn" class="btn-messenger" href="https://www.facebook.com/profile.php?id=61589519277936" target="_blank" rel="noreferrer">
           <span class="btn-messenger-icon" aria-hidden="true">
             <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18" xmlns="http://www.w3.org/2000/svg"><path d="M12.01 2C6.48 2 2 5.94 2 10.5c0 2.86 1.76 5.43 4.6 7.05v3.46l3.05-1.68c.8.2 1.64.31 2.46.31 5.53 0 10.01-3.94 10.01-8.5S17.54 2 12.01 2zm1.86 10.19l-1.17-1.27-2.26 1.27 2.26-2.75 1.17 1.27 2.26-1.27-2.26 2.75z"/></svg>
           </span>
@@ -488,6 +529,16 @@
 <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 
 <script src="js/app.js"></script>
+
+<script>
+  // FAQ Toggle Function
+  function toggleFAQ(button) {
+    const faqItem = button.closest('.faq-item-new');
+    if (!faqItem) return;
+    
+    faqItem.classList.toggle('active');
+  }
+</script>
 
 </body>
 </html>

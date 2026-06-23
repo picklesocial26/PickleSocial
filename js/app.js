@@ -1636,12 +1636,12 @@ Phone: ${firstBooking.phone_number || ''}
     showToast('Payment processing via Messenger. Please send your booking reference and GCash receipt proof.');
   };
 
-  // Close modal on overlay click
+  // Close modal on overlay click (disabled on mobile)
   document.getElementById('bookingModal').onclick = function(e) {
-    if (e.target === this) closeModal();
+    if (e.target === this && window.innerWidth > 768) closeModal();
   };
   document.getElementById('successModal').onclick = function(e) {
-    if (e.target === this) closeSuccessModal();
+    if (e.target === this && window.innerWidth > 768) closeSuccessModal();
   };
 
   // Initialize
