@@ -516,14 +516,15 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (!isToday) return false; // Not today, so slot is not past
     if (!slot || typeof slot !== 'string') return false;
 
-    // Parse the start time from the slot (e.g., "1:00 AM - 2:00 AM" -> "1:00 AM")
+    // Parse the start time from the slot (e.g., "1AM - 2AM" or "1:00 AM - 2:00 AM")
     const startTimeStr = slot.split(' - ')[0];
-    const timeMatch = startTimeStr.match(/(\d+:\d+)\s?(AM|PM)/i);
+    const timeMatch = startTimeStr.match(/^(\d{1,2})(?::(\d{2}))?\s?(AM|PM)$/i);
     if (!timeMatch) return false;
 
-    const [, timeStr, periodRaw] = timeMatch;
+    const [, hoursStr, minsStr, periodRaw] = timeMatch;
     const period = periodRaw.toUpperCase();
-    let [hours, minutes] = timeStr.split(':').map(Number);
+    let hours = Number(hoursStr);
+    let minutes = minsStr ? Number(minsStr) : 0;
 
     // Convert to 24-hour format
     if (period === 'AM' && hours === 12) {
