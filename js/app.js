@@ -1,7 +1,6 @@
 // app.js — extracted from index.html
 // Global variables
 let selectedSlots = new Set();
-let supabaseClient = null;
 let pendingBookingEntries = [];
 let pendingSlotsWithTimer = {}; // Track pending slots with timestamps
 let searchedBookingReference = ''; // Store searched reference for success modal
@@ -191,115 +190,25 @@ document.addEventListener("DOMContentLoaded", async () => {
   const dot = document.getElementById("statusDot");
   const label = document.getElementById("statusLabel");
 
-  // Helper function to call backend API or direct Supabase client for local dev
-  async function callBackendAPI(action, data = {}) {
-    const isLocal = location.hostname === 'localhost' || location.hostname === '127.0.0.1' || location.protocol === 'file:';
-
-    // If a direct Supabase fallback is configured and we're running locally, use it
-    if ((window.SUPABASE_FALLBACK && isLocal) || supabaseClient) {
-      if (!supabaseClient) {
-        const url = (window.SUPABASE_FALLBACK && window.SUPABASE_FALLBACK.url) || null;
-        const key = (window.SUPABASE_FALLBACK && window.SUPABASE_FALLBACK.key) || null;
-        if (!url || !key) {
-          throw new Error('Supabase fallback not configured for direct client');
-        }
-        supabaseClient = supabase.createClient(url, key);
-      }
-
-      try {
-        if (action === 'check-connection') {
-          const { error } = await supabaseClient.from('bookings').select('id').limit(1);
-          if (error) throw error;
-          return { status: 'connected' };
-        }
-
-        if (action === 'get-booked-slots') {
-          const { bookingDate } = data;
-          // Include status and receipt_reference so frontend can distinguish pending vs confirmed
-          const { data: rows, error } = await supabaseClient
-            .from('bookings')
-            .select('time_slot,court,customer_name,status,receipt_reference,created_at')
-            .eq('booking_date', bookingDate);
-          if (error) throw error;
-          return { bookings: rows || [] };
-        }
-
-        if (action === 'create-booking') {
-          const { bookingDate, timeSlot, court, customer_name, phone_number } = data;
-          const { data: inserted, error } = await supabaseClient
-            .from('bookings')
-            .insert([{
-              booking_date: bookingDate,
-              time_slot: timeSlot,
-              court,
-              customer_name,
-              phone_number,
-              created_at: new Date().toISOString()
-            }])
-            .select();
-          if (error) throw error;
-          return { success: true, booking: inserted?.[0] || null };
-        }
-
-        if (action === 'bulk-insert-bookings') {
-          const { bookings } = data;
-          const { data: inserted, error } = await supabaseClient.from('bookings').insert(bookings).select();
-          if (error) throw error;
-          return { success: true, count: inserted?.length || 0, bookings: inserted || [] };
-        }
-
-        if (action === 'get-booking-by-reference') {
-          const { reference } = data;
-          const { data: rows, error } = await supabaseClient.from('bookings').select('*').eq('reference_code', reference);
-          if (error) throw error;
-          return { bookings: rows || [] };
-        }
-
-        if (action === 'check-duplicate-receipt') {
-          const { receipt_reference } = data;
-          const { data: rows, error } = await supabaseClient.from('bookings').select('id').eq('receipt_reference', receipt_reference).limit(1);
-          if (error) throw error;
-          return { exists: rows && rows.length > 0, bookings: rows || [] };
-        }
-
-        if (action === 'update-booking-receipt') {
-          const { reference_code, receipt_reference, status } = data;
-          const { data: updated, error } = await supabaseClient
-            .from('bookings')
-            .update({ receipt_reference, status })
-            .eq('reference_code', reference_code)
-            .select();
-          if (error) throw error;
-          return { success: true, updated: updated?.length || 0, bookings: updated || [] };
-        }
-
-        if (action === 'confirm-booking') {
-          const { booking_id, reference_code } = data;
-          let query = supabaseClient.from('bookings').update({ status: 'confirmed' });
-          
-          if (booking_id) {
-            query = query.eq('id', booking_id);
-          } else if (reference_code) {
-            query = query.eq('reference_code', reference_code);
-          } else {
-            throw new Error('booking_id or reference_code is required');
-          }
-          
-          const { data: updated, error } = await query.select();
-          if (error) throw error;
-          return { success: true, updated: updated?.length || 0, bookings: updated || [] };
-        }
-
-        throw new Error('Unsupported action for direct Supabase client: ' + action);
-      } catch (err) {
-        console.error('Supabase direct call failed:', err);
-        throw err;
-      }
+  // Helper function to call backend API
+  function getApiUrl() {
+    if (location.protocol === 'file:') {
+      return 'http://localhost:3000/api/bookings';
     }
 
-    // Fallback to backend POST endpoint
+    if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
+      if (location.port === '3000') {
+        return `${location.protocol}//${location.host}/api/bookings`;
+      }
+      return 'http://localhost:3000/api/bookings';
+    }
+
+    return '/api/bookings';
+  }
+
+  async function callBackendAPI(action, data = {}) {
     try {
-      const response = await fetch('/api/bookings', {
+      const response = await fetch(getApiUrl(), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
