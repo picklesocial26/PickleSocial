@@ -867,7 +867,6 @@ document.addEventListener("DOMContentLoaded", async () => {
       if (bookingRefCard) bookingRefCard.style.display = 'block';
       if (bookingRefCardBottom) bookingRefCardBottom.style.display = 'block';
       if (doneBtn) doneBtn.disabled = false;
-      await downloadBookingConfirmationImage();
     } else {
       section.style.display = 'none';
       nextSteps.style.display = 'none';
@@ -1028,13 +1027,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   };
 
   window.copyBookingReference = function() {
-    const refCode = document.getElementById('successRefDisplay')?.textContent || document.getElementById('successRefDisplayBottom')?.textContent || receiptBookingReference || 'PKL-000000';
-    navigator.clipboard.writeText(refCode).then(() => {
-      showToast(`✅ Copied: ${refCode}`);
-    }).catch(err => {
-      console.error('Failed to copy:', err);
-      showToast('Failed to copy booking reference');
-    });
+    // Copy functionality disabled
   };
 
   window.handleDoneBooking = async function() {
