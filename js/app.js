@@ -31,6 +31,22 @@ const SOFT_OPENING_DATES = [
 let isRegularRateActive = false; // Legacy flag - not used with new date-based pricing
 
 // Form validation handler for confirm modal
+function sanitizeName(value) {
+  return value.replace(/[^A-Za-z ]+/g, '').slice(0, 30);
+}
+
+function sanitizePhone(value) {
+  return value.replace(/\D+/g, '').slice(0, 10);
+}
+
+function isValidConfirmName(value) {
+  return /^[A-Za-z ]{1,30}$/.test(value);
+}
+
+function isValidConfirmPhone(value) {
+  return /^\d{10}$/.test(value);
+}
+
 function updateConfirmModalButtonState() {
   const confirmBtn = document.getElementById('confirmModalBtn');
   const nameInput = document.getElementById('confirmName');
@@ -38,12 +54,23 @@ function updateConfirmModalButtonState() {
   
   if (!confirmBtn || !nameInput || !phoneInput) return;
   
-  const name = nameInput.value.trim();
-  const phone = phoneInput.value.trim();
-  const isValid = name.length > 0 && phone.length > 0;
-  
+  const rawName = nameInput.value;
+  const rawPhone = phoneInput.value;
+  const sanitizedName = sanitizeName(rawName);
+  const sanitizedPhone = sanitizePhone(rawPhone);
+
+  if (rawName !== sanitizedName) {
+    nameInput.value = sanitizedName;
+  }
+  if (rawPhone !== sanitizedPhone) {
+    phoneInput.value = sanitizedPhone;
+  }
+
+  const name = sanitizedName.trim();
+  const phone = sanitizedPhone.trim();
+  const isValid = isValidConfirmName(name) && isValidConfirmPhone(phone);
+
   confirmBtn.disabled = !isValid;
-  console.log('Form validation:', { name: !!name, phone: !!phone, disabled: !isValid });
 }
 
 function showToast(message) {
@@ -487,10 +514,15 @@ document.addEventListener("DOMContentLoaded", async () => {
                     selectedDateObj.getDate() === todayObj.getDate();
 
     if (!isToday) return false; // Not today, so slot is not past
+    if (!slot || typeof slot !== 'string') return false;
 
     // Parse the start time from the slot (e.g., "1:00 AM - 2:00 AM" -> "1:00 AM")
     const startTimeStr = slot.split(' - ')[0];
-    const [timeStr, period] = startTimeStr.match(/(\d+:\d+)\s(AM|PM)/).slice(1);
+    const timeMatch = startTimeStr.match(/(\d+:\d+)\s?(AM|PM)/i);
+    if (!timeMatch) return false;
+
+    const [, timeStr, periodRaw] = timeMatch;
+    const period = periodRaw.toUpperCase();
     let [hours, minutes] = timeStr.split(':').map(Number);
 
     // Convert to 24-hour format
@@ -789,8 +821,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     // Prefill name/phone from booking modal fields if available
     const existingName = document.getElementById('bookingName');
     const existingPhone = document.getElementById('bookingPhone');
-    if (nameEl) nameEl.value = existingName ? existingName.value : '';
-    if (phoneEl) phoneEl.value = existingPhone ? existingPhone.value : '';
+    if (nameEl) nameEl.value = existingName ? sanitizeName(existingName.value) : '';
+    if (phoneEl) phoneEl.value = existingPhone ? sanitizePhone(existingPhone.value) : '';
 
     // open modal
     document.getElementById('confirmModal').classList.add('open');
@@ -1159,6 +1191,24 @@ Phone: ${firstBooking.phone_number || ''}
     // Require name and phone
     if (!name || !phone) {
       showToast('⚠️ Please fill in your name and phone');
+      if (confirmBtn) {
+        confirmBtn.disabled = false;
+        confirmBtn.textContent = 'Next';
+      }
+      return;
+    }
+
+    // Validate sanitized values
+    if (!isValidConfirmName(name)) {
+      showToast('⚠️ Name must be 1-30 letters and spaces only');
+      if (confirmBtn) {
+        confirmBtn.disabled = false;
+        confirmBtn.textContent = 'Next';
+      }
+      return;
+    }
+    if (!isValidConfirmPhone(phone)) {
+      showToast('⚠️ Phone must be exactly 10 digits');
       if (confirmBtn) {
         confirmBtn.disabled = false;
         confirmBtn.textContent = 'Next';

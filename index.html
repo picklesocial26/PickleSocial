@@ -126,22 +126,8 @@
 
 <body>
 
-<!-- MAINTENANCE MODE OVERLAY -->
-<div class="maintenance-overlay" id="maintenanceOverlay" style="display:none;">
-  <div class="maintenance-content">
-    <img src="logo.jpeg" alt="Pickle Social" class="maintenance-logo">
-    <div class="maintenance-title">Updating the Web</div>
-    <div class="maintenance-subtitle">We're making improvements</div>
-    <div class="maintenance-message">Our service is temporarily under maintenance. We'll be back online shortly. Thank you for your patience!</div>
-  </div>
-</div>
-
 <script>
-  // Check maintenance mode on load
-  if (localStorage.getItem('maintenanceMode') === 'true') {
-    document.getElementById('maintenanceOverlay').style.display = 'flex';
-    document.body.style.overflow = 'hidden';
-  }
+
 </script>
 
 <nav>
@@ -327,7 +313,6 @@
   </div>
 </footer>
 
-<!-- CART BAR -->
 <div class="cart-bar" id="cartBar">
   <div class="cart-info">
     <div class="cart-count" id="cartCount">0 slots selected</div>
@@ -339,7 +324,6 @@
   </div>
 </div>
 
-<!-- BOOKING MODAL -->
 <div class="modal-overlay" id="bookingModal">
   <div class="modal">
     <div class="modal-top">
@@ -381,7 +365,6 @@
   </div>
 </div>
 
-<!-- CONFIRMATION MODAL (opened from cart Proceed) -->
 <div class="modal-overlay" id="confirmModal">
   <div class="modal" role="dialog" aria-modal="true" aria-labelledby="confirmTitle">
     <h2 id="confirmTitle" style="color:var(--accent);">Confirm Booking</h2>
@@ -394,7 +377,6 @@
       </div>
 
       <div id="confirmSlotsContainer" style="display:flex;flex-direction:column;gap:10px;margin-bottom:12px;">
-        <!-- Selected slot cards populated by JS -->
       </div>
 
       <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 12px;border-radius:8px;background:rgba(255,255,255,0.02);margin-bottom:12px;">
@@ -409,12 +391,13 @@
 
       <div class="form-group">
         <label for="confirmName">Facebook Profile Name</label>
-        <input type="text" id="confirmName" placeholder="Enter your name">
+        <input type="text" id="confirmName" placeholder="Enter your name" maxlength="30" pattern="[A-Za-z ]*" autocomplete="name" inputmode="text">
+        <div class="modal-hint">Up to 30 letters and spaces only.</div>
       </div>
       <div class="form-group">
         <label for="confirmPhone">Phone Number</label>
-        <input type="tel" id="confirmPhone" placeholder="e.g., 917 123 4567">
-        <div class="modal-hint">Mobile number (e.g., 917 123 4567)</div>
+        <input type="tel" id="confirmPhone" placeholder="e.g., 917 123 4567" maxlength="10" pattern="\d{10}" inputmode="tel">
+        <div class="modal-hint">Enter exactly 10 digits, no symbols or spaces.</div>
       </div>
     </div>
 
@@ -425,7 +408,6 @@
   </div>
 </div>
 
-<!-- SUCCESS MODAL -->
 <div class="modal-overlay" id="successModal">
   <div class="modal success-modal">
     <div class="success-body-box">
@@ -530,11 +512,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-  // Local development fallback for direct frontend Supabase access (safe for local testing only)
-  window.SUPABASE_FALLBACK = {
-    url: 'https://nozisfmqzkeywefrqkok.supabase.co',
-    key: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5vemlzZm1xemtleXdlZnJxa29rIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg1NzY2NzcsImV4cCI6MjA5NDE1MjY3N30.9CyqA4zZ9o5glyVl40Baah9ce-mqPIB3fAi2wp2-Ppk'
-  };
+ 
 </script>
 <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@4.0.2/dist/tesseract.min.js"></script>
@@ -543,7 +521,6 @@
 <script src="js/app.js"></script>
 
 <script>
-  // FAQ Toggle Function
   function toggleFAQ(button) {
     const faqItem = button.closest('.faq-item-new');
     if (!faqItem) return;
