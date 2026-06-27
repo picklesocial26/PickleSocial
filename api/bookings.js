@@ -9,6 +9,15 @@ const supabaseKey = process.env.SUPABASE_SERVICE_KEY || process.env.SUPABASE_SER
 let supabase = null;
 let supabaseInitError = null;
 
+export const PENDING_EXPIRY_MS = 60 * 60 * 1000;
+
+export function isPendingBookingExpired(createdAt) {
+  if (!createdAt) return false;
+  const ts = Date.parse(createdAt);
+  if (Number.isNaN(ts)) return false;
+  return Date.now() - ts >= PENDING_EXPIRY_MS;
+}
+
 if (!supabaseUrl || !supabaseKey) {
   supabaseInitError = {
     message: 'Supabase configuration missing. Please set SUPABASE_URL and SUPABASE_SERVICE_KEY or SUPABASE_SERVICE_ROLE_KEY in Vercel environment variables.',
@@ -68,14 +77,20 @@ export default async function handler(req, res) {
 
       const { data, error } = await supabase
         .from('bookings')
-        .select('time_slot,court,customer_name,status,receipt_reference,created_at')
+        .select('id,time_slot,court,customer_name,status,receipt_reference,created_at')
         .eq('booking_date', bookingDate);
       
       if (error) throw error;
+
+      const visibleBookings = (data || []).filter(row => {
+        const status = (row.status || '').toString().toLowerCase();
+        if (status !== 'pending') return true;
+        return !isPendingBookingExpired(row.created_at);
+      });
       
       return res.status(200).json({ 
         success: true,
-        bookings: data || []
+        bookings: visibleBookings
       });
     }
 
