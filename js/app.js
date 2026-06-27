@@ -24,7 +24,8 @@ const BLOCKED_DATES = [
 const SOFT_OPENING_DATES = [
   '2026-06-25',
   '2026-06-26',
-  '2026-06-27'
+  '2026-06-27',
+  '2026-06-28'
 ];
 
 let isRegularRateActive = false; // Legacy flag - not used with new date-based pricing
