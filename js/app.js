@@ -14,10 +14,13 @@ const SOFT_OPENING_RATE = 350; // Soft opening rate per hour
 const WEEKDAY_RATE = 400; // Regular weekday rate (Mon-Fri)
 const WEEKEND_RATE = 450; // Regular weekend rate (Sat-Sun)
 
-// Blocked dates (YYYY-MM-DD format)
+// Blocked dates and date ranges (YYYY-MM-DD format)
 const BLOCKED_DATES = [
   '2026-06-23', // June 23, 2026
   '2026-06-24'  // June 24, 2026
+];
+const BLOCKED_DATE_RANGES = [
+  { start: '2026-09-01', end: '2026-09-30' } // September 2026
 ];
 
 // Soft opening period (dates where soft opening rates apply)
@@ -263,7 +266,9 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   // Check if a date is blocked from bookings
   function isDateBlocked(dateStr) {
-    return BLOCKED_DATES.includes(dateStr);
+    return BLOCKED_DATES.includes(dateStr) || BLOCKED_DATE_RANGES.some(range => (
+      dateStr >= range.start && dateStr <= range.end
+    ));
   }
 
   // Helper function to get initials from a name
