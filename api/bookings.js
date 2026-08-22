@@ -11,6 +11,16 @@ let supabaseInitError = null;
 
 export const PENDING_EXPIRY_MS = 60 * 60 * 1000;
 
+const BLOCKED_DATE_RANGES = [
+  { start: '2026-09-01', end: '2026-09-30' }
+];
+
+export function isDateBlocked(bookingDate) {
+  return BLOCKED_DATE_RANGES.some(range => (
+    bookingDate >= range.start && bookingDate <= range.end
+  ));
+}
+
 export function isPendingBookingExpired(createdAt) {
   if (!createdAt) return false;
   const ts = Date.parse(createdAt);
@@ -105,6 +115,10 @@ export default async function handler(req, res) {
       // Validate input to prevent injection
       if (!/^\d{4}-\d{2}-\d{2}$/.test(bookingDate)) {
         return res.status(400).json({ error: 'Invalid date format' });
+      }
+
+      if (isDateBlocked(bookingDate)) {
+        return res.status(400).json({ error: 'Bookings are unavailable for this date' });
       }
 
       const { data, error } = await supabase
