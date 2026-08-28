@@ -20,10 +20,28 @@ const UI_ICONS = {
 };
 
 // Blocked dates and date ranges (YYYY-MM-DD format)
-const BLOCKED_DATES = [
-
-];
+const BLOCKED_DATES = ['2026-08-28'];
 const BLOCKED_DATE_RANGES = [];
+
+// Individually blocked time slots by date (YYYY-MM-DD format)
+const BLOCKED_TIME_SLOTS = {
+  '2026-08-29': [
+    '12AM - 1AM',
+    '1AM - 2AM',
+    '2AM - 3AM',
+    '3AM - 4AM',
+    '4AM - 5AM',
+    '5AM - 6AM',
+    '6AM - 7AM',
+    '7AM - 8AM',
+    '8AM - 9AM',
+    '9AM - 10AM',
+    '10AM - 11AM',
+    '11AM - 12PM',
+    '12PM - 1PM'
+  ],
+ 
+};
 
 // Soft opening period (dates where soft opening rates apply)
 const SOFT_OPENING_DATES = [
@@ -267,6 +285,10 @@ document.addEventListener("DOMContentLoaded", async () => {
     return BLOCKED_DATES.includes(dateStr) || BLOCKED_DATE_RANGES.some(range => (
       dateStr >= range.start && dateStr <= range.end
     ));
+  }
+
+  function isTimeSlotBlocked(dateStr, slot) {
+    return BLOCKED_TIME_SLOTS[dateStr]?.includes(slot) || false;
   }
 
   // Helper function to get initials from a name
@@ -598,8 +620,14 @@ document.addEventListener("DOMContentLoaded", async () => {
         // Check if slot is in the past (only for today)
         const pastSlot = isSlotPast(dk, slot);
 
+        // Individually blocked slots cannot be selected.
+        if (isTimeSlotBlocked(dk, slot)) {
+          btn.classList.add('slot-booked');
+          btn.textContent = 'Blocked';
+          btn.disabled = true;
+        }
         // If the slot is booked in Supabase, mark as booked and show initials
-        if (bookedSlots[key]) {
+        else if (bookedSlots[key]) {
           btn.classList.add('slot-booked');
           btn.textContent = getInitials(bookedSlots[key]);
           btn.disabled = true;
