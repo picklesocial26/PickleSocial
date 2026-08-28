@@ -273,11 +273,12 @@ document.addEventListener("DOMContentLoaded", async () => {
   function getInitials(name) {
     if (!name) return '?';
     return name
-      .split(' ')
+      .trim()
+      .split(/\s+/)
+      .filter(Boolean)
       .map(word => word[0])
       .join('')
-      .toUpperCase()
-      .substring(0, 2);
+      .toUpperCase();
   }
 
   // Helper function to get remaining time for pending slots (60 mins)
@@ -817,7 +818,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-      showToast('Booking confirmation image downloaded');
+      showToast('✅ Booking confirmation image downloaded');
     } catch (err) {
       console.error('Booking image download failed', err);
       showToast('❌ Failed to download booking image');
@@ -1030,7 +1031,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 Hello ${customerName},
 
-Thank you for booking with Pickle Social - Cebu! Your reservation has been successfully confirmed.
+Thank you for booking with Pickle Social - Cebu! Your reservation has been successfully confirmed. ✅
 
 Name: ${firstBooking.customer_name || ''}
 Phone: ${firstBooking.phone_number || ''}
@@ -1041,7 +1042,7 @@ Date: ${bookingDate}${courtSections}`;
       // Copy to clipboard
       if (navigator.clipboard) {
         await navigator.clipboard.writeText(confirmationMessage);
-        showToast('Booking confirmed! Message copied to clipboard.');
+        showToast('✅ Booking confirmed! Message copied to clipboard.');
       } else {
         // Fallback for older browsers
         const textarea = document.createElement('textarea');
@@ -1050,7 +1051,7 @@ Date: ${bookingDate}${courtSections}`;
         textarea.select();
         document.execCommand('copy');
         document.body.removeChild(textarea);
-        showToast('Booking confirmed! Message copied to clipboard.');
+        showToast('✅ Booking confirmed! Message copied to clipboard.');
       }
 
       // Reload table to update status
@@ -1068,7 +1069,7 @@ Date: ${bookingDate}${courtSections}`;
     const confirmBtn = document.getElementById('confirmBtn') || document.getElementById('confirmModalBtn');
     if (confirmBtn && confirmBtn.disabled) {
       console.log('Button already disabled, ignoring duplicate click');
-      showToast('Please wait - your booking is being submitted...');
+      showToast('⏱️ Please wait - your booking is being submitted...');
       return;
     }
     
@@ -1140,7 +1141,7 @@ Date: ${bookingDate}${courtSections}`;
     if (slotsMatch && timeSinceLastSubmission < 60000 && lastSubmissionSlots.length > 0) {
       console.log('DUPLICATE DETECTED! Blocking submission');
       alert('⚠️ This time slot is no longer available.\n\nAnother player has already reserved your selected date and time. Please refresh your browser and choose a different available date or time slot.\n\nThank you for your understanding.');
-      showToast('Please wait before submitting again');
+      showToast('⏱️ Please wait before submitting again');
       if (confirmBtn) {
         confirmBtn.disabled = false;
         confirmBtn.textContent = 'Next';
@@ -1293,7 +1294,7 @@ Date: ${bookingDate}${courtSections}`;
       closeConfirmModal();
       openBookingSubmittedModal(refCode, totalAmount);
 
-      showToast('Booking submitted! Save a copy and proceed to scan payment.');
+      showToast('✅ Booking submitted! Save a copy and proceed to scan payment.');
 
     } catch (err) {
       console.error('Booking error:', err);
