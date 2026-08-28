@@ -28,6 +28,21 @@ export function isPendingBookingExpired(createdAt) {
   return Date.now() - ts >= PENDING_EXPIRY_MS;
 }
 
+async function removeExpiredPendingBookings(dates) {
+  const expiryCutoff = new Date(Date.now() - PENDING_EXPIRY_MS).toISOString();
+
+  for (const date of dates) {
+    const { error } = await supabase
+      .from('bookings')
+      .delete()
+      .eq('booking_date', date)
+      .eq('status', 'pending')
+      .lt('created_at', expiryCutoff);
+
+    if (error) throw error;
+  }
+}
+
 if (!supabaseUrl || !supabaseKey) {
   supabaseInitError = {
     message: 'Supabase configuration missing. Please set SUPABASE_URL and SUPABASE_SERVICE_KEY or SUPABASE_SERVICE_ROLE_KEY in Vercel environment variables.',
@@ -173,6 +188,47 @@ export default async function handler(req, res) {
         notes: booking.notes ? String(booking.notes).substring(0, 500) : null,
         created_at: new Date().toISOString()
       }));
+
+      const slotKeys = validatedBookings.map(booking => (
+        `${booking.booking_date}|${booking.time_slot}|${booking.court}`
+      ));
+      if (new Set(slotKeys).size !== slotKeys.length) {
+        return res.status(409).json({
+          error: 'Slot already booked',
+          message: 'A booking request contains the same court and time more than once.'
+        });
+      }
+
+      const bookingDates = [...new Set(validatedBookings.map(booking => booking.booking_date))];
+      await removeExpiredPendingBookings(bookingDates);
+
+      // This read gives clients a useful conflict response. The unique index below
+      // remains the authoritative guard for concurrent requests.
+      const { data: existingBookings, error: availabilityError } = await supabase
+        .from('bookings')
+        .select('booking_date,time_slot,court')
+        .in('booking_date', bookingDates);
+
+      if (availabilityError) throw availabilityError;
+
+      const existingSlots = new Set((existingBookings || []).map(booking => (
+        `${booking.booking_date}|${booking.time_slot}|${booking.court}`
+      )));
+      const conflicts = validatedBookings.filter(booking => (
+        existingSlots.has(`${booking.booking_date}|${booking.time_slot}|${booking.court}`)
+      ));
+
+      if (conflicts.length > 0) {
+        return res.status(409).json({
+          error: 'Slot already booked',
+          message: 'One or more selected slots were just reserved by another customer.',
+          conflicts: conflicts.map(booking => ({
+            booking_date: booking.booking_date,
+            time_slot: booking.time_slot,
+            court: booking.court
+          }))
+        });
+      }
 
       const { data, error } = await supabase
         .from('bookings')
