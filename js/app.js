@@ -10,6 +10,7 @@ let receiptBookingTotal = 0; // Total amount for current booking
 let receiptFile = null; // Receipt file upload (removed)
 let lastSubmissionTime = 0; // Track last submission timestamp for duplicate prevention
 let lastSubmissionSlots = []; // Track last submission slot keys for duplicate prevention
+let blockedSlots = {};
 const SOFT_OPENING_RATE = 350; // Soft opening rate per hour
 const WEEKDAY_RATE = 500; // Regular weekday rate (Mon-Thu)
 const WEEKEND_RATE = 550; // Friday-Sunday rate
@@ -291,6 +292,10 @@ document.addEventListener("DOMContentLoaded", async () => {
     return BLOCKED_TIME_SLOTS[dateStr]?.includes(slot) || false;
   }
 
+  function isCourtSlotBlocked(dateStr, slot, court) {
+    return blockedSlots[`${dateStr}|${slot}|${court}`] || isTimeSlotBlocked(dateStr, slot);
+  }
+
   // Helper function to get initials from a name
   function getInitials(name) {
     if (!name) return '?';
@@ -318,8 +323,12 @@ document.addEventListener("DOMContentLoaded", async () => {
   // Load booked slots from backend API for a specific dateKey (YYYY-MM-DD)
   async function loadBookedSlotsForDate(dk) {
     bookedSlots = {};
+    blockedSlots = {};
     try {
       const result = await callBackendAPI('get-booked-slots', { bookingDate: dk });
+      (result.blockedSlots || []).forEach(row => {
+        blockedSlots[`${dk}|${row.time_slot}|${row.court}`] = true;
+      });
       if (result.bookings && Array.isArray(result.bookings)) {
         result.bookings.forEach(row => {
           const courtIndex = COURTS.indexOf(row.court);
@@ -621,7 +630,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         const pastSlot = isSlotPast(dk, slot);
 
         // Individually blocked slots cannot be selected.
-        if (isTimeSlotBlocked(dk, slot)) {
+        if (isCourtSlotBlocked(dk, slot, court)) {
           btn.classList.add('slot-booked');
           btn.textContent = 'Blocked';
           btn.disabled = true;
