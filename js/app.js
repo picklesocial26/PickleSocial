@@ -375,7 +375,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     '11PM - 12AM'
   ];
 
-  const COURTS = ['Court One', 'Court Two'];
+  const COURTS = ['Court One'];
   const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
   const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 
@@ -641,6 +641,14 @@ document.addEventListener("DOMContentLoaded", async () => {
         tdC.appendChild(btn);
         tr.appendChild(tdC);
       });
+
+      const trainingCourtCell = document.createElement('td');
+      const trainingCourtButton = document.createElement('button');
+      trainingCourtButton.className = 'slot-btn training-court-btn';
+      trainingCourtButton.textContent = 'Coming Soon';
+      trainingCourtButton.disabled = true;
+      trainingCourtCell.appendChild(trainingCourtButton);
+      tr.appendChild(trainingCourtCell);
 
       body.appendChild(tr);
     });
@@ -1008,7 +1016,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       // Build formatted confirmation message
       let courtSections = '';
-      const courtOrder = ['Court One', 'Court Two'];
+      const courtOrder = ['Court One'];
       courtOrder.forEach(court => {
         if (slotsByCount[court] && slotsByCount[court].length > 0) {
           const slots = slotsByCount[court];
