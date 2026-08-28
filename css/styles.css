@@ -146,6 +146,7 @@
     .table-panel th:nth-child(2), .table-panel td:nth-child(2) { width: 45%; }
     .table-panel th:nth-child(3), .table-panel td:nth-child(3) { width: 25%; }
     .training-court-heading { color: #22d3ee !important; }
+    .training-court-heading span { display: block; }
     tbody tr { border-top: 1px solid var(--dark-border); transition: background 0.1s; }
     tbody tr:hover { background: rgba(255,255,255,0.02); }
     tbody td { padding: 10px 16px; font-size: 0.85rem; }
