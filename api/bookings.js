@@ -107,6 +107,13 @@ export default async function handler(req, res) {
       
       if (error) throw error;
 
+      const { data: blockedSlots, error: blockedSlotsError } = await supabase
+        .from('blocked_time_slots')
+        .select('blocked_date,time_slot,court')
+        .eq('blocked_date', bookingDate);
+
+      if (blockedSlotsError) throw blockedSlotsError;
+
       const visibleBookings = (data || []).filter(row => {
         const status = (row.status || '').toString().toLowerCase();
         if (status !== 'pending') return true;
@@ -115,7 +122,8 @@ export default async function handler(req, res) {
       
       return res.status(200).json({ 
         success: true,
-        bookings: visibleBookings
+        bookings: visibleBookings,
+        blockedSlots: blockedSlots || []
       });
     }
 
@@ -134,6 +142,18 @@ export default async function handler(req, res) {
 
       if (isDateBlocked(bookingDate)) {
         return res.status(400).json({ error: 'Bookings are unavailable for this date' });
+      }
+
+      const { data: blockedSlots, error: blockedSlotsError } = await supabase
+        .from('blocked_time_slots')
+        .select('time_slot,court')
+        .eq('blocked_date', bookingDate)
+        .eq('time_slot', timeSlot)
+        .eq('court', court);
+
+      if (blockedSlotsError) throw blockedSlotsError;
+      if (blockedSlots?.length) {
+        return res.status(409).json({ error: 'Slot is blocked', message: 'This court and time are unavailable.' });
       }
 
       const { data, error } = await supabase
@@ -217,6 +237,32 @@ export default async function handler(req, res) {
       const conflicts = validatedBookings.filter(booking => (
         existingSlots.has(`${booking.booking_date}|${booking.time_slot}|${booking.court}`)
       ));
+
+      const { data: blockedSlots, error: blockedSlotsError } = await supabase
+        .from('blocked_time_slots')
+        .select('blocked_date,time_slot,court')
+        .in('blocked_date', bookingDates);
+
+      if (blockedSlotsError) throw blockedSlotsError;
+
+      const blockedSlotKeys = new Set((blockedSlots || []).map(slot => (
+        `${slot.blocked_date}|${slot.time_slot}|${slot.court}`
+      )));
+      const blockedConflicts = validatedBookings.filter(booking => (
+        blockedSlotKeys.has(`${booking.booking_date}|${booking.time_slot}|${booking.court}`)
+      ));
+
+      if (blockedConflicts.length > 0) {
+        return res.status(409).json({
+          error: 'Slot is blocked',
+          message: 'One or more selected court and time slots are unavailable.',
+          conflicts: blockedConflicts.map(booking => ({
+            booking_date: booking.booking_date,
+            time_slot: booking.time_slot,
+            court: booking.court
+          }))
+        });
+      }
 
       if (conflicts.length > 0) {
         return res.status(409).json({
