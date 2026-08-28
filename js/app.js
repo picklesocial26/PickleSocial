@@ -11,8 +11,8 @@ let receiptFile = null; // Receipt file upload (removed)
 let lastSubmissionTime = 0; // Track last submission timestamp for duplicate prevention
 let lastSubmissionSlots = []; // Track last submission slot keys for duplicate prevention
 const SOFT_OPENING_RATE = 350; // Soft opening rate per hour
-const WEEKDAY_RATE = 400; // Regular weekday rate (Mon-Fri)
-const WEEKEND_RATE = 450; // Regular weekend rate (Sat-Sun)
+const WEEKDAY_RATE = 500; // Regular weekday rate (Mon-Thu)
+const WEEKEND_RATE = 550; // Friday-Sunday rate
 
 // Blocked dates and date ranges (YYYY-MM-DD format)
 const BLOCKED_DATES = [
@@ -410,8 +410,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     const date = new Date(dateStr + 'T00:00:00');
     const dayOfWeek = date.getDay(); // 0=Sunday, 1=Monday, ..., 6=Saturday
     
-    // Weekends: Saturday (6) and Sunday (0)
-    if (dayOfWeek === 0 || dayOfWeek === 6) {
+    // Higher rate: Friday (5), Saturday (6), and Sunday (0)
+    if (dayOfWeek === 0 || dayOfWeek === 5 || dayOfWeek === 6) {
       return WEEKEND_RATE;
     }
     
