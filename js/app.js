@@ -16,19 +16,13 @@ const WEEKEND_RATE = 550; // Friday-Sunday rate
 
 // Blocked dates and date ranges (YYYY-MM-DD format)
 const BLOCKED_DATES = [
-  '2026-06-23', // June 23, 2026
-  '2026-06-24'  // June 24, 2026
+
 ];
-const BLOCKED_DATE_RANGES = [
-  { start: '2026-09-01', end: '2026-09-30' } // September 2026
-];
+const BLOCKED_DATE_RANGES = [];
 
 // Soft opening period (dates where soft opening rates apply)
 const SOFT_OPENING_DATES = [
-  '2026-06-25',
-  '2026-06-26',
-  '2026-06-27',
-  '2026-06-28'
+  
 ];
 
 let isRegularRateActive = false; // Legacy flag - not used with new date-based pricing
