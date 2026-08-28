@@ -1298,9 +1298,12 @@ Date: ${bookingDate}${courtSections}`;
         lastSubmissionTime = previousSubmissionTime;
         lastSubmissionSlots = previousSubmissionSlots;
         console.log('Submission tracking restored due to error:', { lastSubmissionTime, lastSubmissionSlots });
-        
-        alert('⚠️ This time slot is no longer available.\n\nAnother player has already reserved your selected date and time. Please refresh your browser and choose a different available date or time slot.\n\nThank you for your understanding.');
-        showToast('⚠️ This time slot is no longer available.\n\nAnother player has already reserved your selected date and time. Please refresh your browser and choose a different available date or time slot.\n\nThank you for your understanding.');
+
+        const message = err?.status === 409
+          ? 'This time slot was just reserved by another player. Please refresh the availability list and choose a different slot.'
+          : 'We could not save your booking. Please check your connection and try again.';
+        alert(message);
+        showToast(message);
         if (confirmBtn) {
           confirmBtn.disabled = false;
           confirmBtn.textContent = 'Next';
