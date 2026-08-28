@@ -20,7 +20,7 @@ const UI_ICONS = {
 };
 
 // Blocked dates and date ranges (YYYY-MM-DD format)
-const BLOCKED_DATES = ['2026-08-28'];
+const BLOCKED_DATES = [];
 const BLOCKED_DATE_RANGES = [];
 
 // Individually blocked time slots by date (YYYY-MM-DD format)
