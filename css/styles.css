@@ -61,6 +61,8 @@
 
     /* Search icon inside primary button */
     .btn-primary .icon-search { width: 16px; height: 16px; flex: 0 0 16px; display: inline-block; }
+    .ui-icon { width: 1em; height: 1em; display: inline-block; vertical-align: -0.15em; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; flex: 0 0 auto; }
+    .ui-icon-large { width: 2.5rem; height: 2.5rem; }
     .nav-actions { display: flex; gap: 10px; align-items: center; }
     .hamburger { display: none; background: none; border: none; color: white; cursor: pointer; padding: 6px; border-radius: 8px; font-size: 1.5rem; line-height: 1; transition: background 0.15s; }
     .hamburger:hover { background: rgba(255, 153, 207, 0.15); }
