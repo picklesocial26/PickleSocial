@@ -14,6 +14,11 @@ const SOFT_OPENING_RATE = 350; // Soft opening rate per hour
 const WEEKDAY_RATE = 500; // Regular weekday rate (Mon-Thu)
 const WEEKEND_RATE = 550; // Friday-Sunday rate
 
+const UI_ICONS = {
+  clock: '<svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 7v5l3 2"/></svg>',
+  court: '<svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5h14v14H5zM8 8h8v8H8zM5 12h14M12 5v14"/></svg>'
+};
+
 // Blocked dates and date ranges (YYYY-MM-DD format)
 const BLOCKED_DATES = [
 
@@ -126,10 +131,9 @@ function populateSuccessModal() {
   const bookingItemsHtml = Object.entries(courtGroups).map(([court, times]) => {
     const sortedTimes = times.slice().sort();
     const timesHtml = sortedTimes.map((time, index) => {
-      const timeEmojis = ['🕚', '🕛', '🕐', '🕑', '🕒', '🕓', '🕔', '🕕', '🕖', '🕗', '🕘', '🕙'];
       return `
         <div style="display:flex;align-items:center;gap:8px;margin:6px 0;">
-          <span>${timeEmojis[index % timeEmojis.length]}</span>
+          <span>${UI_ICONS.clock}</span>
           <span style="color:#f8fafc;font-size:0.95rem;">${time}</span>
         </div>
       `;
@@ -137,7 +141,7 @@ function populateSuccessModal() {
     
     return `
       <div style="padding:12px;border-radius:12px;border:1px solid rgba(236,72,153,0.14);background:rgba(255,255,255,0.03);margin-bottom:10px;">
-        <div style="font-weight:700;color:#f8fafc;margin-bottom:8px;">🏟️ ${court}</div>
+        <div style="font-weight:700;color:#f8fafc;margin-bottom:8px;">${UI_ICONS.court} ${court}</div>
         ${timesHtml}
       </div>
     `;
@@ -570,7 +574,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       td.style.padding = '24px';
       td.style.color = '#ef4444';
       td.style.fontWeight = '700';
-      td.textContent = '🚫 This date is blocked for bookings. Please choose other dates. Thank you';
+      td.textContent = 'This date is blocked for bookings. Please choose other dates. Thank you';
       tr.appendChild(td);
       body.appendChild(tr);
       return;
@@ -813,7 +817,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-      showToast('✅ Booking confirmation image downloaded');
+      showToast('Booking confirmation image downloaded');
     } catch (err) {
       console.error('Booking image download failed', err);
       showToast('❌ Failed to download booking image');
@@ -955,7 +959,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     
     // Show message with booking reference
     if (currentRef) {
-      showToast(`📋 Booking Reference: ${currentRef} • Complete your payment via Messenger`);
+      showToast(`Booking Reference: ${currentRef} • Complete your payment via Messenger`);
     }
     
     // Clear pending entries for next booking
@@ -1014,13 +1018,10 @@ document.addEventListener("DOMContentLoaded", async () => {
       courtOrder.forEach(court => {
         if (slotsByCount[court] && slotsByCount[court].length > 0) {
           const slots = slotsByCount[court];
-          const emoji = court === 'Court One' ? '🏟️' : '🏟️';
-          courtSections += `\n${emoji} ${court}\n`;
+          courtSections += `\n${court}\n`;
           
-          const timeEmojis = ['🕚', '🕛', '🕐', '🕑', '🕒', '🕓', '🕔', '🕕', '🕖', '🕗', '🕘', '🕙'];
           slots.forEach((slot, idx) => {
-            const emoji = timeEmojis[idx % timeEmojis.length];
-            courtSections += `${emoji} ${slot}\n`;
+            courtSections += `${slot}\n`;
           });
         }
       });
@@ -1029,18 +1030,18 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 Hello ${customerName},
 
-Thank you for booking with Pickle Social - Cebu! Your reservation has been successfully confirmed. ✅
+Thank you for booking with Pickle Social - Cebu! Your reservation has been successfully confirmed.
 
 Name: ${firstBooking.customer_name || ''}
 Phone: ${firstBooking.phone_number || ''}
-📌 Booking Reference: ${referenceCode}
-💳 Total Paid: ₱${totalAmount.toLocaleString()}
-📅 Date: ${bookingDate}${courtSections}`;
+Booking Reference: ${referenceCode}
+Total Paid: ₱${totalAmount.toLocaleString()}
+Date: ${bookingDate}${courtSections}`;
 
       // Copy to clipboard
       if (navigator.clipboard) {
         await navigator.clipboard.writeText(confirmationMessage);
-        showToast('✅ Booking confirmed! Message copied to clipboard.');
+        showToast('Booking confirmed! Message copied to clipboard.');
       } else {
         // Fallback for older browsers
         const textarea = document.createElement('textarea');
@@ -1049,7 +1050,7 @@ Phone: ${firstBooking.phone_number || ''}
         textarea.select();
         document.execCommand('copy');
         document.body.removeChild(textarea);
-        showToast('✅ Booking confirmed! Message copied to clipboard.');
+        showToast('Booking confirmed! Message copied to clipboard.');
       }
 
       // Reload table to update status
@@ -1067,7 +1068,7 @@ Phone: ${firstBooking.phone_number || ''}
     const confirmBtn = document.getElementById('confirmBtn') || document.getElementById('confirmModalBtn');
     if (confirmBtn && confirmBtn.disabled) {
       console.log('Button already disabled, ignoring duplicate click');
-      showToast('⏱️ Please wait - your booking is being submitted...');
+      showToast('Please wait - your booking is being submitted...');
       return;
     }
     
@@ -1139,7 +1140,7 @@ Phone: ${firstBooking.phone_number || ''}
     if (slotsMatch && timeSinceLastSubmission < 60000 && lastSubmissionSlots.length > 0) {
       console.log('DUPLICATE DETECTED! Blocking submission');
       alert('⚠️ This time slot is no longer available.\n\nAnother player has already reserved your selected date and time. Please refresh your browser and choose a different available date or time slot.\n\nThank you for your understanding.');
-      showToast('⏱️ Please wait before submitting again');
+      showToast('Please wait before submitting again');
       if (confirmBtn) {
         confirmBtn.disabled = false;
         confirmBtn.textContent = 'Next';
@@ -1292,7 +1293,7 @@ Phone: ${firstBooking.phone_number || ''}
       closeConfirmModal();
       openBookingSubmittedModal(refCode, totalAmount);
 
-      showToast('✅ Booking submitted! Save a copy and proceed to scan payment.');
+      showToast('Booking submitted! Save a copy and proceed to scan payment.');
 
     } catch (err) {
       console.error('Booking error:', err);
@@ -1415,18 +1416,17 @@ Phone: ${firstBooking.phone_number || ''}
         });
       }
 
-      const timeEmojis = ['🕚', '🕛', '🕐', '🕑', '🕒', '🕓', '🕔', '🕕', '🕖', '🕗', '🕘', '🕙'];
       const courtSections = Object.entries(courtGroups).map(([court, times]) => {
         const sortedTimes = times.slice().sort();
         const timesHtml = sortedTimes.map((time, index) => `
           <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
-            <span>${timeEmojis[index % timeEmojis.length]}</span>
+            <span>${UI_ICONS.clock}</span>
             <span style="color:#f8fafc;">${time}</span>
           </div>
         `).join('');
         return `
           <div style="padding:12px;border-radius:12px;border:1px solid rgba(236,72,153,0.14);background:rgba(255,255,255,0.03);">
-            <div style="font-weight:700;color:#f8fafc;margin-bottom:8px;">🏟️ ${court}</div>
+            <div style="font-weight:700;color:#f8fafc;margin-bottom:8px;">${UI_ICONS.court} ${court}</div>
             ${timesHtml}
           </div>
         `;
@@ -1436,14 +1436,14 @@ Phone: ${firstBooking.phone_number || ''}
       if (status === 'paid' || status === 'confirmed') {
         resultHtml += `
           <div style="text-align:center;padding:16px;border:2px solid #10b981;border-radius:12px;background:rgba(16,185,129,0.1);">
-            <div style="font-size:1.2rem;margin-bottom:8px;">✅ Booking Confirmed</div>
+            <div style="font-size:1.2rem;margin-bottom:8px;">Booking Confirmed</div>
             <div style="color:#a7f3d0;font-weight:700;">Reference: ${ref}</div>
           </div>
         `;
       } else if (status === 'pending') {
         resultHtml += `
-          <div style="text-align:center;padding:16px;border:2px solid #f59e0b;border-radius:12px;background:rgba(245,158,11,0.1);">
-            <div style="font-size:1.1rem;margin-bottom:8px;">⏳ Booking Pending Payment</div>
+            <div style="text-align:center;padding:16px;border:2px solid #f59e0b;border-radius:12px;background:rgba(245,158,11,0.1);">
+            <div style="font-size:1.1rem;margin-bottom:8px;">Booking Pending Payment</div>
             <div style="color:#fcd34d;">Payment required to confirm</div>
           </div>
         `;
@@ -1471,8 +1471,8 @@ Phone: ${firstBooking.phone_number || ''}
 
       resultHtml += `
         <div style="background:rgba(255,255,255,0.03);padding:16px;border-radius:12px;border:1px solid rgba(236,72,153,0.14);">
-          <div style="font-size:1rem;margin-bottom:8px;">💳 Total Paid: ₱${totalAmount}</div>
-          <div style="font-size:1rem;">📅 Date: ${displayDate}</div>
+          <div style="font-size:1rem;margin-bottom:8px;">Total Paid: ₱${totalAmount}</div>
+          <div style="font-size:1rem;">Date: ${displayDate}</div>
         </div>
       `;
       resultHtml += courtSections;
