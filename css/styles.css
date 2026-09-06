@@ -567,6 +567,10 @@
     .modal-info-content a:hover {
       color: var(--accent);
     }
+    .terms-modal { position: relative; width: 90%; max-width: 680px; padding: 24px; }
+    .terms-frame { display: block; width: 100%; height: min(68vh, 620px); border: 1px solid rgba(255,153,207,0.16); border-radius: 12px; background: #08090d; }
+    .terms-modal-actions { justify-content: flex-end; margin-top: 14px; }
+    .terms-modal-actions .btn-confirm { flex: 0 0 120px; }
     .modal-close-btn {
       position: absolute;
       top: 16px;
