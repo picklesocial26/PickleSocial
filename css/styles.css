@@ -282,6 +282,17 @@
     .btn-confirm { flex: 2; padding: 12px 20px; border-radius: 12px; background: linear-gradient(135deg, var(--accent-deep), var(--accent)); border: none; color: #fff; font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; font-size: 0.9rem; cursor: pointer; transition: all 0.2s; box-shadow: 0 6px 16px rgba(255, 153, 207, 0.25); letter-spacing: 0.3px; }
     .btn-confirm:hover { box-shadow: 0 4px 12px rgba(255, 153, 207, 0.25); transform: none; }
     .btn-confirm:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+    .terms-checkbox { display: flex; align-items: center; gap: 10px; margin-top: 16px; padding: 11px 12px; border: 1px solid rgba(255,153,207,0.18); border-radius: 10px; background: rgba(255,153,207,0.035); color: #cbd5e1; font-size: 0.82rem; line-height: 1.4; cursor: pointer; transition: border-color 0.2s, background 0.2s, box-shadow 0.2s; }
+    .terms-checkbox:hover { border-color: rgba(255,153,207,0.42); background: rgba(255,153,207,0.07); }
+    .terms-checkbox:focus-within { border-color: rgba(255,153,207,0.65); box-shadow: 0 0 0 3px rgba(255,153,207,0.12); }
+    .terms-checkbox input { appearance: none; width: 18px; height: 18px; margin: 0; border: 1px solid rgba(255,255,255,0.28); border-radius: 5px; background: rgba(15,23,42,0.7); flex: 0 0 18px; display: grid; place-content: center; transition: background 0.2s, border-color 0.2s, box-shadow 0.2s; }
+    .terms-checkbox input::before { content: ''; width: 8px; height: 4px; border-left: 2px solid #160b13; border-bottom: 2px solid #160b13; transform: rotate(-45deg) scale(0); transition: transform 0.15s ease-in-out; }
+    .terms-checkbox input:checked { background: var(--accent); border-color: var(--accent); box-shadow: 0 0 10px rgba(255,153,207,0.25); }
+    .terms-checkbox input:checked::before { transform: rotate(-45deg) scale(1); }
+    .terms-copy { flex: 1; }
+    .terms-checkbox a { color: #f9a8d4; font-weight: 700; text-decoration: none; }
+    .terms-checkbox a:hover { color: #fff; text-decoration: underline; }
+    .terms-required { color: #94a3b8; font-size: 0.68rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; white-space: nowrap; }
     #successDoneBtn { background: #52525b; color: #f8fafc; border: 1px solid #3f3f46; box-shadow: none; }
     #successDoneBtn:hover { transform: none; box-shadow: none; }
     .btn-checkout:disabled { opacity: 0.55; cursor: not-allowed; box-shadow: none; }
