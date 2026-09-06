@@ -185,6 +185,17 @@ function closeSuccessModal() {
   if (modal) modal.classList.remove('open');
 }
 
+function openTermsServiceModal(event) {
+  if (event) event.preventDefault();
+  const modal = document.getElementById('termsModal');
+  if (modal) modal.classList.add('open');
+}
+
+function closeTermsModal() {
+  const modal = document.getElementById('termsModal');
+  if (modal) modal.classList.remove('open');
+}
+
 // Close modals when clicking on overlay
 document.addEventListener('DOMContentLoaded', function() {
   const modals = ['aboutUsModal', 'privacyPolicyModal', 'termsModal', 'contactUsModal', 'successModal'];
