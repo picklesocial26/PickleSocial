@@ -295,7 +295,7 @@
 
       <label class="terms-checkbox" for="confirmTerms">
         <input type="checkbox" id="confirmTerms">
-        <span class="terms-copy">I agree to the <a href="/terms-of-service" target="_blank" rel="noreferrer">Terms of Service</a>.</span>
+        <span class="terms-copy">I agree to the <a href="/terms-of-service" onclick="openTermsServiceModal(event)">Terms of Service</a>.</span>
         <span class="terms-required">Required</span>
       </label>
     </div>
@@ -303,6 +303,17 @@
     <div class="modal-actions" style="margin-top:14px;">
       <button class="btn-cancel" onclick="closeConfirmModal()">Cancel</button>
       <button class="btn-confirm" id="confirmModalBtn" onclick="submitBooking()" disabled>Next</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="termsModal">
+  <div class="modal modal-info terms-modal" role="dialog" aria-modal="true" aria-labelledby="termsModalTitle">
+    <button class="modal-close-btn" type="button" onclick="closeTermsModal()" aria-label="Close Terms of Service">&times;</button>
+    <h2 id="termsModalTitle">Terms of Service</h2>
+    <iframe class="terms-frame" src="terms-of-service.html" title="Terms of Service"></iframe>
+    <div class="modal-actions terms-modal-actions">
+      <button class="btn-confirm" type="button" onclick="closeTermsModal()">Done</button>
     </div>
   </div>
 </div>
