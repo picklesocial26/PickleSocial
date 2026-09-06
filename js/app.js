@@ -73,8 +73,9 @@ function updateConfirmModalButtonState() {
   const confirmBtn = document.getElementById('confirmModalBtn');
   const nameInput = document.getElementById('confirmName');
   const phoneInput = document.getElementById('confirmPhone');
+  const termsCheckbox = document.getElementById('confirmTerms');
   
-  if (!confirmBtn || !nameInput || !phoneInput) return;
+  if (!confirmBtn || !nameInput || !phoneInput || !termsCheckbox) return;
   
   const rawName = nameInput.value;
   const rawPhone = phoneInput.value;
@@ -90,7 +91,7 @@ function updateConfirmModalButtonState() {
 
   const name = sanitizedName.trim();
   const phone = sanitizedPhone.trim();
-  const isValid = isValidConfirmName(name) && isValidConfirmPhone(phone);
+  const isValid = isValidConfirmName(name) && isValidConfirmPhone(phone) && termsCheckbox.checked;
 
   confirmBtn.disabled = !isValid;
 }
@@ -741,6 +742,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const totalEl = document.getElementById('confirmTotal');
     const nameEl = document.getElementById('confirmName');
     const phoneEl = document.getElementById('confirmPhone');
+    const termsCheckbox = document.getElementById('confirmTerms');
     const confirmBtn = document.getElementById('confirmModalBtn');
 
     if (!container || !dateEl || !countEl || !totalEl) {
@@ -792,6 +794,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const existingPhone = document.getElementById('bookingPhone');
     if (nameEl) nameEl.value = existingName ? sanitizeName(existingName.value) : '';
     if (phoneEl) phoneEl.value = existingPhone ? sanitizePhone(existingPhone.value) : '';
+    if (termsCheckbox) termsCheckbox.checked = false;
 
     // open modal
     document.getElementById('confirmModal').classList.add('open');
@@ -805,6 +808,10 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (phoneEl) {
       phoneEl.removeEventListener('input', updateConfirmModalButtonState);
       phoneEl.addEventListener('input', updateConfirmModalButtonState);
+    }
+    if (termsCheckbox) {
+      termsCheckbox.removeEventListener('change', updateConfirmModalButtonState);
+      termsCheckbox.addEventListener('change', updateConfirmModalButtonState);
     }
     
     // Initial check to enable/disable button
@@ -1139,11 +1146,21 @@ Date: ${bookingDate}${courtSections}`;
     // Prefer values from the confirm modal when present (user-filled there)
     const nameField = document.getElementById('confirmName') || document.getElementById('bookingName');
     const phoneField = document.getElementById('confirmPhone') || document.getElementById('bookingPhone');
+    const termsCheckbox = document.getElementById('confirmTerms');
     const notesField = document.getElementById('bookingNotes');
 
     const name = nameField ? nameField.value.trim() : '';
     const phone = phoneField ? phoneField.value.trim() : '';
     const notes = notesField ? notesField.value.trim() : '';
+
+    if (!termsCheckbox?.checked) {
+      showToast('Please agree to the Terms of Service');
+      if (confirmBtn) {
+        confirmBtn.disabled = false;
+        confirmBtn.textContent = 'Next';
+      }
+      return;
+    }
 
     console.log('Form values:', { name, phone, notes });
 
