@@ -14,6 +14,7 @@ let blockedSlots = {};
 const SOFT_OPENING_RATE = 350; // Soft opening rate per hour
 const WEEKDAY_RATE = 500; // Regular weekday rate (Mon-Thu)
 const WEEKEND_RATE = 550; // Friday-Sunday rate
+const MONDAY_EARLY_RATE = 550; // Monday rate from 12AM through 5AM
 
 const UI_ICONS = {
   clock: '<svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 7v5l3 2"/></svg>',
@@ -39,7 +40,7 @@ const BLOCKED_TIME_SLOTS = {
     '9AM - 10AM',
     '10AM - 11AM',
     '11AM - 12PM',
-    '12PM - 1PM'
+    '12PM - 1PM'                  
   ],
  
 };
@@ -439,6 +440,14 @@ document.addEventListener("DOMContentLoaded", async () => {
     // Parse date string (YYYY-MM-DD) and get day of week
     const date = new Date(dateStr + 'T00:00:00');
     const dayOfWeek = date.getDay(); // 0=Sunday, 1=Monday, ..., 6=Saturday
+
+    if (dayOfWeek === 1) {
+      const startTime = slot?.split(' - ')[0].match(/^(\d{1,2})(AM|PM)$/i);
+      if (startTime) {
+        const hour = Number(startTime[1]) % 12 + (startTime[2].toUpperCase() === 'PM' ? 12 : 0);
+        if (hour < 5) return MONDAY_EARLY_RATE;
+      }
+    }
     
     // Higher rate: Friday (5), Saturday (6), and Sunday (0)
     if (dayOfWeek === 0 || dayOfWeek === 5 || dayOfWeek === 6) {
