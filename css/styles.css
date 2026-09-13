@@ -107,6 +107,10 @@
     .pricing-banner { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06); border-radius: 14px; padding: 16px 22px; margin: 16px 0 28px; display: flex; flex-wrap: wrap; gap: 8px 28px; align-items: center; }
     .pricing-banner .rate { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; color: var(--text-primary); font-size: 0.95rem; display: flex; align-items: center; gap: 7px; }
     .pricing-banner .note { color: var(--gray-text); font-size: 0.82rem; width: 100%; }
+    .pricing-banner { display: grid; grid-template-columns: max-content 1fr; }
+    .pricing-banner > .rate, .pricing-banner > .note { grid-column: 1 / -1; }
+    .pricing-banner > div:nth-last-child(2), .pricing-banner > div:last-child { width: auto; }
+    .pricing-banner > div:nth-last-child(2), .pricing-banner > div:last-child { grid-column: 1 / -1; justify-self: start; width: fit-content; }
 
     .booking-section { display: grid; grid-template-columns: 280px 1fr; gap: 20px; align-items: start; }
 
