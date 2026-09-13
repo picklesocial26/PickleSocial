@@ -12,6 +12,7 @@ let lastSubmissionTime = 0; // Track last submission timestamp for duplicate pre
 let lastSubmissionSlots = []; // Track last submission slot keys for duplicate prevention
 let blockedSlots = {};
 const SOFT_OPENING_RATE = 350; // Soft opening rate per hour
+const TRAINING_COURT_RATE = 350; // Training Court rate per hour, every day
 const WEEKDAY_RATE = 500; // Regular weekday rate (Mon-Thu)
 const WEEKEND_RATE = 550; // Friday-Sunday rate
 const MONDAY_EARLY_RATE = 550; // Monday rate from 12AM through 5AM
@@ -418,7 +419,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     '11PM - 12AM'
   ];
 
-  const COURTS = ['Court One'];
+  const COURTS = ['Court One', 'Training Court'];
   const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
   const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 
@@ -442,7 +443,11 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   // Fixed rate per hour - based on date and day of week
-  function getRate(slot, dateStr) {
+  function getRate(slot, dateStr, court = 'Court One') {
+    if (court === 'Training Court') {
+      return TRAINING_COURT_RATE;
+    }
+
     // If in soft opening period, use soft opening rate
     if (SOFT_OPENING_DATES.includes(dateStr)) {
       return SOFT_OPENING_RATE;
@@ -646,6 +651,9 @@ document.addEventListener("DOMContentLoaded", async () => {
         const key = `${dk}|${slot}|${index}`;
         const btn = document.createElement('button');
         btn.className = 'slot-btn';
+        if (court === 'Training Court') {
+          btn.classList.add('training-court-btn');
+        }
 
         // Check if slot is in the past (only for today)
         const pastSlot = isSlotPast(dk, slot);
@@ -699,14 +707,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         tr.appendChild(tdC);
       });
 
-      const trainingCourtCell = document.createElement('td');
-      const trainingCourtButton = document.createElement('button');
-      trainingCourtButton.className = 'slot-btn training-court-btn';
-      trainingCourtButton.textContent = 'Coming Soon';
-      trainingCourtButton.disabled = true;
-      trainingCourtCell.appendChild(trainingCourtButton);
-      tr.appendChild(trainingCourtCell);
-
       body.appendChild(tr);
     });
   }
@@ -715,7 +715,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const count = selectedSlots.size;
     const total = [...selectedSlots].reduce((sum, key) => {
       const parts = key.split('|');
-      return sum + getRate(parts[1], parts[0]);
+      return sum + getRate(parts[1], parts[0], COURTS[parseInt(parts[2], 10)]);
     }, 0);
 
     document.getElementById('cartCount').textContent = `${count} slot${count !== 1 ? 's' : ''} selected`;
@@ -774,7 +774,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       const slot = parts[1];
       const courtIndex = parseInt(parts[2], 10);
       const court = COURTS[courtIndex] || 'Court';
-      const price = getRate(slot, date);
+      const price = getRate(slot, date, court);
       total += price;
 
       const card = document.createElement('div');
@@ -1079,7 +1079,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       // Build formatted confirmation message
       let courtSections = '';
-      const courtOrder = ['Court One'];
+      const courtOrder = ['Court One', 'Training Court'];
       courtOrder.forEach(court => {
         if (slotsByCount[court] && slotsByCount[court].length > 0) {
           const slots = slotsByCount[court];
@@ -1248,8 +1248,8 @@ Date: ${bookingDate}${courtSections}`;
           time_slot: slot,
           court_name: COURTS[parseInt(courtIndex)],
           court: COURTS[parseInt(courtIndex)],
-          price: getRate(slot, date),
-          rate: getRate(slot, date),
+          price: getRate(slot, date, COURTS[parseInt(courtIndex, 10)]),
+          rate: getRate(slot, date, COURTS[parseInt(courtIndex, 10)]),
           status: 'pending',
           fromExistingBooking: false,
           persistedInDb: false
