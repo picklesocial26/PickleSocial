@@ -142,7 +142,7 @@ function populateSuccessModal() {
   // Populate booking items (courts and times)
   const courtGroups = {};
   searchedBookingData.forEach(booking => {
-    const courtName = booking.court_name || booking.court || 'Court';
+    const courtName = getCourtDisplayName(booking.court_name || booking.court || 'Court');
     const timeSlot = booking.time_slot || booking.booking_time || 'Unknown time';
     if (!courtGroups[courtName]) {
       courtGroups[courtName] = [];
@@ -440,6 +440,10 @@ document.addEventListener("DOMContentLoaded", async () => {
       return String(d || '');
     }
     return `${DAYS[d.getDay()]}, ${MONTHS[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}`;
+  }
+
+  function getCourtDisplayName(court) {
+    return court === 'Training Court' ? 'Training Area' : court;
   }
 
   // Fixed rate per hour - based on date and day of week
@@ -897,7 +901,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (!entries || entries.length === 0) return;
 
     const grouped = entries.reduce((acc, entry) => {
-      const courtName = entry.court_name || entry.court || 'Court';
+      const courtName = getCourtDisplayName(entry.court_name || entry.court || 'Court');
       const timeText = entry.booking_time || entry.time_slot || '';
       const date = entry.booking_date || '';
       const key = `${courtName}||${timeText}||${date}`;
@@ -972,7 +976,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     const bookingEntries = [...pendingBookingEntries];
     const successName = bookingEntries[0]?.customer_name || '';
-    const successCourt = bookingEntries[0]?.court_name || bookingEntries[0]?.court || '';
+    const successCourt = getCourtDisplayName(bookingEntries[0]?.court_name || bookingEntries[0]?.court || '');
     const successDate = bookingEntries[0]?.booking_date ? formatDateDisplay(bookingEntries[0].booking_date) : '';
     const successTime = bookingEntries[0]?.booking_time || bookingEntries[0]?.time_slot || '';
     const successPaidTotal = `₱${totalAmount.toLocaleString()}`;
@@ -1083,7 +1087,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       courtOrder.forEach(court => {
         if (slotsByCount[court] && slotsByCount[court].length > 0) {
           const slots = slotsByCount[court];
-          courtSections += `\n${court}\n`;
+          courtSections += `\n${getCourtDisplayName(court)}\n`;
           
           slots.forEach((slot, idx) => {
             courtSections += `${slot}\n`;
@@ -1504,7 +1508,7 @@ Date: ${bookingDate}${courtSections}`;
         `).join('');
         return `
           <div style="padding:12px;border-radius:12px;border:1px solid rgba(236,72,153,0.14);background:rgba(255,255,255,0.03);">
-            <div style="font-weight:700;color:#f8fafc;margin-bottom:8px;">${UI_ICONS.court} ${court}</div>
+            <div style="font-weight:700;color:#f8fafc;margin-bottom:8px;">${UI_ICONS.court} ${getCourtDisplayName(court)}</div>
             ${timesHtml}
           </div>
         `;
