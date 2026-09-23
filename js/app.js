@@ -110,9 +110,37 @@ function showToast(message) {
   }, 3000);
 }
 
+function waitForLoader(delayMs = 3000) {
+  return new Promise(resolve => setTimeout(resolve, delayMs));
+}
 
+function showLoader(message = 'Processing...') {
+  const loader = document.getElementById('globalLoader');
+  if (!loader) return;
 
+  const loaderText = loader.querySelector('.loader-text');
+  if (loaderText) loaderText.textContent = message;
 
+  loader.classList.add('show');
+}
+
+function hideLoader() {
+  const loader = document.getElementById('globalLoader');
+  if (!loader) return;
+  loader.classList.remove('show');
+}
+
+function showTableLoader() {
+  const loader = document.getElementById('tablePanelLoader');
+  if (!loader) return;
+  loader.classList.add('show');
+}
+
+function hideTableLoader() {
+  const loader = document.getElementById('tablePanelLoader');
+  if (!loader) return;
+  loader.classList.remove('show');
+}
 
 function populateSuccessModal() {
   if (!searchedBookingData || searchedBookingData.length === 0) {
@@ -387,8 +415,13 @@ document.addEventListener("DOMContentLoaded", async () => {
   // Helper to load bookings then render table
   async function loadAndRenderTable() {
     const dk = dateKey(selectedDate);
-    await loadBookedSlotsForDate(dk);
-    renderTable();
+    showTableLoader();
+    try {
+      await loadBookedSlotsForDate(dk);
+      renderTable();
+    } finally {
+      hideTableLoader();
+    }
   }
 
   // 24-HOUR SLOTS
@@ -1052,6 +1085,8 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   // Admin function to confirm a pending booking and copy confirmation message
   window.confirmBooking = async function(referenceCode, bookingDetails) {
+    showLoader('Confirming booking...');
+
     try {
       // Update booking status to confirmed
       const result = await callBackendAPI('confirm-booking', { reference_code: referenceCode });
@@ -1124,9 +1159,12 @@ Date: ${bookingDate}${courtSections}`;
 
       // Reload table to update status
       await loadAndRenderTable();
+      await waitForLoader(3000);
     } catch (err) {
       console.error('Error confirming booking:', err);
       showToast('❌ Error confirming booking. Please try again.');
+    } finally {
+      hideLoader();
     }
   };
 
@@ -1370,6 +1408,10 @@ Date: ${bookingDate}${courtSections}`;
       
       startPendingPoll(); // Start polling to detect admin confirmations
 
+      showLoader('Submitting your booking...');
+      await waitForLoader(3000);
+      hideLoader();
+
       // Close booking/confirm modal and show the booking submitted summary
       closeModal();
       closeConfirmModal();
@@ -1609,7 +1651,14 @@ Date: ${bookingDate}${courtSections}`;
 
   // Refresh available slots from server and re-render table
   window.refreshSlots = async function() {
-    location.reload();
+    showTableLoader();
+    try {
+      const dk = dateKey(selectedDate);
+      await loadBookedSlotsForDate(dk);
+      renderTable();
+    } finally {
+      hideTableLoader();
+    }
   };
 
   window.closeReceiptModal = function() {
