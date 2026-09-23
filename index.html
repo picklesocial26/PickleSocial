@@ -120,7 +120,7 @@
     <h2>Frequently Asked Questions</h2>
     
     <div class="faq-item-new">
-      <button class="faq-toggle" type="button">
+      <button class="faq-toggle" onclick="toggleFAQ(this)">
         <span class="faq-question">How to book?</span>
         <span class="faq-icon">⌄</span>
       </button>
@@ -131,7 +131,7 @@
     </div>
 
     <div class="faq-item-new">
-      <button class="faq-toggle" type="button">
+      <button class="faq-toggle" onclick="toggleFAQ(this)">
         <span class="faq-question">What is the Pickle Racket Range?</span>
         <span class="faq-icon">⌄</span>
       </button>
@@ -142,7 +142,7 @@
     </div>
 
     <div class="faq-item-new">
-      <button class="faq-toggle" type="button">
+      <button class="faq-toggle" onclick="toggleFAQ(this)">
         <span class="faq-question">Where to send payment?</span>
         <span class="faq-icon">⌄</span>
       </button>
@@ -158,7 +158,7 @@
     </div>
 
     <div class="faq-item-new">
-      <button class="faq-toggle" type="button">
+      <button class="faq-toggle" onclick="toggleFAQ(this)">
         <span class="faq-question">What to do when you arrive?</span>
         <span class="faq-icon">⌄</span>
       </button>
@@ -168,7 +168,7 @@
     </div>
 
     <div class="faq-item-new">
-      <button class="faq-toggle" type="button">
+      <button class="faq-toggle" onclick="toggleFAQ(this)">
         <span class="faq-question">Parking Information</span>
         <span class="faq-icon">⌄</span>
       </button>
@@ -453,3 +453,35 @@
       image.src = imagePath;
       image.alt = `${courtName} preview`;
       modal.classList.add('open');
+    };
+  }
+
+  if (typeof window.closeCourtPreview !== 'function') {
+    window.closeCourtPreview = function() {
+      const modal = document.getElementById('courtPreviewModal');
+      const image = document.getElementById('courtPreviewImage');
+      if (modal) modal.classList.remove('open');
+      if (image) image.removeAttribute('src');
+    };
+  }
+
+  document.querySelectorAll('[data-preview-name]').forEach(function(button) {
+    button.addEventListener('click', function() {
+      window.openCourtPreview(button.dataset.previewName, button.dataset.previewImage);
+    });
+  });
+
+  document.querySelectorAll('[data-close-court-preview]').forEach(function(button) {
+    button.addEventListener('click', window.closeCourtPreview);
+  });
+
+  function toggleFAQ(button) {
+    const faqItem = button.closest('.faq-item-new');
+    if (!faqItem) return;
+    
+    faqItem.classList.toggle('active');
+  }
+</script>
+
+</body>
+</html>
