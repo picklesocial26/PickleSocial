@@ -93,7 +93,13 @@
           <div style="color:#9ca3af;font-size:0.9rem;font-weight:600;">Tap available slots to select multiple.</div>
           <button class="btn-primary" id="refreshBtn" onclick="refreshSlots()">Refresh</button>
         </div>
-      <div class="table-scroll">
+      <div class="table-scroll table-scroll-loading">
+        <div id="tablePanelLoader" class="table-panel-loader" aria-live="polite" aria-busy="true">
+          <div class="table-loader-card">
+            <div class="table-loader-ring"></div>
+            <div class="table-loader-copy">Loading available slots...</div>
+          </div>
+        </div>
         <table>
           <thead>
             <tr>
@@ -342,6 +348,11 @@
       <button class="btn-confirm" type="button" data-close-court-preview>Done</button>
     </div>
   </div>
+</div>
+
+<div id="globalLoader" class="global-loader" aria-live="polite" aria-busy="true">
+  <div class="loader-spinner"></div>
+  <div class="loader-text">Processing...</div>
 </div>
 
 <div class="modal-overlay" id="successModal">
