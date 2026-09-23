@@ -68,7 +68,7 @@
     <div class="rate"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 1.5 5.5L19 7l-3.5 4.5L21 14l-5.5 1.5L17 21l-5-3-5 3 1.5-5.5L3 14l5.5-2.5L5 7l5.5 1.5L12 3Z"/></svg><span>Monday - Thursday: 500<br>Friday - Sunday: 550</span></div>
   
     <div style="margin-top: 12px; padding: 12px; background: rgba(74, 222, 128, 0.1); border-radius: 8px; font-size: 0.85em; color: #10b981; border-left: 3px solid #10b981;"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10v4h3l5 4V6l-5 4H4Z"/><path d="M16 9.5a4 7.5 7.5 0 0 1 0 10"/></svg> <strong>NOTE: </strong>Please send your Booking Ref and Receipt to confirm your reservation.</div>
-    <div style="margin-top: 12px; padding: 12px; background: rgba(255, 153, 207, 0.1); border-radius: 8px; font-size: 0.85em; color: #ff99cf; border-left: 3px solid #ff99cf;"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10v4h3l5 4V6l-5 4H4Z"/><path d="M15.5 9.5a4 4 0 0 1 0 5M18 7a7 7 0 0 1 0 10"/></svg> <strong>NOTE: </strong>Training Area is now available for 350 PHP per hour.</div>
+    <div style="margin-top: 12px; padding: 12px; background: rgba(255, 153, 207, 0.1); border-radius: 8px; font-size: 0.85em; color: #ff99cf; border-left: 3px solid #ff99cf;"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10v4h3l5 4V6l-5 4H4Z"/><path d="M15.5 9.5a4 4 0 0 1 0 5M18 7a7 7 0 0 1 0 10"/></svg> <strong>NOTE: </strong>Pickle Racket Range is now available for 350 PHP per hour.</div>
   </div>
 
   <div class="booking-section">
@@ -98,8 +98,14 @@
           <thead>
             <tr>
               <th>Time</th>
-              <th>Court 1</th>
-                <th class="training-court-heading">Training Area</th>
+              <th>
+                <span class="court-heading-label">Standard Court</span>
+                <button class="court-preview-btn" type="button" onclick="openCourtPreview('Standard Court', 'PREVIEW_COURT 1.jpg')" aria-label="Preview Standard Court">i</button>
+              </th>
+              <th class="training-court-heading">
+                <span class="court-heading-label">Pickle Racket Range</span>
+                <button class="court-preview-btn" type="button" onclick="openCourtPreview('Pickle Racket Range', 'training area.jpg')" aria-label="Preview Pickle Racket Range">i</button>
+              </th>
             </tr>
           </thead>
           <tbody id="slotBody"></tbody>
@@ -121,6 +127,17 @@
       <div class="faq-answer">
         <p>Simply go to our booking website and select your preferred date and time slot. Fill in your details and confirm your reservation.</p>
         <p>COPY YOUR BOOKING REFERENCE CODE: <strong>PKL-0000000</strong></p>
+      </div>
+    </div>
+
+    <div class="faq-item-new">
+      <button class="faq-toggle" onclick="toggleFAQ(this)">
+        <span class="faq-question">What is the Pickle Racket Range?</span>
+        <span class="faq-icon">⌄</span>
+      </button>
+      <div class="faq-answer">
+        <p>The Pickle Racket Range is a smaller training area designed for individual practice and drills. It is not a standard-size pickleball court.</p>
+        <button class="btn-primary faq-preview-btn" type="button" onclick="openCourtPreview('Pickle Racket Range', 'training area.jpg')">Preview Pickle Racket Range</button>
       </div>
     </div>
 
@@ -316,6 +333,17 @@
   </div>
 </div>
 
+<div class="modal-overlay" id="courtPreviewModal">
+  <div class="modal court-preview-modal" role="dialog" aria-modal="true" aria-labelledby="courtPreviewTitle">
+    <button class="modal-close-btn" type="button" onclick="closeCourtPreview()" aria-label="Close court preview">&times;</button>
+    <h2 id="courtPreviewTitle">Court Preview</h2>
+    <img id="courtPreviewImage" class="court-preview-image" src="" alt="">
+    <div class="modal-actions court-preview-actions">
+      <button class="btn-confirm" type="button" onclick="closeCourtPreview()">Done</button>
+    </div>
+  </div>
+</div>
+
 <div class="modal-overlay" id="successModal">
   <div class="modal success-modal">
     <div class="success-body-box">
@@ -397,31 +425,3 @@
       </div>
     </div>
 
-    <div class="modal-actions">
-      <button id="successDoneBtn" class="btn-confirm" style="flex:1;" onclick="handleDoneBooking()" disabled>Done</button>
-      <a href="https://www.facebook.com/profile.php?id=61589519277936" target="_blank" rel="noreferrer" class="btn-confirm" style="flex:1; text-align: center; text-decoration: none; display: flex; align-items: center; justify-content: center;">Message Us On Facebook</a>
-    </div>
-  </div>
-</div>
-
-<div class="toast" id="toast"></div>
-
-
-
-<script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/tesseract.js@4.0.2/dist/tesseract.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
-
-<script src="js/app.js"></script>
-
-<script>
-  function toggleFAQ(button) {
-    const faqItem = button.closest('.faq-item-new');
-    if (!faqItem) return;
-    
-    faqItem.classList.toggle('active');
-  }
-</script>
-
-</body>
-</html>
