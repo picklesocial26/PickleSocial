@@ -12,7 +12,7 @@ let lastSubmissionTime = 0; // Track last submission timestamp for duplicate pre
 let lastSubmissionSlots = []; // Track last submission slot keys for duplicate prevention
 let blockedSlots = {};
 const SOFT_OPENING_RATE = 350; // Soft opening rate per hour
-const TRAINING_AREA_RATE = 350; // Training Area rate per hour, every day
+const PICKLE_RACKET_RANGE_RATE = 350; // Pickle Racket Range rate per hour, every day
 const WEEKDAY_RATE = 500; // Regular weekday rate (Mon-Thu)
 const WEEKEND_RATE = 550; // Friday-Sunday rate
 const MONDAY_EARLY_RATE = 550; // Monday rate from 12AM through 5AM
@@ -419,7 +419,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     '11PM - 12AM'
   ];
 
-  const COURTS = ['Court One', 'Training Area'];
+  const COURTS = ['Standard Court', 'Pickle Racket Range'];
   const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
   const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 
@@ -443,13 +443,19 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   function getCourtDisplayName(court) {
-    return court === 'Training Area' || court === 'Training Court' ? 'Training Area' : court;
+    return normalizeCourtName(court);
+  }
+
+  function normalizeCourtName(court) {
+    if (court === 'Court One' || court === 'Court 1' || court === 'Standard Court') return 'Standard Court';
+    if (court === 'Training Area' || court === 'Training Court' || court === 'Pickle Racket Range') return 'Pickle Racket Range';
+    return court;
   }
 
   // Fixed rate per hour - based on date and day of week
-  function getRate(slot, dateStr, court = 'Court One') {
-    if (court === 'Training Area' || court === 'Training Court') {
-      return TRAINING_AREA_RATE;
+  function getRate(slot, dateStr, court = 'Standard Court') {
+    if (court === 'Pickle Racket Range') {
+      return PICKLE_RACKET_RANGE_RATE;
     }
 
     // If in soft opening period, use soft opening rate
@@ -655,7 +661,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         const key = `${dk}|${slot}|${index}`;
         const btn = document.createElement('button');
         btn.className = 'slot-btn';
-        if (court === 'Training Area' || court === 'Training Court') {
+        if (court === 'Pickle Racket Range') {
           btn.classList.add('training-court-btn');
         }
 
@@ -1083,7 +1089,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       // Build formatted confirmation message
       let courtSections = '';
-      const courtOrder = ['Court One', 'Training Area'];
+      const courtOrder = ['Standard Court', 'Pickle Racket Range'];
       courtOrder.forEach(court => {
         if (slotsByCount[court] && slotsByCount[court].length > 0) {
           const slots = slotsByCount[court];
