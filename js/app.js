@@ -110,6 +110,11 @@ function showToast(message) {
   }, 3000);
 }
 
+window.toggleFAQ = function(button) {
+  const faqItem = button?.closest('.faq-item-new');
+  if (faqItem) faqItem.classList.toggle('active');
+};
+
 
 
 
@@ -1793,8 +1798,3 @@ Date: ${bookingDate}${courtSections}`;
         const expiryEl = document.getElementById('successExpiryNote');
         if (expiryEl) {
           expiryEl.textContent = `Expires in ${mins}:${secs.toString().padStart(2, '0')}`;
-        }
-      }
-    }
-  }, 1000);
-});
