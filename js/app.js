@@ -12,7 +12,7 @@ let lastSubmissionTime = 0; // Track last submission timestamp for duplicate pre
 let lastSubmissionSlots = []; // Track last submission slot keys for duplicate prevention
 let blockedSlots = {};
 const SOFT_OPENING_RATE = 350; // Soft opening rate per hour
-const TRAINING_AREA_RATE = 350; // Training Area rate per hour, every day
+const PICKLE_RACKET_RANGE_RATE = 350; // Pickle Racket Range rate per hour, every day
 const WEEKDAY_RATE = 500; // Regular weekday rate (Mon-Thu)
 const WEEKEND_RATE = 550; // Friday-Sunday rate
 const MONDAY_EARLY_RATE = 550; // Monday rate from 12AM through 5AM
@@ -197,9 +197,31 @@ function closeTermsModal() {
   if (modal) modal.classList.remove('open');
 }
 
+function openCourtPreview(courtName, imagePath) {
+  const modal = document.getElementById('courtPreviewModal');
+  const title = document.getElementById('courtPreviewTitle');
+  const image = document.getElementById('courtPreviewImage');
+  if (!modal || !title || !image) return;
+
+  title.textContent = `${courtName} Preview`;
+  image.src = imagePath;
+  image.alt = `${courtName} preview`;
+  modal.classList.add('open');
+}
+
+function closeCourtPreview() {
+  const modal = document.getElementById('courtPreviewModal');
+  const image = document.getElementById('courtPreviewImage');
+  if (modal) modal.classList.remove('open');
+  if (image) image.removeAttribute('src');
+}
+
+window.openCourtPreview = openCourtPreview;
+window.closeCourtPreview = closeCourtPreview;
+
 // Close modals when clicking on overlay
 document.addEventListener('DOMContentLoaded', function() {
-  const modals = ['aboutUsModal', 'privacyPolicyModal', 'termsModal', 'contactUsModal', 'successModal'];
+  const modals = ['aboutUsModal', 'privacyPolicyModal', 'termsModal', 'courtPreviewModal', 'contactUsModal', 'successModal'];
   
   modals.forEach(modalId => {
     const modal = document.getElementById(modalId);
@@ -209,6 +231,7 @@ document.addEventListener('DOMContentLoaded', function() {
           if (modalId === 'aboutUsModal') closeAboutUsModal();
           else if (modalId === 'privacyPolicyModal') closePrivacyPolicyModal();
           else if (modalId === 'termsModal') closeTermsModal();
+          else if (modalId === 'courtPreviewModal') closeCourtPreview();
           else if (modalId === 'contactUsModal') closeContactUsModal();
           else if (modalId === 'successModal') closeSuccessModal();
         }
@@ -341,11 +364,11 @@ document.addEventListener("DOMContentLoaded", async () => {
     try {
       const result = await callBackendAPI('get-booked-slots', { bookingDate: dk });
       (result.blockedSlots || []).forEach(row => {
-        blockedSlots[`${dk}|${row.time_slot}|${row.court}`] = true;
+        blockedSlots[`${dk}|${row.time_slot}|${normalizeCourtName(row.court)}`] = true;
       });
       if (result.bookings && Array.isArray(result.bookings)) {
         result.bookings.forEach(row => {
-          const courtIndex = COURTS.indexOf(row.court);
+          const courtIndex = COURTS.indexOf(normalizeCourtName(row.court));
           if (courtIndex >= 0 && row.time_slot) {
             const status = (row.status || '').toString().toLowerCase();
 
@@ -419,7 +442,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     '11PM - 12AM'
   ];
 
-  const COURTS = ['Court One', 'Training Area'];
+  const COURTS = ['Standard Court', 'Pickle Racket Range'];
   const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
   const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 
@@ -443,13 +466,19 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   function getCourtDisplayName(court) {
-    return court === 'Training Area' || court === 'Training Court' ? 'Training Area' : court;
+    return normalizeCourtName(court);
+  }
+
+  function normalizeCourtName(court) {
+    if (court === 'Court One' || court === 'Court 1' || court === 'Standard Court') return 'Standard Court';
+    if (court === 'Training Area' || court === 'Training Court' || court === 'Pickle Racket Range') return 'Pickle Racket Range';
+    return court;
   }
 
   // Fixed rate per hour - based on date and day of week
-  function getRate(slot, dateStr, court = 'Court One') {
-    if (court === 'Training Area' || court === 'Training Court') {
-      return TRAINING_AREA_RATE;
+  function getRate(slot, dateStr, court = 'Standard Court') {
+    if (court === 'Pickle Racket Range') {
+      return PICKLE_RACKET_RANGE_RATE;
     }
 
     // If in soft opening period, use soft opening rate
@@ -655,7 +684,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         const key = `${dk}|${slot}|${index}`;
         const btn = document.createElement('button');
         btn.className = 'slot-btn';
-        if (court === 'Training Area' || court === 'Training Court') {
+        if (court === 'Pickle Racket Range') {
           btn.classList.add('training-court-btn');
         }
 
@@ -1083,7 +1112,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       // Build formatted confirmation message
       let courtSections = '';
-      const courtOrder = ['Court One', 'Training Area'];
+      const courtOrder = ['Standard Court', 'Pickle Racket Range'];
       courtOrder.forEach(court => {
         if (slotsByCount[court] && slotsByCount[court].length > 0) {
           const slots = slotsByCount[court];
@@ -1277,14 +1306,14 @@ Date: ${bookingDate}${courtSections}`;
             // Add confirmed and valid pending slots to booked set
             bookings.forEach(b => {
               if (b.status === 'confirmed') {
-                bookedSlots.add(`${b.time_slot}|${b.court}`);
+                bookedSlots.add(`${b.time_slot}|${normalizeCourtName(b.court)}`);
               } else if (b.status === 'pending') {
                 // Check if pending slot is still within the 60-minute window
                 const createdAt = new Date(b.created_at).getTime();
                 const now = Date.now();
                 const expiresAt = createdAt + (60 * 60 * 1000); // 60-minute hold
                 if (now < expiresAt) {
-                  bookedSlots.add(`${b.time_slot}|${b.court}`);
+                  bookedSlots.add(`${b.time_slot}|${normalizeCourtName(b.court)}`);
                 }
               }
             });
