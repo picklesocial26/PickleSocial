@@ -100,11 +100,11 @@
               <th>Time</th>
               <th>
                 <span class="court-heading-label">Standard Court</span>
-                <button class="court-preview-btn" type="button" onclick="openCourtPreview('Standard Court', 'PREVIEW_COURT 1.jpg')" aria-label="Preview Standard Court">i</button>
+                <button class="court-preview-btn" type="button" data-preview-name="Standard Court" data-preview-image="PREVIEW_COURT 1.jpg" aria-label="Preview Standard Court">i</button>
               </th>
               <th class="training-court-heading">
                 <span class="court-heading-label">Pickle Racket Range</span>
-                <button class="court-preview-btn" type="button" onclick="openCourtPreview('Pickle Racket Range', 'training area.jpg')" aria-label="Preview Pickle Racket Range">i</button>
+                <button class="court-preview-btn" type="button" data-preview-name="Pickle Racket Range" data-preview-image="training area.jpg" aria-label="Preview Pickle Racket Range">i</button>
               </th>
             </tr>
           </thead>
@@ -137,7 +137,7 @@
       </button>
       <div class="faq-answer">
         <p>The Pickle Racket Range is a smaller training area designed for individual practice and drills. It is not a standard-size pickleball court.</p>
-        <button class="btn-primary faq-preview-btn" type="button" onclick="openCourtPreview('Pickle Racket Range', 'training area.jpg')">Preview Pickle Racket Range</button>
+        <button class="btn-primary faq-preview-btn" type="button" data-preview-name="Pickle Racket Range" data-preview-image="training area.jpg">Preview Pickle Racket Range</button>
       </div>
     </div>
 
@@ -335,11 +335,11 @@
 
 <div class="modal-overlay" id="courtPreviewModal">
   <div class="modal court-preview-modal" role="dialog" aria-modal="true" aria-labelledby="courtPreviewTitle">
-    <button class="modal-close-btn" type="button" onclick="closeCourtPreview()" aria-label="Close court preview">&times;</button>
+    <button class="modal-close-btn" type="button" data-close-court-preview aria-label="Close court preview">&times;</button>
     <h2 id="courtPreviewTitle">Court Preview</h2>
     <img id="courtPreviewImage" class="court-preview-image" src="" alt="">
     <div class="modal-actions court-preview-actions">
-      <button class="btn-confirm" type="button" onclick="closeCourtPreview()">Done</button>
+      <button class="btn-confirm" type="button" data-close-court-preview>Done</button>
     </div>
   </div>
 </div>
