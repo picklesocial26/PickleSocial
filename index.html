@@ -343,6 +343,7 @@
   <div class="modal court-preview-modal" role="dialog" aria-modal="true" aria-labelledby="courtPreviewTitle">
     <button class="modal-close-btn" type="button" data-close-court-preview aria-label="Close court preview">&times;</button>
     <h2 id="courtPreviewTitle">Court Preview</h2>
+    <p id="courtPreviewNote" class="court-preview-note" hidden></p>
     <img id="courtPreviewImage" class="court-preview-image" src="" alt="">
     <div class="modal-actions court-preview-actions">
       <button class="btn-confirm" type="button" data-close-court-preview>Done</button>
@@ -455,12 +456,28 @@
 
 <script>
   if (typeof window.openCourtPreview !== 'function') {
-    window.openCourtPreview = function(courtName, imagePath) {
+    window.openCourtPreview = function(courtName, imagePath, noteText, emphasisText) {
       const modal = document.getElementById('courtPreviewModal');
       const title = document.getElementById('courtPreviewTitle');
+      const note = document.getElementById('courtPreviewNote');
       const image = document.getElementById('courtPreviewImage');
       if (!modal || !title || !image) return;
       title.textContent = `${courtName} Preview`;
+      if (note) {
+        const emphasisIndex = noteText && emphasisText ? noteText.indexOf(emphasisText) : -1;
+        if (emphasisIndex >= 0) {
+          const emphasis = document.createElement('strong');
+          emphasis.textContent = emphasisText;
+          note.replaceChildren(
+            document.createTextNode(noteText.slice(0, emphasisIndex)),
+            emphasis,
+            document.createTextNode(noteText.slice(emphasisIndex + emphasisText.length))
+          );
+        } else {
+          note.textContent = noteText || '';
+        }
+        note.hidden = !note.textContent;
+      }
       image.src = imagePath;
       image.alt = `${courtName} preview`;
       modal.classList.add('open');
