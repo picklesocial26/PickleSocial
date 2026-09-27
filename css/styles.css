@@ -658,6 +658,7 @@
     .terms-modal-actions .btn-confirm { flex: 0 0 120px; }
     .court-preview-modal { position: relative; width: 90%; max-width: 720px; padding: 24px; }
     .court-preview-modal h2 { padding-right: 36px; }
+    .court-preview-note { margin-top: 10px; color: var(--text-secondary); line-height: 1.5; }
     .court-preview-image { display: block; width: 100%; max-height: 68vh; object-fit: contain; margin-top: 18px; border: 1px solid rgba(255,153,207,0.16); border-radius: 12px; background: #08090d; }
     .court-preview-actions { justify-content: flex-end; margin-top: 14px; }
     .court-preview-actions .btn-confirm { flex: 0 0 120px; }
