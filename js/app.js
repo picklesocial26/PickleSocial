@@ -1,6 +1,7 @@
 // app.js — extracted from index.html
 // Global variables
 let selectedSlots = new Set();
+let hasShownTrainingAreaPreview = false;
 let pendingBookingEntries = [];
 let pendingSlotsWithTimer = {}; // Track pending slots with timestamps
 let searchedBookingReference = ''; // Store searched reference for success modal
@@ -735,6 +736,15 @@ document.addEventListener("DOMContentLoaded", async () => {
             selectedSlots.delete(key);
           } else {
             selectedSlots.add(key);
+            if (court === 'Training Area' && !hasShownTrainingAreaPreview) {
+              hasShownTrainingAreaPreview = true;
+              window.openCourtPreview(
+                'Pickle Racket Range',
+                'training area.jpg',
+                'You selected a time slot for Pickle Racket Range. Are you sure you want to book it? This is a smaller training area for individual practice and drills, not a standard-size pickleball court. ₱350 per hour.',
+                'This is a smaller training area for individual practice and drills, not a standard-size pickleball court.'
+              );
+            }
           }
           updateCart();
           debounceRenderTable();
